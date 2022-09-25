@@ -39,6 +39,5 @@ void primes(){
     }
     num += 2;
   }
-  sys_exit();
 }
 

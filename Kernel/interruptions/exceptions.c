@@ -2,7 +2,6 @@
 #include <console.h>
 #include <syscalls.h>
 #include <naiveConsole.h>
-#include <scheduler.h>
 #include <snapshot.h>
 #include <string.h>
 
@@ -20,8 +19,6 @@ void exceptionDispatcher(int exception, uint64_t rsp) {
 		invalid_opcode();
 	}
 	printRegisters((uint64_t*) rsp);
-	uint64_t currentPid = getPid();
-	killTask(currentPid);
 }
 
 static void invalid_opcode(){

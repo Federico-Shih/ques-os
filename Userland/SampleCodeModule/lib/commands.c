@@ -40,19 +40,16 @@ void divZero(){
   int aux1 = 1;
   int aux2 = 0;
   int o = aux1/aux2;
-  sys_exit();
 }
 
 void invalidOpcode(){
   _opcodeExp();
-  sys_exit();
 }
 
 void printmem(int argc, char* argv[]){
   if (argc < 1) {
     char* error_message = "No se dio una direccion de memoria\n";
     sys_write(STDERR, error_message, _strlen(error_message));
-    sys_exit();
     return;
   } 
   char* address = argv[0];
@@ -63,7 +60,6 @@ void printmem(int argc, char* argv[]){
 	if(memDir == -1 || memDir >= LAST_MEM){
     char* error_message = "\nLa direccion ingresada no es alcanzable \n";
     sys_write(STDERR, error_message,_strlen(error_message));
-    sys_exit();
     return;
   }
   _fprintf(STDOUT, "\nDump de 32 bytes a partir de la direccion: %s\n\n", address);
@@ -77,7 +73,6 @@ void printmem(int argc, char* argv[]){
       _fprintf(STDOUT, "0x%x  ", buffer[i]);
   }
   _fprintf(STDOUT,"\n");
-  sys_exit();
 }
 
 void dateAndTime(){
@@ -89,7 +84,6 @@ void dateAndTime(){
   uint64_t minute = sys_dateAndTime(MINUTE_RTC_ID);
   uint64_t second = sys_dateAndTime(SECOND_RTC_ID);
   _fprintf(STDOUT,"\n Y el horario de este momento es: %d:%d:%d\n", hour, minute, second);
-  sys_exit();
 }
 
 void help(int argc, char* argv[]){
@@ -109,7 +103,6 @@ void help(int argc, char* argv[]){
       _fprintf(STDOUT, "%s no existe\n", argv[0]);
     }
   }
-  sys_exit();
 }
 
 void infoReg(){
@@ -120,12 +113,10 @@ void infoReg(){
     _fprintf(STDOUT, "%s",registerNames[i]);
     _fprintf(STDOUT, "%x\n",registers[i]);
   }
-  sys_exit();
 }
 
 void holaMundo() {
   _print("hola mundo\n");
-  sys_exit();
 }
 
 char* getDescriptions(char* function){  
@@ -142,7 +133,6 @@ char* getDescriptions(char* function){
 
 void clearScreen() {
   clear_screen(0);
-  sys_exit();
 }
 
 command* getCommands() {

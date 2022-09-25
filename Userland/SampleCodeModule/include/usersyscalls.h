@@ -37,18 +37,9 @@ int sys_clear(uint8_t fd);
 int sys_inforeg(uint64_t* buffer);
 int sys_dateAndTime(uint64_t id);
 int sys_showCursor(int active);
-int sys_switchScreen(size_t screen);
 int sys_toggleMode(int mode);
 int sys_printMem(uint64_t direc, uint8_t* buffer, uint64_t bytes);
 int sys_wait(uint64_t seconds);
-uint64_t sys_start(caller* function);
-uint64_t sys_child(caller* function);
-bool sys_exit();
-bool sys_kill();
-bool sys_pause(uint64_t pid);
-bool sys_resume(uint64_t pid);
-uint64_t sys_getPid();
-bool sys_hasChild();
 int sys_getKey(uint8_t fd, int* buffer, size_t count);
 
 #endif

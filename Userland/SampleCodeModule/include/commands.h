@@ -14,7 +14,7 @@
 
 typedef struct {
   char *name;
-  void (*runner)(int count, void** args);
+  int (*runner)(unsigned int count, void** args);
 } command;
 
 command* getCommands();

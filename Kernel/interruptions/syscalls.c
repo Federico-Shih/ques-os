@@ -2,7 +2,6 @@
 #include <keyboard.h>
 #include <snapshot.h>
 #include <console.h>
-#include <scheduler.h>
 #include <time.h>
 #include <interrupts.h>
 
@@ -90,33 +89,6 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         case SYS_SET_CURSOR:
             setCursor((int)arg0);
             return 0;
-        case SYS_SET_SCREEN:
-            switchScreens((size_t)arg0);
-            return 0;
-        case SYS_TOGGLE_MODE:
-            if (!(size_t)arg0) {
-                initializeSingleScreen();
-            } else {
-                initializeDualScreen();
-            }
-            return 0;
-        case SYS_START:
-            startTask((caller *)arg0, rsp);
-            return 0;
-        case SYS_CHILD:
-            return startChild((caller *)arg0);
-        case SYS_EXIT:
-            return killTask(getPid());
-        case SYS_KILL:
-            return killTask(arg0);
-        case SYS_PAUSE:
-            return pauseTask(arg0);
-        case SYS_RESUME:
-            return resumeTask(arg0);
-        case SYS_GETPID:
-            return getPid();
-        case SYS_HASCHILD:
-            return currentHasChilds();
         case SYS_WAIT:
             sys_wait((uint64_t)arg0);
             return 0;

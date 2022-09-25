@@ -17,12 +17,6 @@ static char buffer[64] = { '0' };
 static window windows[3] = {
   { //stdout
     SCREEN_WIDTH, SCREEN_HEIGHT, {0, 0}, {0, 0}
-  },
-  { //stleft
-    SCREEN_WIDTH / 2 - 2, SCREEN_HEIGHT, {0, 0}, {0, 0}
-  },
-  { //stdright
-    SCREEN_WIDTH / 2, SCREEN_HEIGHT, {SCREEN_WIDTH / 2 - 1, 0}, {SCREEN_WIDTH / 2 - 1, 0}
   }
 };
 
@@ -147,17 +141,6 @@ void newLine() {
 // Imprime caracter en default
 void printChar(char c) {
   printCharColor(c, LGREY, BLACK, 1);
-}
-
-// Comienza desde cero las pantallas de izquierda, derecha y dibuja una linea que separa las pantallas
-void initializeDualScreen() {
-  for (int i = 0; i < height; i += 1) {
-    *(getPosition(i, width / 2 - 2)) = 219;
-  }
-  currentWindow = 2;
-  restartCurrentPos();
-  currentWindow = 1;
-  restartCurrentPos();
 }
 
 // Comienza desde cero la pantalla principal

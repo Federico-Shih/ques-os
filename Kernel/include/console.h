@@ -35,13 +35,11 @@ void clearScreen();
 void scrollUp();
 void print(char* str, size_t count);
 void printColor(char* str, size_t count, color_t charColor, color_t bgColor);
-void initializeDualScreen();
 void blinkCursor();
 void stopCursor();
 void setCursor(int active);
 void switchScreens(size_t screen);
 void initializeSingleScreen();
-void initializeDualScreen();
 void printCheese();
 void printCheeseOs();
 

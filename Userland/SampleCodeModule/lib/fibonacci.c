@@ -18,5 +18,4 @@ void fibonacci(){
     sys_wait(1);
     _fprintf(STDOUT,"n %d: %u\n",count ,c);
   }
-  sys_exit();
 }
