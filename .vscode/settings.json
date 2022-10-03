@@ -1,6 +1,10 @@
 {
   "files.associations": {
     "scheduler.h": "c",
-    "console.h": "c"
+    "console.h": "c",
+    "stdlib.h": "c",
+    "stdbool.h": "c",
+    "syscalls.h": "c",
+    "memorymanager.h": "c"
   }
 }

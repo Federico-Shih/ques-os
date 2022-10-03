@@ -4,6 +4,7 @@
 #include <console.h>
 #include <time.h>
 #include <interrupts.h>
+#include <memoryManager.h>
 
 
 uint8_t sys_dateAndTime(uint64_t rtcID){
@@ -69,6 +70,7 @@ int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size) {
     return i;
 }
 
+
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t rsp) {
     switch (rax) {
         case SYS_READ:
@@ -95,6 +97,13 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         case SYS_GETKEY:
             toggleBuffer(SCANCODEBUFFER);
             return sys_readKey((FILE_DESCRIPTOR)arg0, (int*)arg1, (size_t)arg2);
+        case SYS_MALLOC:
+            return (uint64_t)malloc(arg0);
+        case SYS_FREE:
+            free((void *) arg0);
+        case SYS_MEMDUMP:
+            memoryDump();
+            return 0;
     }
     return -1;
 }

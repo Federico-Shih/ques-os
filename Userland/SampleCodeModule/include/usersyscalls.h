@@ -13,16 +13,6 @@ enum {
   SYS_DNT_ID,
   SYS_PRINTMEM_ID,
   SYS_CURSOR_ID, 
-  SYS_SWITCHSCREEN_ID, 
-  SYS_TOGGLEMODE_ID,
-  SYS_START_ID,
-  SYS_CHILD_ID,
-  SYS_EXIT_ID,
-  SYS_KILL_ID,
-  SYS_PAUSE_ID,
-  SYS_RESUME_ID,
-  SYS_GETPID_ID,
-  SYS_HASCHILD,
   SYS_WAIT_ID,
   SYS_GETKEY_ID
 };
@@ -37,7 +27,6 @@ int sys_clear(uint8_t fd);
 int sys_inforeg(uint64_t* buffer);
 int sys_dateAndTime(uint64_t id);
 int sys_showCursor(int active);
-int sys_toggleMode(int mode);
 int sys_printMem(uint64_t direc, uint8_t* buffer, uint64_t bytes);
 int sys_wait(uint64_t seconds);
 int sys_getKey(uint8_t fd, int* buffer, size_t count);
