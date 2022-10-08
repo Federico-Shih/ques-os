@@ -5,17 +5,20 @@
 #include <stdbool.h>
 #include "shell.h"
 
-enum {
-  SYS_READ_ID, 
-  SYS_WRITE_ID,
-  SYS_CLEAR_ID, 
-  SYS_INFOREG_ID, 
-  SYS_DNT_ID,
-  SYS_PRINTMEM_ID,
-  SYS_CURSOR_ID, 
-  SYS_WAIT_ID,
-  SYS_GETKEY_ID
-};
+typedef enum {
+  SYS_READ=0, 
+  SYS_WRITE, 
+  SYS_CLEAN_SCREEN, 
+  SYS_INFOREG, 
+  SYS_DATENTIME, 
+  SYS_PRINTMEM, 
+  SYS_SET_CURSOR, 
+  SYS_WAIT,
+  SYS_GETKEY,
+  SYS_MALLOC,
+  SYS_FREE,
+  SYS_MEMDUMP,
+} syscall_id;
 
 
 
@@ -30,5 +33,8 @@ int sys_showCursor(int active);
 int sys_printMem(uint64_t direc, uint8_t* buffer, uint64_t bytes);
 int sys_wait(uint64_t seconds);
 int sys_getKey(uint8_t fd, int* buffer, size_t count);
+void* sys_malloc(size_t memory);
+void sys_free(void* memory);
+void sys_memDump();
 
 #endif

@@ -149,16 +149,16 @@ void memoryDump()
   int i = 0;
   unsigned int cant = 0;
   do {
-    cant = current->data.size;
+    cant += current->data.size;
     print("   Bloque nro: ", 16);
     printBase(i, 10);
     printChar('\n');
     print("   Base: ", 10);
     printBase((uint64_t)current, 16);
     printChar('\n');
-    print("   Tamano en bloques: ", 12);
+    print("   Cantidad de bloques: ", 23);
     printBase(current->data.size, 10);
-    printChar('\n');
+    print("\n\n------------------------------------\n", 40);
     current = current->data.next;
     i += 1;
   } while (current != free_base);

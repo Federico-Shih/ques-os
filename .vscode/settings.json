@@ -5,6 +5,10 @@
     "stdlib.h": "c",
     "stdbool.h": "c",
     "syscalls.h": "c",
-    "memorymanager.h": "c"
+    "memorymanager.h": "c",
+    "usersyscalls.h": "c",
+    "ustdlib.h": "c",
+    "processmanagerqueue.h": "c",
+    "processmanager.h": "c"
   }
 }
