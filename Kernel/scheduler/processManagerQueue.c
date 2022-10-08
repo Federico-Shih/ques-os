@@ -33,7 +33,7 @@ pcb* dequeProcess(processQueueADT queue) {
     queue_node *aux = queue->first;
     queue->first = queue->first->next;
     queue->size -= 1;
-    return aux;
+    return aux->pcb;
 }
 
 void queueProcess(processQueueADT queue, pcb* process) {
