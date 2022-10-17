@@ -10,9 +10,11 @@ void initScheduler();
 
 void *scheduleProcess(void *currStackPointer);
 
-void *initProcess(void (*process)(int argc, char** argv), int argc, char** argv, priority_type foreground, int *fd);
+int initProcess(void (*process)(int argc, char** argv), int argc, char** argv, priority_type foreground, int *fd);
 
 void printProcesses();
+
+void printProcess(int pid);
 
 int getpid();
 
@@ -26,8 +28,15 @@ void resumeProcess(int pid);
 
 void yield();
 
-static int cpyArgs(char **dest, char **from, int count);
+int cpyArgs(char **dest, char **from, int count);
 
+int changeState(int pid, process_state newState);
+
+char *foregToBool(int foreground);
+
+char *stateToStr(process_state state);
+
+void _callTimerTick();
 
 pcb* initializeBlock(char* name, priority_type foreground, int *fd);
 void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);

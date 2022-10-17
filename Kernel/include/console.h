@@ -45,6 +45,10 @@ void printCheese();
 void printCheeseOs();
 int printf(char const *fmt, ...);
 void printline(char* str);
+int abs(int num);
+char *reverse(char *buffer, int i, int j);
+void swap(char *x, char *y);
+char *intToStr(int value, char *buffer, int base);
 
 #endif
 

@@ -39,4 +39,10 @@ processQueueADT initQueue();
 
 pcb* getProcess(processQueueADT queue, int pid);
 
+int toBegin(processQueueADT queue);
+
+int hasNext(processQueueADT queue);
+
+pcb *next(processQueueADT queue);
+
 #endif

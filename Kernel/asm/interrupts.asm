@@ -16,6 +16,7 @@ GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
 GLOBAL _irq80Handler
+GLOBAL _callTimerTick
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
@@ -167,7 +168,7 @@ _irq00Handler:
 	call scheduleProcess
 	mov rsp, rax
 
-	endInterrupt
+	call endInterrupt
 
 	popExtraRegisters
 	popState
@@ -238,7 +239,9 @@ haltcpu:
 	hlt
 	ret
 
-
+_callTimerTick:
+    int 20h
+    ret
 
 SECTION .bss
 	aux resq 1

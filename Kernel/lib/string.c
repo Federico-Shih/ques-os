@@ -13,6 +13,6 @@ int strlen(char * string){
 char * strcpy(char *strDest, const char *strSrc)
 {
     char *temp = strDest;
-    while(*strDest++ = *strSrc++); 
+    while( (*(strDest++) = *(strSrc++)) ); 
     return temp;
 }

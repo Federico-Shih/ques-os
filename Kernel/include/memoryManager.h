@@ -1,7 +1,9 @@
 #ifndef MEMORY_MANAGER_H
 #define MEMORY_MANAGER_H
 
-void* malloc(uint64_t);
+#include <stdint.h>
+
+void* malloc(uint64_t size);
 
 void free(void* memory);
 

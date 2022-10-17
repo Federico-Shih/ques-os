@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <interrupts.h>
 #include <string.h>
+#include <console.h>
 
 #define STACK_SIZE 0x1024 * 4
 
@@ -95,7 +96,7 @@ void *scheduleProcess(void *currStackPointer)
   return currentProcessPCB->rsp;
 }
 
-void *initProcess(void (*process)(int argc, char **argv), int argc, char **argv, priority_type foreground, int *fd)
+int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, priority_type foreground, int *fd)
 {
   if (process == NULL) return -1;
   
@@ -317,7 +318,7 @@ int changeState(int pid, process_state newState) {
 }
 
 // Realizo una copia de los argumentos
-static int cpyArgs(char **dest, char **from, int count) {
+int cpyArgs(char **dest, char **from, int count) {
   for (int i = 0; i < count; i += 1) {
     dest[i] = malloc(sizeof(char) * (strlen(from[i]) + 1));
     if (dest[i] == NULL) {

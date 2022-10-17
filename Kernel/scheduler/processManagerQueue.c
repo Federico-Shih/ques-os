@@ -69,6 +69,7 @@ int toBegin(processQueueADT queue)
   if( queue->first == NULL)
     return -1;
   queue->next = queue->first;
+  return 1;
 }
 
 int hasNext(processQueueADT queue) 
