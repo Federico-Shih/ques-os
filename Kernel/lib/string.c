@@ -9,3 +9,10 @@ int strlen(char * string){
 		i++;
 	return i;
 }
+
+char * strcpy(char *strDest, const char *strSrc)
+{
+    char *temp = strDest;
+    while(*strDest++ = *strSrc++); 
+    return temp;
+}

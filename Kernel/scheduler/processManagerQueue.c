@@ -11,6 +11,7 @@ typedef struct processQueueCDT {
     uint64_t size;
     queue_node *first;
     queue_node *last;
+    queue_node *next;
 } processQueueCDT;
 
 processQueueADT initQueue() {
@@ -33,6 +34,7 @@ pcb* dequeProcess(processQueueADT queue) {
     queue_node *aux = queue->first;
     queue->first = queue->first->next;
     queue->size -= 1;
+    free(aux);
     return aux->pcb;
 }
 
@@ -47,4 +49,36 @@ void queueProcess(processQueueADT queue, pcb* process) {
     queue->last->next = newNode;
     queue->last = newNode;
   }
+}
+
+pcb* getProcess(processQueueADT queue, int pid)
+{
+  queue_node* q = queue->first;
+  while (q != NULL) 
+  {
+    if (q->pcb->pid == pid) {
+      return q->pcb;
+    }
+    q = q->next;
+  }
+  return NULL;
+}
+
+int toBegin(processQueueADT queue) 
+{
+  if( queue->first == NULL)
+    return -1;
+  queue->next = queue->first;
+}
+
+int hasNext(processQueueADT queue) 
+{
+  return queue->next != NULL;
+}
+
+pcb *next(processQueueADT queue)
+{
+  pcb *aux = queue->next->pcb;
+  queue->next = queue->next->next;
+  return aux;
 }

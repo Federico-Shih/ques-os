@@ -4,6 +4,8 @@
 #include <time.h>
 #include <string.h>
 
+static int scan(char const *fmt, va_list arg);
+
 // Puntero a memoria del dispositivo de video
 static uint8_t * const video = (uint8_t*)0xB8000;
 
@@ -267,4 +269,66 @@ static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
 	}
 
 	return digits;
+}
+
+int printf(char const *fmt, ...) {
+  va_list arguments;
+  int length;
+
+  va_start(arguments, fmt);
+  length = scan(fmt, arguments);
+  va_end(arguments);
+  return length;
+}
+static int scan(char const *fmt, va_list arg) {
+  int int_temp;
+  char char_temp;
+  char *string_temp;
+
+  char ch;
+  int length = 0;
+
+  char buffer[512];
+
+  while ((ch = *fmt++)) {
+    if ('%' == ch) {
+      switch (ch = *fmt++) {
+        case '%':
+          putChar('%');
+          length++;
+          break;
+        case 'c':
+          char_temp = va_arg(arg, int);
+          putChar(char_temp);
+          length++;
+          break;
+        case 's':
+          string_temp = va_arg(arg, char *);
+          printString(string_temp);
+          length += strlen(string_temp);
+          break;
+        case 'd':
+          int_temp = va_arg(arg, int);
+          intToStr(int_temp, buffer, 10);
+          printString(buffer);
+          length += strlen(buffer);
+          break;
+        case 'x':
+          int_temp = va_arg(arg, int);
+          intToStr(int_temp, buffer, 16);
+          printString("0x");
+          printString(buffer);
+          length += strlen(buffer);
+          break;
+      }
+    } else {
+      putChar(ch);
+      length++;
+    }
+  }
+  return length;
+}
+
+void printline(char* str) {
+  print(str, strlen(str));
 }

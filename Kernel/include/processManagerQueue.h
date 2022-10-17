@@ -37,4 +37,6 @@ void queueProcess(processQueueADT queue, pcb *process);
 
 processQueueADT initQueue();
 
+pcb* getProcess(processQueueADT queue, int pid);
+
 #endif

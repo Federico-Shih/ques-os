@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <colors.h>
+#include <stdarg.h>
 
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
@@ -42,6 +43,8 @@ void switchScreens(size_t screen);
 void initializeSingleScreen();
 void printCheese();
 void printCheeseOs();
+int printf(char const *fmt, ...);
+void printline(char* str);
 
 #endif
 

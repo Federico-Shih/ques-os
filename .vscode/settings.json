@@ -9,6 +9,7 @@
     "usersyscalls.h": "c",
     "ustdlib.h": "c",
     "processmanagerqueue.h": "c",
-    "processmanager.h": "c"
+    "processmanager.h": "c",
+    "string.h": "c"
   }
 }

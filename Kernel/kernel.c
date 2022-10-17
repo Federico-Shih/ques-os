@@ -8,6 +8,7 @@
 #include <keyboard.h>
 #include <lib.h>
 #include <memoryManager.h>
+#include <processManager.h>
 
 
 extern uint8_t text;
@@ -91,28 +92,28 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
 	load_idt();
-	ncPrint("[Kernel Main]");
-	ncNewline();
-	ncPrint("  Sample code module at 0x");
-	ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	ncNewline();
+	// ncPrint("[Kernel Main]");
+	// ncNewline();
+	// ncPrint("  Sample code module at 0x");
+	// ncPrintHex((uint64_t)sampleCodeModuleAddress);
+	// ncNewline();
 
-	ncPrint("  Sample data module at 0x");
-	ncPrintHex((uint64_t)sampleDataModuleAddress);
-	ncNewline();
-	ncPrint("  Sample data module contents: ");
-	ncPrint((char*)sampleDataModuleAddress);
-	ncNewline();
-
-	ncClear();
+	// ncPrint("  Sample data module at 0x");
+	// ncPrintHex((uint64_t)sampleDataModuleAddress);
+	// ncNewline();
+	// ncPrint("  Sample data module contents: ");
+	// ncPrint((char*)sampleDataModuleAddress);
+	// ncNewline();
+	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
+	
 	printCheeseOs();
 	printCheese();
 
 	print("Press enter to log in\n", 22);
 	while(getFromBuffer() != '\n');
 
-  ((EntryPoint)sampleCodeModuleAddress)();
+	char *args[] = {"Init userland"};
+  initProcess(sampleCodeModuleAddress, 1, args, FOREGROUND_PRIORITY, 0);
 	return 0;
 }

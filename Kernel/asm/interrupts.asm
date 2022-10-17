@@ -21,6 +21,7 @@ GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 
 EXTERN irqDispatcher
+EXTERN scheduleProcess
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
 EXTERN getStackBase
@@ -43,6 +44,11 @@ SECTION .text
 	push r13
 	push r14
 	push r15
+%endmacro
+
+%macro pushExtraRegisters 0
+	push gs
+	push fs
 %endmacro
 
 
@@ -80,6 +86,11 @@ SECTION .text
 	pop rcx
 	pop rbx
 	pop rax
+%endmacro
+
+%macro popExtraRegisters 0
+	pop fs
+	pop gs
 %endmacro
 
 
@@ -145,7 +156,22 @@ picSlaveMask:
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	pushState
+	pushExtraRegisters
+
+	mov rdi, 0
+	mov rsi, rsp
+	call irqDispatcher
+
+	mov rdi,rsp
+	call scheduleProcess
+	mov rsp, rax
+
+	endInterrupt
+
+	popExtraRegisters
+	popState
+	iretq
 
 ;Keyboard
 _irq01Handler:
