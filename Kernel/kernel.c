@@ -9,6 +9,7 @@
 #include <lib.h>
 #include <memoryManager.h>
 #include <processManager.h>
+#include <interrupts.h>
 
 
 extern uint8_t text;
@@ -92,7 +93,6 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	load_idt();
 	// ncPrint("[Kernel Main]");
 	// ncNewline();
 	// ncPrint("  Sample code module at 0x");
@@ -106,14 +106,17 @@ int main()
 	// ncPrint((char*)sampleDataModuleAddress);
 	// ncNewline();
 	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
-	
-	printCheeseOs();
-	printCheese();
+	// printCheeseOs();
+	// printCheese();
 
-	print("Press enter to log in\n", 22);
-	while(getFromBuffer() != '\n');
+	// print("Press enter to log in\n", 22);
+	// while(getFromBuffer() != '\n');
+	initScheduler();
 
 	char *args[] = {"Init userland"};
-  initProcess(sampleCodeModuleAddress, 1, args, FOREGROUND_PRIORITY, 0);
+  // initProcess(sampleCodeModuleAddress, 1, args, 1, 0);
+	load_idt();
+	_hlt(); // Fuerzo a que el scheduler empiece
+	printline("Failureeee\n");
 	return 0;
 }

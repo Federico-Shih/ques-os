@@ -35,14 +35,25 @@ void initScheduler()
 
   char *idleArgv[] = {"idle"};
 
-  initProcess(idleProcess, 1, idleArgv, BACKGROUND_PRIORITY, NULL);
+  initProcess(idleProcess, 1, idleArgv, 0, NULL);
 
   idleProcessPCB = dequeProcess(queue);
+}
+
+void freeProcess(pcb* process) {
+  for (int i = 0; i < process->argc; i += 1) {
+    free(process->argv[i]);
+  }
+  free(process->argv);
+  // Previamente se hizo malloc en el stack del proceso
+  free((void *)((char *)process->rbp - STACK_SIZE + 1));
+  free((void *)process);
 }
 
 // Tengo que buscar que proceso correr
 void *scheduleProcess(void *currStackPointer)
 {
+  if (queue == NULL) return currStackPointer;
   // Se fija si hay un proceso actual en existencia. Si no lo hay no hay cambio de contexto.
   if (currentProcessPCB != NULL) {
     // Intento correrlo y descuento la cantidad de ciclos
@@ -63,7 +74,7 @@ void *scheduleProcess(void *currStackPointer)
         if (parent != NULL && currentProcessPCB->foreground &&  parent->state == BLOCKED) {
           changeState(parent->pid, READY);
         }
-        free(currentProcessPCB);
+        freeProcess(currentProcessPCB);
       } else {
         queueProcess(queue, currentProcessPCB);
       }
@@ -78,7 +89,7 @@ void *scheduleProcess(void *currStackPointer)
     while (currentProcessPCB->state != READY) {
       if (currentProcessPCB->state == TERMINATED) 
       {
-        free(currentProcessPCB);
+        freeProcess(currentProcessPCB);
       }
       if (currentProcessPCB->state == BLOCKED)
       {
@@ -96,7 +107,7 @@ void *scheduleProcess(void *currStackPointer)
   return currentProcessPCB->rsp;
 }
 
-int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, priority_type foreground, int *fd)
+int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
   if (process == NULL) return -1;
   
@@ -107,8 +118,7 @@ int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, p
   char **args = malloc(sizeof(char *) * argc);
   
   if (cpyArgs(args, argv, argc) == -1) {
-    free(newProcess);
-    free(args);
+    freeProcess(newProcess);
     return -1;
   }
 
@@ -177,13 +187,14 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
-void killProcess(int pid)
+int killProcess(int pid)
 {
   int id = changeState(pid, TERMINATED);
-  if(id == -1)
-    return;
+
   if(id == currentProcessPCB->pid)
     _callTimerTick();
+
+  return id;
 }
 
 void nice(int pid, int priorityValue)

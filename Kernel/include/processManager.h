@@ -10,7 +10,7 @@ void initScheduler();
 
 void *scheduleProcess(void *currStackPointer);
 
-int initProcess(void (*process)(int argc, char** argv), int argc, char** argv, priority_type foreground, int *fd);
+int initProcess(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
 
 void printProcesses();
 
@@ -18,7 +18,7 @@ void printProcess(int pid);
 
 int getpid();
 
-void killProcess(int pid);
+int killProcess(int pid);
 
 void nice(int pid, int priorityLevel);
 

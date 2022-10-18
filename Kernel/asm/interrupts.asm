@@ -48,8 +48,8 @@ SECTION .text
 %endmacro
 
 %macro pushExtraRegisters 0
-	push gs
 	push fs
+	push gs
 %endmacro
 
 
@@ -90,8 +90,8 @@ SECTION .text
 %endmacro
 
 %macro popExtraRegisters 0
-	pop fs
 	pop gs
+	pop fs
 %endmacro
 
 
