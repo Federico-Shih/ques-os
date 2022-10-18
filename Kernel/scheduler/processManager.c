@@ -128,7 +128,7 @@ int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, i
   initializeStack(process, argc, args, newProcess->rbp);
   
   queueProcess(queue, newProcess);
-
+  readyCount += 1;
   // Bloqueo el padre.
   if (newProcess->foreground && newProcess->ppid) {
     blockProcess(newProcess->ppid);
@@ -278,12 +278,12 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
   pcb* newProcess = malloc(sizeof(pcb));
 
   if (newProcess == NULL) return NULL;
-    newProcess->ppid = (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0; 
+  newProcess->ppid = (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0; 
   
   strcpy(newProcess->name, name);
 
   newProcess->pid = pidCounter++;
-  newProcess->foreground = foreground;
+  newProcess->foreground = currentProcessPCB != NULL ? (currentProcessPCB->foreground && foreground) : 1; // chequear que el proceso actual sea foreground
   newProcess->state = READY;
 
   newProcess->priority = (foreground) ? FOREGROUND_PRIORITY : BACKGROUND_PRIORITY;
@@ -300,7 +300,7 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
 
   // POR QUE???
   newProcess->rbp = (void *)((char *)tempRbp + STACK_SIZE - 1);
-  newProcess->rsp = (void *)((stackFrame *)tempRbp - 1);
+  newProcess->rsp = (void *)((stackFrame *)newProcess->rbp - 1);
 
   return newProcess;
 }
