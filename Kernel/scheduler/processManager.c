@@ -232,7 +232,7 @@ void yield()
   _callTimerTick();
 }
 
-static void killCurrent() {
+void killCurrent() {
   killTask(currentProcessPCB->pid);
 }
 

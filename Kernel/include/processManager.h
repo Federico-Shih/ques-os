@@ -26,6 +26,8 @@ void blockTask(int pid);
 
 void resumeTask(int pid);
 
+void killCurrent();
+
 void yield();
 
 int cpyArgs(char **dest, char **from, int count);
