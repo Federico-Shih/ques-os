@@ -50,6 +50,7 @@ void queueProcess(processQueueADT queue, pcb* process) {
     queue->last->next = newNode;
     queue->last = newNode;
   }
+  queue->size += 1;
 }
 
 pcb* getProcess(processQueueADT queue, int pid)

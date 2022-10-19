@@ -22,7 +22,7 @@ GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 
 EXTERN irqDispatcher
-EXTERN scheduleProcess
+EXTERN scheduleTask
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
 EXTERN getStackBase
@@ -165,7 +165,7 @@ _irq00Handler:
 	call irqDispatcher
 
 	mov rdi,rsp
-	call scheduleProcess
+	call scheduleTask
 	mov rsp, rax
 
 	call endInterrupt

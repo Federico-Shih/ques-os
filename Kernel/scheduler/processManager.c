@@ -4,7 +4,7 @@
 #include <string.h>
 #include <console.h>
 
-#define STACK_SIZE 0x1024 * 4
+#define STACK_SIZE (1024 * 4)
 
 static int pidCounter = 1;
 static processQueueADT queue = NULL;
@@ -35,8 +35,9 @@ void initScheduler()
 
   char *idleArgv[] = {"idle"};
 
-  initProcess(idleProcess, 1, idleArgv, 0, NULL);
+  startTask(idleProcess, 1, idleArgv, 0, NULL);
 
+  readyCount -= 1;
   idleProcessPCB = dequeProcess(queue);
 }
 
@@ -51,7 +52,7 @@ void freeProcess(pcb* process) {
 }
 
 // Tengo que buscar que proceso correr
-void *scheduleProcess(void *currStackPointer)
+void *scheduleTask(void *currStackPointer)
 {
   if (queue == NULL) return currStackPointer;
   // Se fija si hay un proceso actual en existencia. Si no lo hay no hay cambio de contexto.
@@ -78,6 +79,8 @@ void *scheduleProcess(void *currStackPointer)
       } else {
         queueProcess(queue, currentProcessPCB);
       }
+    } else {
+      idleProcessPCB = currentProcessPCB;
     }
   }
 
@@ -107,7 +110,7 @@ void *scheduleProcess(void *currStackPointer)
   return currentProcessPCB->rsp;
 }
 
-int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
+int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
   if (process == NULL) return -1;
   
@@ -131,23 +134,23 @@ int initProcess(void (*process)(int argc, char **argv), int argc, char **argv, i
   readyCount += 1;
   // Bloqueo el padre.
   if (newProcess->foreground && newProcess->ppid) {
-    blockProcess(newProcess->ppid);
+    blockTask(newProcess->ppid);
   }
 
   return newProcess->pid;
 } 
 
-void printProcesses()
+void printTasks()
 {
   pcb *aux;
   toBegin(queue);
   while(hasNext(queue)){
     aux = next(queue);
-    printProcess(aux->pid);
+    printTask(aux->pid);
   }
 }
 
-void printProcess(int pid)
+void printTask(int pid)
 {
   pcb *process = getProcess(queue, pid);
   if( process != NULL )
@@ -187,7 +190,7 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
-int killProcess(int pid)
+int killTask(int pid)
 {
   int id = changeState(pid, TERMINATED);
 
@@ -211,14 +214,14 @@ void nice(int pid, int priorityValue)
   }  
 }
 
-void blockProcess(int pid)
+void blockTask(int pid)
 {
   int id = changeState(pid, BLOCKED);
   if( id == currentProcessPCB->pid)
     _callTimerTick();
 }
 
-void resumeProcess(int pid)
+void resumeTask(int pid)
 {
   changeState(pid, READY);
 }
@@ -229,15 +232,14 @@ void yield()
   _callTimerTick();
 }
 
-static void endCurrent() {
-  killProcess(currentProcessPCB->pid);
-  _callTimerTick();
+static void killCurrent() {
+  killTask(currentProcessPCB->pid);
 }
 
 static void processWrapper(void (*process)(int, char**), int argc, char **argv) 
 {
   process(argc, argv);
-  endCurrent();
+  killCurrent();
 }
 
 
@@ -298,7 +300,6 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
     return NULL;
   }
 
-  // POR QUE???
   newProcess->rbp = (void *)((char *)tempRbp + STACK_SIZE - 1);
   newProcess->rsp = (void *)((stackFrame *)newProcess->rbp - 1);
 
@@ -306,24 +307,23 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
 }
 
 int changeState(int pid, process_state newState) {
-  pcb *process = getProcess(queue, pid);
-  if (process == NULL|| process->state == TERMINATED )
+  pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
+  if (process == NULL || process->state == TERMINATED )
     return -1;
   
-  if (process->pid == currentProcessPCB->pid) {
-    process->state = newState;
-    return process->pid;
-  }
+  if (process->pid != currentProcessPCB->pid) {
+    // Cambia el contador de cuantos procesos listos hay para saber cuando activar el idle
+    if (process->state != READY && newState == READY) {
+      readyCount += 1;
+    }
 
-  // Cambia el contador de cuantos procesos listos hay para saber cuando activar el idle
-  if (process->state != READY && newState == READY) {
-    readyCount += 1;
-  }
-
-  if (process->state == READY && newState != READY) {
+    if (process->state == READY && newState != READY) {
+      readyCount -= 1;
+    }
+  } else if (newState == TERMINATED) {
     readyCount -= 1;
   }
-  
+
   process->state = newState;
   return process->pid;
 }

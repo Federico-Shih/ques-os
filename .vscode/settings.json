@@ -10,6 +10,7 @@
     "ustdlib.h": "c",
     "processmanagerqueue.h": "c",
     "processmanager.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "shell.h": "c"
   }
 }

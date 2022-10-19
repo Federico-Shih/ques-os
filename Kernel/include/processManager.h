@@ -8,23 +8,23 @@
 
 void initScheduler();
 
-void *scheduleProcess(void *currStackPointer);
+void *scheduleTask(void *currStackPointer);
 
-int initProcess(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
+int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
 
-void printProcesses();
+void printTasks();
 
-void printProcess(int pid);
+void printTask(int pid);
 
 int getpid();
 
-int killProcess(int pid);
+int killTask(int pid);
 
 void nice(int pid, int priorityLevel);
 
-void blockProcess(int pid);
+void blockTask(int pid);
 
-void resumeProcess(int pid);
+void resumeTask(int pid);
 
 void yield();
 

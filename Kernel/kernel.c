@@ -112,9 +112,9 @@ int main()
 	// print("Press enter to log in\n", 22);
 	// while(getFromBuffer() != '\n');
 	initScheduler();
-
+	ncClear();
 	char *args[] = {"Init userland"};
-  // initProcess(sampleCodeModuleAddress, 1, args, 1, 0);
+  startTask(sampleCodeModuleAddress, 1, args, 1, 0);
 	load_idt();
 	_hlt(); // Fuerzo a que el scheduler empiece
 	printline("Failureeee\n");

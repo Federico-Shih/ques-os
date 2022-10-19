@@ -3,6 +3,7 @@
 #include <shell.h>
 
 int main() {
-	// initShell();
+	initShell();
+	_print("hola");
 	return 0;
 }
