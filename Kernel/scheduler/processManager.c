@@ -200,17 +200,17 @@ int killTask(int pid)
   return id;
 }
 
-void nice(int pid, int priorityValue)
+void nice(int pid, int newPriority)
 {
-  if( priorityValue < 0)
-    priorityValue = 0;
-  if( priorityValue > MAX_PRIO)
-    priorityValue = MAX_PRIO;
+  if( newPriority < 0)
+    newPriority = 0;
+  if( newPriority > MAX_PRIO)
+    newPriority = MAX_PRIO;
 
   pcb *process = getProcess(queue, pid);   
 
   if(process != NULL) {
-    process->priority = priorityValue;
+    process->priority = newPriority;
   }  
 }
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <console.h>
 
+
 typedef enum {
   SYS_READ=0, 
   SYS_WRITE, 
@@ -17,6 +18,14 @@ typedef enum {
   SYS_MALLOC,
   SYS_FREE,
   SYS_MEMDUMP,
+  SYS_GETPID,
+  SYS_PRINTPROCESSES,
+  SYS_PRINTPROCESS,
+  SYS_KILL,
+  SYS_NICE,
+  SYS_BLOCK,
+  SYS_RESUME,
+  SYS_YIELD
 } syscall_id;
 
 

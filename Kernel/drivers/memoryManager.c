@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <console.h>
 
-/* La estructura fue inspirada de la implementación de malloc del K&C */
+/* La estructura fue inspirada de la implementación de malloc del K&R */
 typedef long Align;
 
 typedef union header

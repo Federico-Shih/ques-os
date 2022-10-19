@@ -5,6 +5,7 @@
 #include <time.h>
 #include <interrupts.h>
 #include <memoryManager.h>
+#include <processManager.h>
 
 
 uint8_t sys_dateAndTime(uint64_t rtcID){
@@ -103,6 +104,28 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
             free((void *) arg0);
         case SYS_MEMDUMP:
             memoryDump();
+            return 0;
+        case SYS_GETPID:
+            return getpid();
+        case SYS_PRINTPROCESSES:
+            printTasks();
+            return 0;
+        case SYS_PRINTPROCESS:
+            printTask((int) arg0);
+            return 0;
+        case SYS_KILL:
+            return killTask((int) arg0);
+        case SYS_NICE:
+            nice((int) arg0, (int) arg1);
+            return 0;
+        case SYS_BLOCK:
+            blockTask((int) arg0);
+            return 0;
+        case SYS_RESUME:
+            resumeTask((int) arg0);
+            return 0;
+        case SYS_YIELD:
+            yield();
             return 0;
     }
     return -1;
