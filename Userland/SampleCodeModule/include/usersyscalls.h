@@ -18,6 +18,14 @@ typedef enum {
   SYS_MALLOC,
   SYS_FREE,
   SYS_MEMDUMP,
+  SYS_GETPID,
+  SYS_PRINTPROCESSES,
+  SYS_PRINTPROCESS,
+  SYS_KILL,
+  SYS_NICE,
+  SYS_BLOCK,
+  SYS_RESUME,
+  SYS_YIELD
 } syscall_id;
 
 
@@ -36,5 +44,13 @@ int sys_getKey(uint8_t fd, int* buffer, size_t count);
 void* sys_malloc(size_t memory);
 void sys_free(void* memory);
 void sys_memDump();
+int sys_getpid();
+void sys_printProcesses();
+void sys_printProcess(int pid);
+int sys_kill(int pid);
+void sys_nice(int pid, int newPriority);
+void sys_block(int pid);
+void sys_resume(int pid);
+void sys_yield();
 
 #endif
