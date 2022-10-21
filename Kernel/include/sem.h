@@ -10,10 +10,8 @@ typedef struct t_pid_node {
   struct t_pid_node * next;
 } t_pid_node;
 
-typedef t_pid_node * t_pid_list;
-
 typedef struct t_sem {
-  t_pid_list blockedPidsList;
+  t_pid_node * blockedPidsList;
   uint16_t  attachedProcesses; //para init y destroy automatico
   uint32_t id;
   uint64_t value;
