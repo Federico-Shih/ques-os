@@ -11,6 +11,10 @@
     "processmanagerqueue.h": "c",
     "processmanager.h": "c",
     "string.h": "c",
-    "shell.h": "c"
+    "shell.h": "c",
+    "sem.h": "c",
+    "queue.h": "c",
+    "type_traits": "c",
+    "interrupts.h": "c"
   }
 }

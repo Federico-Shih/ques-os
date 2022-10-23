@@ -7,24 +7,26 @@
 #define STACK_SIZE (1024 * 4)
 
 static int pidCounter = 1;
-static processQueueADT queue = NULL;
+static queueADT queue = NULL;
 static int currentCycles;
 
-// idle process
+// Datos de proceso inactivo
 static pcb *idleProcessPCB = NULL;
 
-// current process
+// Datos del proceso actual
 static pcb *currentProcessPCB = NULL;
 
-// queue ready processes
+// Cantidad de procesos listos
 static int readyCount = 0;
 
+// Proceso inactivo
 void idleProcess(int argc, char **argv)
 {
   while (1)
     _hlt();
 }
 
+// Comenzar scheduler
 void initScheduler()
 {
   queue = initQueue();
@@ -38,9 +40,10 @@ void initScheduler()
   startTask(idleProcess, 1, idleArgv, 0, NULL);
 
   readyCount -= 1;
-  idleProcessPCB = dequeProcess(queue);
+  idleProcessPCB = (pcb *)dequeue(queue);
 }
 
+// Libera la memoria de un proceso particular
 void freeProcess(pcb* process) {
   for (int i = 0; i < process->argc; i += 1) {
     free(process->argv[i]);
@@ -51,7 +54,7 @@ void freeProcess(pcb* process) {
   free((void *)process);
 }
 
-// Tengo que buscar que proceso correr
+// Programa una tarea a realizar
 void *scheduleTask(void *currStackPointer)
 {
   if (queue == NULL) return currStackPointer;
@@ -77,7 +80,7 @@ void *scheduleTask(void *currStackPointer)
         }
         freeProcess(currentProcessPCB);
       } else {
-        queueProcess(queue, currentProcessPCB);
+        enqueue(queue, (void *)currentProcessPCB);
       }
     } else {
       idleProcessPCB = currentProcessPCB;
@@ -86,7 +89,7 @@ void *scheduleTask(void *currStackPointer)
 
   if (readyCount > 0) 
   {
-    currentProcessPCB = dequeProcess(queue);
+    currentProcessPCB = (pcb *)dequeue(queue);
 
     // Como readyCount > 0, me aseguro que existe algun proceso
     while (currentProcessPCB->state != READY) {
@@ -96,9 +99,9 @@ void *scheduleTask(void *currStackPointer)
       }
       if (currentProcessPCB->state == BLOCKED)
       {
-        queueProcess(queue, currentProcessPCB);
+        enqueue(queue, (void *)currentProcessPCB);
       }
-      currentProcessPCB = dequeProcess(queue);
+      currentProcessPCB = dequeue(queue);
     }  
   } 
   else 
@@ -110,6 +113,7 @@ void *scheduleTask(void *currStackPointer)
   return currentProcessPCB->rsp;
 }
 
+// Comienza una tarea
 int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
   if (process == NULL) return -1;
@@ -130,7 +134,7 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
 
   initializeStack(process, argc, args, newProcess->rbp);
   
-  queueProcess(queue, newProcess);
+  enqueue(queue, (void *)newProcess);
   readyCount += 1;
   // Bloqueo el padre.
   if (newProcess->foreground && newProcess->ppid) {
@@ -140,7 +144,8 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   return newProcess->pid;
 } 
 
-void printTasks()
+// Imprime el estado y datos de todas las tareas actuales
+int printTasks()
 {
   pcb *aux;
   toBegin(queue);
@@ -148,9 +153,11 @@ void printTasks()
     aux = next(queue);
     printTask(aux->pid);
   }
+  return 0;
 }
 
-void printTask(int pid)
+// Imprime el estado y datos de una tarea particular
+int printTask(int pid)
 {
   pcb *process = getProcess(queue, pid);
   if( process != NULL )
@@ -163,13 +170,16 @@ void printTask(int pid)
         (uint64_t)process->rbp, process->priority,
         stateToStr(process->state));
   }
+  return 0;
 }
 
+// Funcion que retorna un string diferenciando si un proceso es foreground o no
 char *foregToBool(int foreground)
 {
   return foreground ? "TRUE" : "FALSE";
 }
 
+// Funcion que retorna un string del estado de un proceso
 char *stateToStr(process_state state)
 {
   switch (state)
@@ -185,14 +195,20 @@ char *stateToStr(process_state state)
   }
 }
 
+// retorna el id del proceso actual
 int getpid()
 {
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
+// Termina el proceso especificado
 int killTask(int pid)
 {
   int id = changeState(pid, TERMINATED);
+
+  // No se encontro el proceso
+  if( id == -1 )
+    return -1; 
 
   if(id == currentProcessPCB->pid)
     _callTimerTick();
@@ -200,7 +216,8 @@ int killTask(int pid)
   return id;
 }
 
-void nice(int pid, int newPriority)
+// Cambia la prioridad del proceso especificado
+int nice(int pid, int newPriority)
 {
   if( newPriority < 0)
     newPriority = 0;
@@ -209,32 +226,46 @@ void nice(int pid, int newPriority)
 
   pcb *process = getProcess(queue, pid);   
 
-  if(process != NULL) {
-    process->priority = newPriority;
-  }  
+  if(process == NULL) {
+    return -1;
+  } 
+  process->priority = newPriority; 
+  return 0;
 }
 
-void blockTask(int pid)
+// Bloquea el proceso especificado
+int blockTask(int pid)
 {
   int id = changeState(pid, BLOCKED);
+  if( id == -1 )
+    return -1;
   if( id == currentProcessPCB->pid)
     _callTimerTick();
+  return 0;
 }
 
-void resumeTask(int pid)
+// Desbloque el proceso especificado
+int resumeTask(int pid)
 {
-  changeState(pid, READY);
+  int id = changeState(pid, READY);
+  if(id == -1 )
+    return -1;
+  return 0;
 }
 
-void yield()
+// Renuncia al CPU
+int yield()
 {
   currentCycles = 0;
   _callTimerTick();
+  return 0;
 }
 
-void killCurrent() {
-  killTask(currentProcessPCB->pid);
+// Termina el proceso actual
+int killCurrent() {
+  return killTask(currentProcessPCB->pid);
 }
+
 
 static void processWrapper(void (*process)(int, char**), int argc, char **argv) 
 {
@@ -242,7 +273,7 @@ static void processWrapper(void (*process)(int, char**), int argc, char **argv)
   killCurrent();
 }
 
-
+// Inicializa el stack
 void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp)
 {
   // Ubico el stackframe correctamente
@@ -274,6 +305,7 @@ void initializeStack(void (*process)(int, char**), int argc, char **argv, void *
   sf->base = 0x000;
 }
 
+// Inicializa el bloque de memoria
 pcb* initializeBlock(char* name, priority_type foreground, int *fd) 
 {
   if (foreground > 1) return NULL;
@@ -306,6 +338,7 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
   return newProcess;
 }
 
+// Cambia el estado del proceso especificado
 int changeState(int pid, process_state newState) {
   pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
   if (process == NULL || process->state == TERMINATED )
@@ -344,4 +377,17 @@ int cpyArgs(char **dest, char **from, int count) {
     strcpy(dest[i], from[i]);
   }
   return 0;
+}
+
+// Devuelve los datos del proceso especificado
+pcb *getProcess(queueADT queue, int pid)
+{
+  toBegin(queue);
+  while(hasNext(queue))
+  {
+    pcb *process =(pcb *) next(queue);
+    if(pid == process->pid)
+      return next;
+  }
+  return NULL;
 }

@@ -1,47 +1,35 @@
 #ifndef PROCESS_MANAGER_H
 #define PROCESS_MANAGER_H
 
-#include <processManagerQueue.h>
 #include <stdint.h>
+#include <queue.h>
 
 #define MAX_PRIO 20
 
-void initScheduler();
+typedef enum
+{
+  READY,
+  BLOCKED,
+  TERMINATED
+} process_state;
 
-void *scheduleTask(void *currStackPointer);
+typedef enum { BACKGROUND_PRIORITY = 1, FOREGROUND_PRIORITY } priority_type;
 
-int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
+typedef struct pcb
+{
+  int pid;
+  int ppid;
+  int foreground;
+  process_state state;
+  priority_type priority;
+  char name[30];
+  int fileDescriptors[2];
+  void *rsp;
+  void *rbp;
+  int argc;
+  char **argv;
+} pcb;
 
-void printTasks();
-
-void printTask(int pid);
-
-int getpid();
-
-int killTask(int pid);
-
-void nice(int pid, int priorityLevel);
-
-void blockTask(int pid);
-
-void resumeTask(int pid);
-
-void killCurrent();
-
-void yield();
-
-int cpyArgs(char **dest, char **from, int count);
-
-int changeState(int pid, process_state newState);
-
-char *foregToBool(int foreground);
-
-char *stateToStr(process_state state);
-
-void _callTimerTick();
-
-pcb* initializeBlock(char* name, priority_type foreground, int *fd);
-void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
 
 typedef struct {
   uint64_t gs;
@@ -69,5 +57,57 @@ typedef struct {
   uint64_t ss;
   uint64_t base;
 } stackFrame;
+
+// Obtiene un proceso en especifico
+pcb* getProcess(queueADT queue, int pid);
+
+// Inicializa el scheduler y la queue
+void initScheduler();
+
+/*
+  Decide que hacer para el proceso actual corriendo.
+  Se encarga de liberar los procesos que estan terminados
+*/
+void *scheduleTask(void *currStackPointer);
+
+// Empieza un proceso. Recibe el puntero del proceso, argumentos, si es foreground o no, y sus file descriptors.
+int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
+
+// Imprime todos los procesos actuales
+int printTasks();
+
+// Imprime el estado de un proceso
+int printTask(int pid);
+
+// Obtiene el pid del proceso actual
+int getpid();
+
+// 
+int killTask(int pid);
+
+int nice(int pid, int priorityLevel);
+
+int blockTask(int pid);
+
+int resumeTask(int pid);
+
+int killCurrent();
+
+int yield();
+
+int cpyArgs(char **dest, char **from, int count);
+
+// Cambia de estado a un proceso. Devuelve el pid del proceso que se cambio o -1 si el proceso no existe.
+int changeState(int pid, process_state newState);
+
+char *foregToBool(int foreground);
+
+char *stateToStr(process_state state);
+
+void _callTimerTick();
+
+void* initializeBlock(char* name, priority_type foreground, int *fd);
+
+void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
 
 #endif
