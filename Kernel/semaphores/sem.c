@@ -27,8 +27,8 @@ int findSemCondition(void * queueElement, void * value){
 static t_sem *findSem(uint32_t id);
 static t_sem *createSem(uint32_t id, uint64_t initialValue);
 
-// Usado para prevenir acceso mutuo
-int lock = 0;
+// Usado para prevenir acceso mutuo al crear y destruir semaforos
+int allSemsLock = 0;
 
 int initSemSystem(){
   if(semQueue != NULL)
@@ -43,7 +43,7 @@ int semOpen(uint32_t id, uint64_t initialValue)
 {
   t_sem * sem = findSem(id);
 
-  acquire(&lock);
+  acquire(&allSemsLock);
   if (sem == NULL) {
     sem = createSem(id, initialValue);
     if (sem == NULL) {
@@ -52,7 +52,7 @@ int semOpen(uint32_t id, uint64_t initialValue)
   }
 
   sem->attachedProcesses++;
-  release(&lock);
+  release(&allSemsLock);
   return id;
 }
 
@@ -64,12 +64,12 @@ int semClose(uint32_t id)
   
   if(sem == NULL) return -1;
 
-  acquire(&lock);
+  acquire(&allSemsLock);
   if(sem->attachedProcesses > 0)
     sem->attachedProcesses--;
   else
     removeElement(semQueue, findSemCondition, &id);
-  release(&lock);
+  release(&allSemsLock);
   return 0;
 }
 
@@ -79,15 +79,15 @@ int semWait(uint32_t id)
 
   if (sem == NULL) return -1;
 
-  acquire(&lock);
+  acquire(&(sem->lock));
   if (sem->value > 0){
     sem->value--;
-    release(&lock);
+    release(&(sem->lock));
   } else { //bloqueo el proceso
     int * callerPID = malloc(sizeof(int));
     *callerPID = getpid();
     enqueue(sem->blockedPidsQueue, callerPID);
-    release(&lock);
+    release(&(sem->lock));
     blockTask(*callerPID);
   }
   return 0;
@@ -99,7 +99,7 @@ int semPost(uint32_t id)
   if (sem == NULL) return -1;
 
   //desbloqueo el primer pid que quedo bloqueado.
-  acquire(&lock);
+  acquire(&(sem->lock));
   while (getQueueSize(sem->blockedPidsQueue) > 0) {
     int * callerPID = dequeue(sem->blockedPidsQueue);
     int pid = resumeTask(*callerPID);
@@ -107,12 +107,12 @@ int semPost(uint32_t id)
     // Se pudo desbloquear
     if (pid != -1)
     {
-      release(&lock);
+      release(&(sem->lock));
       return 0;
     }
   }
   (sem->value)++;
-  release(&lock);
+  release(&(sem->lock));
   return 0;
 }
 
