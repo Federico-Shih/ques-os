@@ -9,5 +9,7 @@ int semWait(uint32_t id);
 int semPost(uint32_t id);
 int semClose(uint32_t id);
 void printSemInfo();
+void acquire(int *lock);
+void release(int *lock);
 
 #endif

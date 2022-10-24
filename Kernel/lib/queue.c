@@ -102,7 +102,7 @@ int hasNext(queueADT queue)
 
 void *next(queueADT queue)
 {
-  if (queue == NULL && (hasNext(queue) != NULL))
+  if (queue == NULL || (!hasNext(queue)))
     return NULL;
   void *aux = queue->next->value;
   queue->next = queue->next->next;

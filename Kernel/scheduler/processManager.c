@@ -244,13 +244,10 @@ int blockTask(int pid)
   return 0;
 }
 
-// Desbloque el proceso especificado
+// Desbloque el proceso especificado. Devuelve -1 si no se encontro el proceso.
 int resumeTask(int pid)
 {
-  int id = changeState(pid, READY);
-  if(id == -1 )
-    return -1;
-  return 0;
+  return changeState(pid, READY);
 }
 
 // Renuncia al CPU
@@ -338,7 +335,7 @@ pcb* initializeBlock(char* name, priority_type foreground, int *fd)
   return newProcess;
 }
 
-// Cambia el estado del proceso especificado
+// Cambia el estado del proceso especificado. Devuelve el pid del proceso.
 int changeState(int pid, process_state newState) {
   pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
   if (process == NULL || process->state == TERMINATED )
@@ -387,7 +384,7 @@ pcb *getProcess(queueADT queue, int pid)
   {
     pcb *process =(pcb *) next(queue);
     if(pid == process->pid)
-      return next;
+      return process;
   }
   return NULL;
 }

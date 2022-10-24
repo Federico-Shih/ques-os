@@ -106,7 +106,7 @@ char *stateToStr(process_state state);
 
 void _callTimerTick();
 
-void* initializeBlock(char* name, priority_type foreground, int *fd);
+pcb* initializeBlock(char* name, priority_type foreground, int *fd);
 
 void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
 
