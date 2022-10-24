@@ -3,10 +3,12 @@
 #include "processManager.h"
 #include "sem.h"
 #include "queue.h"
+#include <console.h>
 //there are no race conditions in the whole semaphore management because all syscalls block interruptions
 //todo mejor manejo de errores
 
 extern int _xchg(int *lock, int value);
+static void printBlockedSemInfo(queueADT queue);
 
 typedef struct t_sem {
   queueADT blockedPidsQueue;
@@ -151,4 +153,35 @@ void acquire(int *lock){
 void release(int *lock){
   _xchg(lock, 0);
 }
+
+void printSemInfo()
+{
+  if(toBegin(semQueue) != 0)
+  {
+    printf("No hay semaforos\n");
+    return;
+  }
+  while(hasNext(semQueue))
+  {
+    t_sem *sem = (t_sem *)next(semQueue);
+    printf("Id del semaforo: %d\n", sem->id);
+    printf("Valor del semaforo: %d\n", sem->value);
+    printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
+    printf("Lock del semaforo: %d\n",sem->lock);
+    printf("Procesos bloqueados: \n");
+    printBlockedSemInfo(sem->blockedPidsQueue);
+    printf("\n\n");
+  }
+}
+
+static void printBlockedSemInfo(queueADT queue)
+{
+  if(toBegin(queue) != 0)
+    printf("No hay procesos bloqueados. \n");
+  while(hasNext(queue))
+  {
+    int *pid = (int *)next(queue);
+    printf("Id del proceso bloqueado: %d\n", *pid);
+  }
+} 
 

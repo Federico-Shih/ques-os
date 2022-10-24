@@ -46,6 +46,8 @@ int sys_getKey(uint8_t fd, int* buffer, size_t count)
   return _syscall(SYS_GETKEY, fd, (uint64_t)buffer, 1);
 }
 
+// Syscalls de manejo de memoria (heap)
+
 void *sys_malloc(size_t memory)
 {
   return (void *)_syscall(SYS_MALLOC, memory, 0, 0);
@@ -61,6 +63,13 @@ void sys_memDump()
  _syscall(SYS_MEMDUMP, 0, 0, 0);
 }
 
+// Syscalls de manejo de procesos
+
+int sys_create()
+{
+  return 0;
+}
+
 int sys_getpid()
 {
   return _syscall(SYS_GETPID, 0, 0, 0);
@@ -70,27 +79,56 @@ void sys_printProcesses()
 {
   _syscall(SYS_PRINTPROCESSES, 0, 0, 0);
 }
+
 void sys_printProcess(int pid)
 {
   _syscall(SYS_PRINTPROCESS, pid, 0, 0);
 }
+
 int sys_kill(int pid)
 {
   return _syscall(SYS_KILL, pid, 0, 0);
 }
+
 void sys_nice(int pid, int newPriority)
 {
  _syscall(SYS_NICE, pid, newPriority, 0);
 }
+
 void sys_block(int pid)
 {
   _syscall(SYS_BLOCK, pid, 0, 0);
 }
+
 void sys_resume(int pid)
 {
   _syscall(SYS_RESUME, pid, 0, 0);
 }
+
 void sys_yield()
 {
   _syscall(SYS_YIELD, 0 , 0 , 0);
+}
+
+// Syscalls de manejo de semaforos
+
+int sys_semOpen(uint32_t id, uint64_t initialValue)
+{
+  return _syscall(SYS_SEMOPEN, id, initialValue, 0);
+}
+int sys_semWait(uint32_t id)
+{
+  return _syscall(SYS_SEMWAIT, id, 0, 0);
+}
+int sys_semPost(uint32_t id)
+{
+  return _syscall(SYS_SEMPOST, id, 0, 0);
+}
+int sys_semClose(uint32_t id)
+{
+  return _syscall(SYS_SEMCLOSE, id, 0, 0);
+}
+void sys_printSemInfo()
+{
+  _syscall(SYS_SEMPRINT, 0, 0, 0);
 }

@@ -15,17 +15,27 @@ typedef enum {
   SYS_SET_CURSOR, 
   SYS_WAIT,
   SYS_GETKEY,
+  // Memory Manager
   SYS_MALLOC,
   SYS_FREE,
   SYS_MEMDUMP,
+  // Scheduler
+  SYS_CREATE,
   SYS_GETPID,
   SYS_PRINTPROCESSES,
   SYS_PRINTPROCESS,
   SYS_KILL,
+  SYS_EXIT,
   SYS_NICE,
   SYS_BLOCK,
   SYS_RESUME,
-  SYS_YIELD
+  SYS_YIELD,
+  // Semaphores
+  SYS_SEMOPEN,
+  SYS_SEMWAIT,
+  SYS_SEMPOST,
+  SYS_SEMCLOSE,
+  SYS_SEMPRINT
 } syscall_id;
 
 

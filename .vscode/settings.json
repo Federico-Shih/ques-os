@@ -15,6 +15,7 @@
     "sem.h": "c",
     "queue.h": "c",
     "type_traits": "c",
-    "interrupts.h": "c"
+    "interrupts.h": "c",
+    "stdint.h": "c"
   }
 }

@@ -1,7 +1,7 @@
 #ifndef SEM_H
 #define SEM_H
 
-#define NULL (void *) 0
+#include <stdlib.h>
 
 int initSemSystem();
 int semOpen(uint32_t id, uint64_t initialValue);
