@@ -4,8 +4,6 @@
 #include "sem.h"
 #include "queue.h"
 #include <console.h>
-//there are no race conditions in the whole semaphore management because all syscalls block interruptions
-//todo mejor manejo de errores
 
 extern int _xchg(int *lock, int value);
 static void printBlockedSemInfo(queueADT queue);
@@ -23,7 +21,7 @@ queueADT semQueue = NULL;
 
 //necessary to find and delete semaphores from the queue
 int findSemCondition(void * queueElement, void * value){
-  return ((t_sem*)queueElement)->id == *((int*) value);
+  return ((t_sem*)queueElement)->id == *((uint32_t*) value);
 }
 
 static t_sem *findSem(uint32_t id);
@@ -32,8 +30,9 @@ static t_sem *createSem(uint32_t id, uint64_t initialValue);
 // Usado para prevenir acceso mutuo al crear y destruir semaforos
 int allSemsLock = 0;
 
+// devuelve != 0 si funciono, 0 si hubo error
 int initSemSystem(){
-  if(semQueue != NULL)
+  if(semQueue == NULL)
     semQueue = initQueue();
 
   return semQueue != NULL;
