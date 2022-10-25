@@ -42,15 +42,16 @@ int getCommandLine(char** strings) {
 }
 
 int runCommandLine(int argCount, char** args) {
+  if (argCount == 0) return 0;
   // Obtiene lista de comandos validos
   command* commandList = getCommands();
-
+  
   int firstCommandIndex = -1;
   char* firstCommand = args[0]; // hola <- | mundo
 
   // Busca el supuesto commando en la lista de commandos
   for (int i = 0; i < COMMANDS_LENGTH && (firstCommandIndex == -1); i += 1) {
-    if (_strcasecmp(firstCommand, commandList[i].name)) {
+    if (!_strcasecmp(firstCommand, commandList[i].name)) {
       firstCommandIndex = i;
     }
   }
@@ -60,20 +61,24 @@ int runCommandLine(int argCount, char** args) {
     return 0;
   }
 
-  // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
-  caller callers[1];
-  callers[0].argCount = (argCount - 1); 
-  callers[0].args = (void**)&(args[1]);
-  callers[0].runner = commandList[firstCommandIndex].runner;
-  callers[0].screenId = 0;
+  int foreground = 1;
 
-  callers->runner(callers->argCount, callers->args);
+  // Si tiene un & 
+  foreground = _strcasecmp(args[argCount - 1], "&") != 0;
+
+  // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
+  caller command;
+  command.argCount = argCount; 
+  command.args = args - (1 - foreground);
+  command.runner = commandList[firstCommandIndex].runner;
+
+  sys_startTask(command.runner, command.argCount, command.args, foreground);
   return 1;
 }
 
 void runShell() {
   clear_screen(1);
-  help(0, NULL);
+  help(1, NULL);
   _putc(STDOUT, '\n');
   // sys_free(mem);
   // sys_memDump();

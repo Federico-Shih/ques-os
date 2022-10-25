@@ -15,8 +15,8 @@ void initShell();
 
 
 typedef struct caller {
-  int (*runner)(unsigned int count, void** args);
-  void** args;
+  void (*runner)(unsigned int count, char** args);
+  char** args;
   unsigned int argCount;
   unsigned int screenId;
 } caller;

@@ -20,7 +20,7 @@ typedef enum {
   SYS_FREE,
   SYS_MEMDUMP,
   // Scheduler
-  SYS_CREATE,
+  SYS_CREATE_PROCESS,
   SYS_GETPID,
   SYS_PRINTPROCESSES,
   SYS_PRINTPROCESS,
@@ -48,7 +48,7 @@ void snapshotRegisters(uint64_t* rsp);
 void sys_getMem(uint64_t direc, uint8_t * buffer, uint64_t bytes);
 int sys_read(FILE_DESCRIPTOR fd, char* buffer, size_t count);
 int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size);
-uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t rsp);
+uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4);
 void sys_wait(uint64_t seconds);
 
 #endif

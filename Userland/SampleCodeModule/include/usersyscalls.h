@@ -20,7 +20,7 @@ typedef enum {
   SYS_FREE,
   SYS_MEMDUMP,
   // Scheduler
-  SYS_CREATE,
+  SYS_CREATE_PROCESS,
   SYS_GETPID,
   SYS_PRINTPROCESSES,
   SYS_PRINTPROCESS,
@@ -40,7 +40,7 @@ typedef enum {
 
 
 
-extern uint64_t _syscall(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx);
+extern uint64_t _syscall(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 
 int sys_read(uint8_t fd, char* buffer, size_t count);
 int sys_write(uint8_t fd, const char* buffer, size_t count);
@@ -62,6 +62,7 @@ void sys_nice(int pid, int newPriority);
 void sys_block(int pid);
 void sys_resume(int pid);
 void sys_yield();
+int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground);
 int sys_semOpen(uint32_t id, uint64_t initialValue);
 int sys_semWait(uint32_t id);
 int sys_semPost(uint32_t id);

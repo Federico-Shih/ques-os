@@ -114,7 +114,7 @@ int main()
 	initScheduler();
 	ncClear();
 	char *args[] = {"Init userland"};
-  startTask(sampleCodeModuleAddress, 1, args, 1, 0);
+ 	startTask(sampleCodeModuleAddress, 1, args, 1);
 	load_idt();
 	_hlt(); // Fuerzo a que el scheduler empiece
 	printline("Failureeee\n");

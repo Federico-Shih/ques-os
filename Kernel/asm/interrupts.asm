@@ -196,7 +196,6 @@ _irq05Handler:
 
 _irq80Handler:
 	pushState ;pusheo todos los registros al stack
-	mov r8, rsp ;paso el rsp como parametro nro 5
 	call syscallHandler
 	popStateNoRax ;popeo todos los registros menos rax para no pisar el valor de retorno de syscall handler
 	iretq

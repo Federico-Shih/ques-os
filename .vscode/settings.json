@@ -16,6 +16,11 @@
     "queue.h": "c",
     "type_traits": "c",
     "interrupts.h": "c",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "math.h": "c",
+    "rtcid.h": "c",
+    "fibonacci.h": "c",
+    "commands.h": "c",
+    "test_mm.h": "c"
   }
 }

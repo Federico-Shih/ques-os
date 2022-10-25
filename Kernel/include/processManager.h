@@ -70,8 +70,8 @@ void initScheduler();
 */
 void *scheduleTask(void *currStackPointer);
 
-// Empieza un proceso. Recibe el puntero del proceso, argumentos, si es foreground o no, y sus file descriptors.
-int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
+// Empieza un proceso. Recibe el puntero del proceso, argumentos, si es foreground o no.
+int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground);
 
 // Imprime todos los procesos actuales
 int printTasks();
@@ -106,7 +106,7 @@ char *stateToStr(process_state state);
 
 void _callTimerTick();
 
-pcb* initializeBlock(char* name, priority_type foreground, int *fd);
+pcb* initializeBlock(char* name, int foreground, int *fd);
 
 void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
 

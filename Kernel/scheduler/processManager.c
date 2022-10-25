@@ -1,8 +1,8 @@
-#include <processManager.h>
-#include <stdlib.h>
-#include <interrupts.h>
-#include <string.h>
-#include <console.h>
+#include "processManager.h"
+#include "stdlib.h"
+#include "interrupts.h"
+#include "string.h"
+#include "console.h"
 
 #define STACK_SIZE (1024 * 4)
 
@@ -37,7 +37,7 @@ void initScheduler()
 
   char *idleArgv[] = {"idle"};
 
-  startTask(idleProcess, 1, idleArgv, 0, NULL);
+  startTask(idleProcess, 1, idleArgv, 0);
 
   readyCount -= 1;
   idleProcessPCB = (pcb *)dequeue(queue);
@@ -114,11 +114,11 @@ void *scheduleTask(void *currStackPointer)
 }
 
 // Comienza una tarea
-int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
+int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground)
 {
   if (process == NULL) return -1;
   
-  pcb* newProcess = initializeBlock(argv[0], foreground, NULL);
+  pcb* newProcess = initializeBlock(argv[0], foreground, currentProcessPCB != NULL ? currentProcessPCB->fileDescriptors : NULL);
   
   if (newProcess == NULL) return -1;
 
@@ -137,7 +137,8 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
   // Bloqueo el padre.
-  if (newProcess->foreground && newProcess->ppid) {
+
+  if (newProcess->foreground) {
     blockTask(newProcess->ppid);
   }
 
@@ -207,7 +208,7 @@ int killTask(int pid)
   int id = changeState(pid, TERMINATED);
 
   // No se encontro el proceso
-  if( id == -1 )
+  if(id == -1)
     return -1; 
 
   if(id == currentProcessPCB->pid)
@@ -303,7 +304,7 @@ void initializeStack(void (*process)(int, char**), int argc, char **argv, void *
 }
 
 // Inicializa el bloque de memoria
-pcb* initializeBlock(char* name, priority_type foreground, int *fd) 
+pcb* initializeBlock(char* name, int foreground, int *fd) 
 {
   if (foreground > 1) return NULL;
   pcb* newProcess = malloc(sizeof(pcb));

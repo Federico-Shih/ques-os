@@ -73,7 +73,7 @@ int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size) {
 }
 
 
-uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t rsp) {
+uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4) {
     switch (rax) {
         case SYS_READ:
             toggleBuffer(CHARBUFFER);
@@ -103,11 +103,12 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
             return (uint64_t)malloc(arg0);
         case SYS_FREE:
             free((void *) arg0);
+            return 0;
         case SYS_MEMDUMP:
             memoryDump();
             return 0;
-        case SYS_CREATE:
-            return 0;
+        case SYS_CREATE_PROCESS:
+            return startTask((void (*)(int argc, char **argv))arg0, (int) arg1, (char **)arg2, (int)arg3);
         case SYS_GETPID:
             return getpid();
         case SYS_PRINTPROCESSES:
