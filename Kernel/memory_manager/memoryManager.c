@@ -1,9 +1,11 @@
+#ifdef STANDARD
+
 #include <memoryManager.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <console.h>
 
-/* La estructura fue inspirada de la implementación de malloc del K&R */
+// La estructura fue inspirada de la implementación de malloc del K&R 
 typedef long Align;
 
 typedef union header
@@ -171,3 +173,6 @@ void memoryDump()
   printBase((memoria_total - memoria_libre_total), 10);
   return;
 }
+
+
+#endif
