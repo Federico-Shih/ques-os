@@ -149,7 +149,7 @@ int sys_pipeRead(int pipeId)
 }
 int sys_pipeWrite(int pipeId, char *str)
 {
-  return _syscall(SYS_PIPEWRITE, pipeId, str, 0, 0, 0);
+  return _syscall(SYS_PIPEWRITE, (uint64_t)pipeId, (uint64_t)str, 0, 0, 0);
 }
 int sys_pipeClose(int pipeId)
 {

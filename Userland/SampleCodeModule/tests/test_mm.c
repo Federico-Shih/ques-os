@@ -1,8 +1,7 @@
 #define MAX_BLOCKS 128
 
 #include <stdint.h>
-#include "usersyscalls.h"
-#include "test_utils.h"
+#include "test_util.h"
 #include "ustdlib.h"
 
 typedef struct MM_rq{
@@ -34,6 +33,8 @@ void test_mm(unsigned int argc, char *argv[]){
         rq++;
       }
     }
+  
+    bussy_wait(MINOR_WAIT);
 
     // Set
     uint32_t i;
@@ -46,12 +47,16 @@ void test_mm(unsigned int argc, char *argv[]){
       if (mm_rqs[i].address)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)){
           _fprintf(0, "test_mm ERROR\n");
-          return -1;
+          return;
         }
+
+    bussy_wait(MINOR_WAIT);
 
     // Free
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         sys_free(mm_rqs[i].address);
+    
+    bussy_wait(MINOR_WAIT);
   } 
 }

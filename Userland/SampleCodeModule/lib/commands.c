@@ -7,59 +7,30 @@
 #include "fibonacci.h"
 #include "prime.h"
 #include "inforeg.h"
-#include "test_mm.h"
+#include "tests.h"
 
-static command commands[COMMANDS_LENGTH] = {
-    {"date&time", &dateAndTime},
-    {"divZero", &divZero},
-    {"fibonacci", &fibonacci},
-    {"hello", &holaMundo},
-    {"help", &help},
-    {"inforeg", &infoReg},
-    {"invalidOpcode", &invalidOpcode},
-    {"prime", &primes},
-    {"printmem", &printmem},
-    {"clear", &clearScreen},
-    {"mem", &sys_memDump},
-    {"ps", &sys_printProcesses},
-    {"kill", &kill},
-    {"block", &block},
-    {"resume", &resume},
-    {"nice", &nice},
-    {"test_mm", &test_mm},
-    {"semOpen", &sys_semOpen},
-    {"semClose", &sys_semClose},
-    {"semPost", &sys_semPost},
-    {"semRead", &sys_semWait},
-    {"printSemInfo", &sys_semOpen},
-    {"pipeOpen", &sys_pipeOpen},
-    {"pipeClose", &sys_pipeClose},
-    {"pipeRead", &sys_pipeRead},
-    {"pipeWrite", &sys_pipeWrite},
-    {"printPipeInfo", &sys_printPipeInfo},
-    
-};
-
-static char *commandInfo[COMMANDS_LENGTH] = {
-    "date&time : Imprime en patalla la fecha del ano corriente y horario en que fue\nllamado.\n",
-    "divzero: Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion.\n",
-    "fibonacci: Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion.\n",
-    "hello: Imprime un saludo al usuario.\n",
-    "help: Imprime una lista detallada de los comandos  y modulos ejecutables del\nprograma.\n",
-    "inforeg: Imprime los registros registros capturados al presionar ctrl + r.\n",
-    "invalidOpcode: Lanza la excepcion de invalid operand code e imprime los\nregistros al momento de ejecucion.\n",
-    "prime: imprime numeros primos infinitamente hasta que se pause o se termine su\nejecucion.\n",
-    "printmem [DIRECCION DE MEMORIA]: Recibe como argumento una direccion de memoria no superior a\n80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la\ndireccion dada.\n",
-    "clear: Limpia la pantalla\n",
-    "mem: imprime el estado de memoria",
-    "ps: imprime el estado de los procesos",
-    "kill: recibe un pid y mata al proceso",
-    "block: recibe un pid y bloquea al proceso",
-    "resume: recibe un pid y resume el proceso",
-    "nice: recibe un pid y un valor de prioridad y modifica la prioridad del proceso",
-    "test_mm: recibe una cantidad de memoria y empieza a testear",
-    "Semaforos: semOpen, semClose, semWait, semPost, printSemInfo",
-    "Pipes: pipeOpen, pipeClose, pipeRead, pipeWrite, printPipeInfo"
+static command_t commands[] = {
+    {"date&time", &dateAndTime, "date&time : Imprime en patalla la fecha del ano corriente y horario en que fue\nllamado.\n"},
+    {"divZero", &divZero, "divzero: Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion.\n"},
+    {"fibonacci", &fibonacci, "fibonacci: Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion.\n",},
+    {"hello", &holaMundo, "hello: Imprime un saludo al usuario.\n",},
+    {"help", &help, "help: Imprime una lista detallada de los comandos  y modulos ejecutables del\nprograma.\n",},
+    {"inforeg", &infoReg, "inforeg: Imprime los registros registros capturados al presionar ctrl + r.\n"},
+    {"invalidOpcode", &invalidOpcode, "invalidOpcode: Lanza la excepcion de invalid operand code e imprime los\nregistros al momento de ejecucion.\n",},
+    {"prime", &primes, "prime: imprime numeros primos infinitamente hasta que se pause o se termine su\nejecucion.\n",},
+    {"printmem", &printmem, "printmem [DIRECCION DE MEMORIA]: Recibe como argumento una direccion de memoria no superior a\n80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la\ndireccion dada.\n"},
+    {"clear", &clearScreen, "clear: Limpia la pantalla\n"},
+    {"mem", &sys_memDump, "mem: imprime el estado de memoria",},
+    {"ps", &sys_printProcesses, "ps: imprime el estado de los procesos",},
+    {"kill", &kill, "kill: recibe un pid y mata al proceso"},
+    {"block", &block, "block: recibe un pid y bloquea al proceso"},
+    {"resume", &resume, "resume: recibe un pid y resume el proceso"},
+    {"nice", &nice, "nice: recibe un pid y un valor de prioridad y modifica la prioridad del proceso"},
+    {"sem", &sys_printSemInfo, "sem: imprime informacion sobre los semaforos"},
+    {"pipes", &sys_printPipeInfo, "pipes: imprime estado de los pipes"},
+    {"test_mm", &test_mm, "test_mm: recibe una cantidad de memoria y empieza a testear"},
+    {"test_prio", &test_prio, "test_prio: testea el scheduler"},
+    {"", NULL, ""},
 };
 
 void divZero()
@@ -67,6 +38,7 @@ void divZero()
   int aux1 = 1;
   int aux2 = 0;
   int o = aux1 / aux2;
+  _fprintf(0, "%d\n", o);
 }
 
 void invalidOpcode()
@@ -124,7 +96,7 @@ void help(unsigned int argc, char *argv[])
   if (argc == 1)
   {
     _fprint(STDOUT, "Lista de posibles comandos: \n");
-    for (uint8_t i = 0; i < COMMANDS_LENGTH; i++)
+    for (uint8_t i = 0; _strcasecmp(commands[i].name, "") != 0; i++)
     {
       _fprintf(STDOUT, "\t%s\n", commands[i].name);
     }
@@ -165,18 +137,9 @@ void holaMundo()
 
 char *getDescriptions(char *function)
 {
-  for (int i = 0; i < COMMANDS_LENGTH; i++)
-  {
-    if (!_strcasecmp(function, commands[i].name))
-    {
-      return commandInfo[i];
-    }
-  }
-  if (!_strcasecmp(function, "operaciones"))
-  {
-    return commandInfo[COMMANDS_LENGTH];
-  }
-  return NULL;
+  command_t* foundCommand = getCommand(function);
+  if (foundCommand == NULL) return NULL;
+  return foundCommand->help;
 }
 
 void clearScreen()
@@ -184,7 +147,17 @@ void clearScreen()
   clear_screen(0);
 }
 
-command *getCommands()
+command_t* getCommand(char *commandName)
+{
+  for (uint8_t i = 0; _strcasecmp(commands[i].name, "") != 0; i++)
+  {
+    if (_strcasecmp(commands[i].name, commandName) == 0) return &commands[i];
+  }
+
+  return NULL;
+}
+
+command_t *getCommands()
 {
   return commands;
 }

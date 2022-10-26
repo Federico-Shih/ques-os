@@ -1,8 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
-#define COMMANDS_LENGTH 17
 #define DUMP_SIZE 32
 #define LAST_MEM 0x80000000
+#define MAX_HELP_LENGTH 250
 
 #include <stdbool.h>
 
@@ -16,13 +16,15 @@ typedef struct
 {
   char *name;
   void (*runner)(unsigned int count, char **args);
-} command;
+  char help[MAX_HELP_LENGTH];
+} command_t;
 
-command *getCommands();
+command_t *getCommands();
+command_t *getCommand(char *commandName);
 
 /*
  Lista de comandos y su estructura
- command {
+ command_t {
    char* name;        NOMBRE DE LA FUNCION
    void (*runner)();  FUNCION A CORRER
  }

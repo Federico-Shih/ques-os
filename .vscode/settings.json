@@ -21,6 +21,10 @@
     "rtcid.h": "c",
     "fibonacci.h": "c",
     "commands.h": "c",
-    "test_mm.h": "c"
+    "test_mm.h": "c",
+    "test_util.h": "c",
+    "lib.h": "c",
+    "prime.h": "c",
+    "tests.h": "c"
   }
 }

@@ -44,33 +44,23 @@ int getCommandLine(char** strings) {
 int runCommandLine(int argCount, char** args) {
   if (argCount == 0) return 0;
   // Obtiene lista de comandos validos
-  command* commandList = getCommands();
   
-  int firstCommandIndex = -1;
-  char* firstCommand = args[0]; // hola <- | mundo
+  command_t* foundCommand = getCommand(args[0]);
 
-  // Busca el supuesto commando en la lista de commandos
-  for (int i = 0; i < COMMANDS_LENGTH && (firstCommandIndex == -1); i += 1) {
-    if (!_strcasecmp(firstCommand, commandList[i].name)) {
-      firstCommandIndex = i;
-    }
-  }
-
-  if (firstCommandIndex == -1) {
-    _fprintf(STDOUT, "%s no es un comando valido\n", firstCommand);
+  if (foundCommand == NULL) {
+    _fprintf(STDOUT, "%s no es un comando valido\n", args[0]);
     return 0;
   }
 
   int foreground = 1;
-
   // Si tiene un & 
   foreground = _strcasecmp(args[argCount - 1], "&") != 0;
 
   // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
   caller command;
-  command.argCount = argCount; 
-  command.args = args - (1 - foreground);
-  command.runner = commandList[firstCommandIndex].runner;
+  command.argCount = argCount - (1 - foreground); 
+  command.args = args;
+  command.runner = foundCommand->runner;
 
   sys_startTask(command.runner, command.argCount, command.args, foreground);
   return 1;
@@ -80,8 +70,6 @@ void runShell() {
   clear_screen(1);
   help(1, NULL);
   _putc(STDOUT, '\n');
-  // sys_free(mem);
-  // sys_memDump();
   while (1) {
     sys_showCursor(1);
     _print("QUESOS>");
