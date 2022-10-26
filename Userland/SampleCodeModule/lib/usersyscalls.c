@@ -95,14 +95,14 @@ void sys_nice(int pid, int newPriority)
  _syscall(SYS_NICE, pid, newPriority, 0, 0, 0);
 }
 
-void sys_block(int pid)
+int sys_block(int pid)
 {
-  _syscall(SYS_BLOCK, pid, 0, 0, 0, 0);
+  return _syscall(SYS_BLOCK, pid, 0, 0, 0, 0);
 }
 
-void sys_resume(int pid)
+int sys_resume(int pid)
 {
-  _syscall(SYS_RESUME, pid, 0, 0, 0, 0);
+  return _syscall(SYS_RESUME, pid, 0, 0, 0, 0);
 }
 
 void sys_yield()

@@ -29,7 +29,8 @@ static command_t commands[] = {
     {"sem", &sys_printSemInfo, "sem: imprime informacion sobre los semaforos"},
     {"pipes", &sys_printPipeInfo, "pipes: imprime estado de los pipes"},
     {"test_mm", &test_mm, "test_mm: recibe una cantidad de memoria y empieza a testear"},
-    {"test_prio", &test_prio, "test_prio: testea el scheduler"},
+    {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
+    {"test_processes", &test_processes, "test_processes: testea el scheduler"},
     {"", NULL, ""},
 };
 

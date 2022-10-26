@@ -1,8 +1,8 @@
 #include "processManager.h"
-#include "stdlib.h"
 #include "interrupts.h"
 #include "string.h"
 #include "console.h"
+#include "memoryManager.h"
 
 #define STACK_SIZE (1024 * 4)
 
@@ -52,6 +52,7 @@ void freeProcess(pcb* process) {
   // Previamente se hizo malloc en el stack del proceso
   free((void *)((char *)process->rbp - STACK_SIZE + 1));
   free((void *)process);
+  printline("K");
 }
 
 // Programa una tarea a realizar
@@ -78,6 +79,7 @@ void *scheduleTask(void *currStackPointer)
         if (parent != NULL && currentProcessPCB->foreground &&  parent->state == BLOCKED) {
           changeState(parent->pid, READY);
         }
+        printline("F");
         freeProcess(currentProcessPCB);
       } else {
         enqueue(queue, (void *)currentProcessPCB);
@@ -120,7 +122,9 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   
   pcb* newProcess = initializeBlock(argv[0], foreground, currentProcessPCB != NULL ? currentProcessPCB->fileDescriptors : NULL);
   
-  if (newProcess == NULL) return -1;
+  if (newProcess == NULL) {
+    return -1;
+  }
 
   char **args = malloc(sizeof(char *) * argc);
   
@@ -202,9 +206,15 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
+int popCondition(pcb *queueElement, int pid)
+{
+  return queueElement->pid == pid;
+}
+
 // Termina el proceso especificado
 int killTask(int pid)
 {
+  printline("T");
   int id = changeState(pid, TERMINATED);
 
   // No se encontro el proceso
@@ -213,7 +223,11 @@ int killTask(int pid)
 
   if(id == currentProcessPCB->pid)
     _callTimerTick();
+    return id;
 
+
+  pcb* removedElement = (pcb *)popElement(queue, (conditionFunction) popCondition, id);
+  freeProcess(removedElement);
   return id;
 }
 
@@ -326,6 +340,7 @@ pcb* initializeBlock(char* name, int foreground, int *fd)
   */
 
   if (tempRbp == NULL) {
+    // memoryDump();
     free(newProcess);
     return NULL;
   }

@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "ustdlib.h"
 #include <stdint.h>
 #include "test_util.h"
 

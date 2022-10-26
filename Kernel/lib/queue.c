@@ -132,6 +132,18 @@ int includes(queueADT queue, int (*findCondition)(void *, void *), void *element
 
 int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
 {
+  void* poppedElement = popElement(queue, removeCondition, removeElement);
+  if (poppedElement != NULL)
+  {
+    free(poppedElement);
+    return 1;
+  }
+  return 0;
+}
+
+
+void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
+{
   if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0) return 0;
   queue_node* node = queue->first;
   queue_node* prev = NULL;
@@ -146,13 +158,13 @@ int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *
       {
         prev->next = node->next;
       }
-      free(node->value);
+      void* nodeValue = node->value;
       free(node);
       queue->size -= 1;
-      return 1;
+      return nodeValue;
     }
     prev = node;
     node = node->next;
   }
-  return 0;
+  return NULL;
 }

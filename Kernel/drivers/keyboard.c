@@ -1,8 +1,9 @@
-#include <keyboard.h>
-#include <console.h>
-#include <naiveConsole.h>
-#include <interrupts.h>
-#include <syscalls.h>
+#include "keyboard.h"
+#include "console.h"
+#include "naiveConsole.h"
+#include "interrupts.h"
+#include "syscalls.h"
+#include "processManager.h"
 
 // Tablas que mapean scancodes a chars
 static char kbd_US [128] =
@@ -121,7 +122,13 @@ void keyboardHandler(uint64_t rsp){
     else if(controlFlag && (kbd_US[teclahex]=='r')){
         snapshotRegisters((uint64_t*) rsp);
         controlFlag = 0;
-    } else {
+    }
+    else if (controlFlag && (kbd_US[teclahex] == 'c'))
+    {
+        controlFlag = 0;
+        killCurrent();
+    }
+    else {
         if(actualBuf == CHARBUFFER){
                 if (shiftFlag && isPrintable(teclahex)) //si es algo imprimible (no de retorno)
                     loadInBuffer(shift_kbd_US[teclahex]);
