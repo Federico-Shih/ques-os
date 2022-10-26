@@ -26,7 +26,18 @@ static command commands[COMMANDS_LENGTH] = {
     {"block", &block},
     {"resume", &resume},
     {"nice", &nice},
-    {"test_mm", &test_mm}
+    {"test_mm", &test_mm},
+    {"semOpen", &sys_semOpen},
+    {"semClose", &sys_semClose},
+    {"semPost", &sys_semPost},
+    {"semRead", &sys_semWait},
+    {"printSemInfo", &sys_semOpen},
+    {"pipeOpen", &sys_pipeOpen},
+    {"pipeClose", &sys_pipeClose},
+    {"pipeRead", &sys_pipeRead},
+    {"pipeWrite", &sys_pipeWrite},
+    {"printPipeInfo", &sys_printPipeInfo},
+    
 };
 
 static char *commandInfo[COMMANDS_LENGTH] = {
@@ -46,7 +57,9 @@ static char *commandInfo[COMMANDS_LENGTH] = {
     "block: recibe un pid y bloquea al proceso",
     "resume: recibe un pid y resume el proceso",
     "nice: recibe un pid y un valor de prioridad y modifica la prioridad del proceso",
-    "test_mm: recibe una cantidad de memoria y empieza a testear", 
+    "test_mm: recibe una cantidad de memoria y empieza a testear",
+    "Semaforos: semOpen, semClose, semWait, semPost, printSemInfo",
+    "Pipes: pipeOpen, pipeClose, pipeRead, pipeWrite, printPipeInfo"
 };
 
 void divZero()

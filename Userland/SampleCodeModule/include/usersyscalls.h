@@ -35,7 +35,13 @@ typedef enum {
   SYS_SEMWAIT,
   SYS_SEMPOST,
   SYS_SEMCLOSE,
-  SYS_SEMPRINT
+  SYS_SEMPRINT,
+    // Pipes
+  SYS_PIPEOPEN,
+  SYS_PIPECLOSE,
+  SYS_PIPEREAD,
+  SYS_PIPEWRITE,
+  SYS_PIPEPRINT
 } syscall_id;
 
 
@@ -63,10 +69,15 @@ void sys_block(int pid);
 void sys_resume(int pid);
 void sys_yield();
 int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground);
-int sys_semOpen(uint32_t id, uint64_t initialValue);
-int sys_semWait(uint32_t id);
-int sys_semPost(uint32_t id);
-int sys_semClose(uint32_t id);
+int sys_semOpen(int id, int initialValue);
+int sys_semWait(int id);
+int sys_semPost(int id);
+int sys_semClose(int id);
 void sys_printSemInfo();
+int sys_pipeOpen(int pipeId);
+int sys_pipeWrite(int pipeId, char *str);
+int sys_pipeClose(int pipeId);
+int sys_pipeRead(int pipeId);
+void sys_printPipeInfo();
 
 #endif

@@ -112,6 +112,7 @@ int main()
 	// print("Press enter to log in\n", 22);
 	// while(getFromBuffer() != '\n');
 	initScheduler();
+	//initSem and initPipe
 	ncClear();
 	char *args[] = {"Init userland"};
  	startTask(sampleCodeModuleAddress, 1, args, 1);

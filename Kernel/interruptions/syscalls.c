@@ -7,6 +7,7 @@
 #include <memoryManager.h>
 #include <processManager.h>
 #include <sem.h>
+#include "pipes.h"
 
 
 uint8_t sys_dateAndTime(uint64_t rtcID){
@@ -134,15 +135,26 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
             yield();
             return 0;
         case SYS_SEMOPEN:
-            return semOpen((uint32_t) arg0, (uint64_t) arg1);
+            return semOpen((int) arg0, (uint64_t) arg1);
         case SYS_SEMWAIT:
-            return semWait((uint32_t) arg0);
+            return semWait((int) arg0);
         case SYS_SEMPOST:
-            return semPost((uint32_t) arg0);
+            return semPost((int) arg0);
         case SYS_SEMCLOSE:
-            return semClose((uint32_t) arg0);
+            return semClose((int) arg0);
         case SYS_SEMPRINT:
             printSemInfo();
+            return 0;
+        case SYS_PIPEOPEN:
+            return pipeOpen((int) arg0);
+        case SYS_PIPECLOSE:
+            return pipeClose((int) arg0);
+        case SYS_PIPEREAD:
+            return pipeRead((int) arg0);
+        case SYS_PIPEWRITE:
+            return pipeWrite((int) arg0, (char *) arg1);
+        case SYS_PIPEPRINT:
+            printPipeInfo();
             return 0;
     }
     return -1;

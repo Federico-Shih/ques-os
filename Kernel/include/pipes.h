@@ -3,6 +3,8 @@
 
 #define PIPE_BUFFER_SIZE 1024
 
+#include <stdint.h>
+
 int initPipeSystem();
 int pipeOpen(int pipeId);
 int pipeWrite(int pipeId, char *str);

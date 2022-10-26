@@ -1,37 +1,38 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "pipes.h"
-// todo include imprimir en pantalla
-#include <sem.h>
+#include "console.h"
+#include "sem.h"
 #include <stdint.h>
 #include "queue.h"
+#include <stdlib.h>
 
 queueADT pipeQueue = NULL;
-
-uint32_t sem_id = UINT32_MAX;
+int allPipesSem; //para evitar condiciones de carrera en creacion, destruccion e impresion de pipes
 
 typedef struct t_pipe {
-  uint32_t id;
+  int id;
   char buffer[PIPE_BUFFER_SIZE];
   int writeIndex, readIndex; //porque el array es circular
-  long totalProcesses; //para saber si se debe borrar un pipe al hacer un close
-  int writeSemId, readSemId, operationsSemId;
+  int totalProcesses; //para saber si se debe borrar un pipe al hacer un close
+  int writeSemId, readSemId;
   //la funcion de write y readSemId es utilizar de manera correcta el buffer circular
-  //la funcion de operationsSemId es hacer atomicas las operaciones sobre un pipe
 } t_pipe;
 
 
 //funciones auxiliares
-static t_pipe *createPipe(uint32_t id);
+static t_pipe *createPipe(int id);
 static void writeToPipe(t_pipe * pipe, char c);
 static int findPipeCondition(void * queueElement, void * value);
-static int getPipe(uint32_t pipeId);
-static uint32_t getUnusedSemId();
+static t_pipe * getPipe(int pipeId);
+static int getUnusedSemId();
 
 // devuelve != 0 si funciono, 0 si hubo error
 int initPipeSystem(){
-    if(pipeQueue == NULL)
+    if(pipeQueue == NULL){
         pipeQueue = initQueue();
+        allPipesSem = semOpen(getUnusedSemId(), 1);
+    }
     return pipeQueue != NULL;
 }
 
@@ -40,12 +41,14 @@ int initPipeSystem(){
 //si no existe lo crea y le suma el proceso
 int pipeOpen(int pipeId) {
   t_pipe * pipe;
+  semWait(allPipesSem);
   if ((pipe = getPipe(pipeId)) == NULL){
     pipe = createPipe(pipeId);
     if (pipe == NULL)
         return -1;
   }
   pipe->totalProcesses++;
+  semPost(allPipesSem);
   return pipe->id;
 }
 
@@ -57,12 +60,10 @@ int pipeWrite(int pipeId, char *str) {
     if((pipe = getPipe(pipeId)) == NULL)
         return -1;
 
-    semWait(pipe->operationsSemId);
-    for (uint32_t i = 0; str[i] != 0; i++)
+    for (int i = 0; str[i] != 0; i++)
     {
-        pipeWriter(pipe, str[i]);
+        writeToPipe(pipe, str[i]);
     }
-    semPost(pipe->operationsSemId);
 
     return 0;
 }
@@ -75,7 +76,6 @@ int pipeRead(int pipeId) {
 
     char c;
 
-    semWait(pipe->operationsSemId);
     semWait(pipe->readSemId);
 
     c = pipe->buffer[pipe->readIndex];
@@ -83,7 +83,6 @@ int pipeRead(int pipeId) {
     pipe->readIndex = (pipe->readIndex + 1) % PIPE_BUFFER_SIZE;
 
     semPost(pipe->writeSemId);
-    semPost(pipe->operationsSemId);
 
     return c;
 }
@@ -95,18 +94,20 @@ int pipeClose(int pipeId) {
     if((pipe = getPipe(pipeId)) == NULL)
         return -1;
 
-    pipe->totalProcesses--; //todo race condition aca
+    semWait(allPipesSem);
+    pipe->totalProcesses--;
 
     if (pipe->totalProcesses == 0){
         semClose(pipe->readSemId);
         semClose(pipe->writeSemId);
-        semClose(pipe->operationsSemId);
     }
-    removeElement(pipeQueue, findPipeCondition, pipeId); //todo fijarse si falta algun free
-  return 0;
+    removeElement(pipeQueue, findPipeCondition, &pipeId); //todo fijarse si falta algun free
+    semPost(allPipesSem);
+    return 0;
 }
 
 void printPipeInfo(){
+    semWait(allPipesSem);
     printf("\n\nActive Pipe Status\n\n");
     toBegin(pipeQueue);
     t_pipe * pipe = NULL;
@@ -116,13 +117,13 @@ void printPipeInfo(){
         printf("Amount of attached processes: %d\n", pipe->totalProcesses);
         printf("Read semaphore ID: %d\n", pipe->readSemId);
         printf("Write semaphore ID: %d\n", pipe->writeSemId);
-        //todo
-        // printf("Pipe buffer content: ");
-        // for (int i = pipe->readIndex; i != pipe->writeIndex;
-        //     i = (i + 1) % PIPE_BUFFER_SIZE) {
-        //     putChar(pipe->buffer[i]);
-        // }
+        printf("Pipe buffer content: ");
+        for (int i = pipe->readIndex; i != pipe->writeIndex;
+            i = (i + 1) % PIPE_BUFFER_SIZE) {
+            printChar(pipe->buffer[i]);
+        }
     }
+    semPost(allPipesSem);
 }
 
 // ------------ FUNCIONES AUXILIARES -----------------
@@ -134,7 +135,7 @@ static void writeToPipe(t_pipe * pipe, char c){
     semPost(pipe->readSemId);
 }
 
-static t_pipe *createPipe(uint32_t id) {
+static t_pipe *createPipe(int id) {
   t_pipe * pipe = malloc(sizeof(t_pipe));
   if (pipe == NULL) return NULL;
 
@@ -143,28 +144,28 @@ static t_pipe *createPipe(uint32_t id) {
 
   pipe->readSemId = semOpen(getUnusedSemId(), 0);
   pipe->writeIndex = semOpen(getUnusedSemId(), PIPE_BUFFER_SIZE);
-  pipe->operationsSemId = semOpen(getUnusedSemId(), 1);
-  if(pipe->readSemId == -1 || pipe->writeSemId == -1 || pipe->operationsSemId == -1)
+  if(pipe->readSemId == -1 || pipe->writeSemId == -1)
     return NULL;
 
   enqueue(pipeQueue, pipe);
-  return pipe->id;
+  return pipe;
 }
 
 //los id de semaforos empiezan en el num maximo y van disminuyendo
 //para que no se pisen con los creados por el usuario
 //todo algun checkeo para que el usuario no pueda usar sems tan grandes
-static uint32_t getUnusedSemId(){
+static int getUnusedSemId(){
+    static int sem_id = UINT32_MAX;
     return sem_id--;
 }
 
 // -------------- para funciones de la cola de pipes -----------------
 
 static int findPipeCondition(void * queueElement, void * value){
-  return (((t_pipe*)queueElement)->id == (*(uint32_t*)value));
+  return (((t_pipe*)queueElement)->id == (*(int*)value));
 }
 
-static int getPipe(uint32_t pipeId){
+static t_pipe * getPipe(int pipeId){
     return find(pipeQueue, findPipeCondition, &pipeId);
 }
 

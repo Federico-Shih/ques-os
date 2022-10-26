@@ -109,32 +109,53 @@ void sys_yield()
 {
   _syscall(SYS_YIELD, 0 , 0 , 0, 0, 0);
 }
-
-// Syscalls de manejo de semaforos
-
-int sys_semOpen(uint32_t id, uint64_t initialValue)
-{
-  return _syscall(SYS_SEMOPEN, id, initialValue, 0, 0, 0);
-}
-int sys_semWait(uint32_t id)
-{
-  return _syscall(SYS_SEMWAIT, id, 0, 0, 0, 0);
-}
-int sys_semPost(uint32_t id)
-{
-  return _syscall(SYS_SEMPOST, id, 0, 0, 0, 0);
-}
-int sys_semClose(uint32_t id)
-{
-  return _syscall(SYS_SEMCLOSE, id, 0, 0, 0, 0);
-}
-
 int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground)
 {
   return _syscall(SYS_CREATE_PROCESS, (uint64_t)process, (uint64_t)argc, (uint64_t)argv, (uint64_t)foreground, 0);
 }
 
+// Syscalls de manejo de semaforos
+
+int sys_semOpen(int id, int initialValue)
+{
+  return _syscall(SYS_SEMOPEN, id, initialValue, 0, 0, 0);
+}
+int sys_semWait(int id)
+{
+  return _syscall(SYS_SEMWAIT, id, 0, 0, 0, 0);
+}
+int sys_semPost(int id)
+{
+  return _syscall(SYS_SEMPOST, id, 0, 0, 0, 0);
+}
+int sys_semClose(int id)
+{
+  return _syscall(SYS_SEMCLOSE, id, 0, 0, 0, 0);
+}
 void sys_printSemInfo()
 {
   _syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
+}
+
+// Syscalls de manejo de pipes
+
+int sys_pipeOpen(int pipeId)
+{
+  return _syscall(SYS_PIPEOPEN, pipeId, 0, 0, 0, 0);
+}
+int sys_pipeRead(int pipeId)
+{
+  return _syscall(SYS_PIPEREAD, pipeId, 0, 0, 0, 0);
+}
+int sys_pipeWrite(int pipeId, char *str)
+{
+  return _syscall(SYS_PIPEWRITE, pipeId, str, 0, 0, 0);
+}
+int sys_pipeClose(int pipeId)
+{
+  return _syscall(SYS_PIPECLOSE, pipeId, 0, 0, 0, 0);
+}
+void sys_printPipeInfo()
+{
+  _syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
 }
