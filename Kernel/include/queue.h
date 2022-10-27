@@ -5,7 +5,7 @@
 
 typedef struct queueCDT *queueADT;
 
-typedef int (*conditionFunction)(void*, void*);
+typedef int (*comparator)(void*, void*);
 
 //creates a new queue
 queueADT initQueue();
@@ -27,16 +27,16 @@ int hasNext(queueADT queue) ;
 // 
 void *next(queueADT queue);
 // 
-void *find(queueADT queue, conditionFunction func, void* element);
+void *find(queueADT queue, comparator func, void* element);
 
 // Returns 0 if not found, return 1 if found
-int includes(queueADT queue, conditionFunction func, void* element);
+int includes(queueADT queue, comparator func, void* element);
 
 // Removes first element from array that fulfills removeCondition
-int removeElement(queueADT queue, conditionFunction func, void *element);
+int removeElement(queueADT queue, comparator func, void *element);
 
 // Removes first element from array that fulfills removeCondition and returns
-void* popElement(queueADT queue, conditionFunction func, void *element);
+void* popElement(queueADT queue, comparator func, void *element);
 
 
 #endif

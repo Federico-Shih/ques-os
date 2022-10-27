@@ -93,6 +93,8 @@ int resumeTask(int pid);
 
 int killCurrent();
 
+int killCurrentForeground();
+
 int yield();
 
 int cpyArgs(char **dest, char **from, int count);

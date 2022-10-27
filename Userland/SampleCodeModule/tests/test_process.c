@@ -21,14 +21,13 @@ void test_processes(unsigned int argc, char *argv[])
   uint8_t alive = 0;
   uint8_t action;
   uint64_t max_processes;
-  char *argvAux[] = {0};
+  char *argvAux[] = {"endless_loop"};
 
   if (argc < 2)
     return;
 
   if ((max_processes = satoi(argv[1])) <= 0)
     return;
-  _fprintf(0, "%d\n", max_processes);
   p_rq p_rqs[max_processes];
 
   while (1)
@@ -36,7 +35,7 @@ void test_processes(unsigned int argc, char *argv[])
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++)
     {
-      p_rqs[rq].pid = sys_startTask(&endless_loop, 0, argvAux, 0);
+      p_rqs[rq].pid = sys_startTask(&endless_loop, 1, argvAux, 0);
 
       if (p_rqs[rq].pid == -1)
       {
@@ -89,7 +88,8 @@ void test_processes(unsigned int argc, char *argv[])
 
       // Randomly unblocks processes
       for (rq = 0; rq < max_processes; rq++)
-        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
+      {
+         if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
         {
           if (sys_resume(p_rqs[rq].pid) == -1)
           {
@@ -98,6 +98,7 @@ void test_processes(unsigned int argc, char *argv[])
           }
           p_rqs[rq].state = RUNNING;
         }
+      }
     }
   }
 }

@@ -132,18 +132,16 @@ void initializeMemoryManager(void *heap_base, unsigned int heap_size)
 
 void memoryDump()
 {
-  print("\nMemory manager dump (Free List)", 33);
-  print("\nMemoria total:", 16);
+  printline("\nMemory manager dump (Free List)");
   uint64_t memoria_total = header_blocks * sizeof(Header);
-  printBase(memoria_total, 10);
-  print("\n\n------------------------------------", 39);
+  printf("\nMemoria total: %d", memoria_total);
+  printline("\n\n------------------------------------\n");
 
   if (free_node == NULL) {
-    print("\nNo hay bloques libres", 23);
+    printline("No hay bloques libres");
     return;
   }
-
-  print("\nBloques libres\n\n", 16);
+  printline("Bloques libres\n");
 
   Header* current, *free_base;
 
@@ -152,25 +150,16 @@ void memoryDump()
   unsigned int cant = 0;
   do {
     cant += current->data.size;
-    print("   Bloque nro: ", 16);
-    printBase(i, 10);
-    printChar('\n');
-    print("   Base: ", 10);
+    printf("Bloque nro: %d | Base: ", i);
     printBase((uint64_t)current, 16);
-    printChar('\n');
-    print("   Cantidad de bloques: ", 23);
-    printBase(current->data.size, 10);
-    print("\n\n------------------------------------\n", 40);
+    printf(" | Cantidad de bloques: %d\n", current->data.size);
+    print("------------------------------------\n", 40);
     current = current->data.next;
     i += 1;
   } while (current != free_base);
 
   uint64_t memoria_libre_total = cant * sizeof(Header);
-  print("\n\n------------------------------------\n\n", 41);
-  print("\nMemoria libre: ", 17);
-  printBase(memoria_libre_total, 10);
-  print("\nMemoria ocupada ", 18);
-  printBase((memoria_total - memoria_libre_total), 10);
+  printf("Memoria libre: %d | Memoria ocupada: %d\n", memoria_libre_total, memoria_total - memoria_libre_total);
   return;
 }
 

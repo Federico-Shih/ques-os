@@ -126,7 +126,7 @@ void keyboardHandler(uint64_t rsp){
     else if (controlFlag && (kbd_US[teclahex] == 'c'))
     {
         controlFlag = 0;
-        killCurrent();
+        killCurrentForeground();
     }
     else {
         if(actualBuf == CHARBUFFER){

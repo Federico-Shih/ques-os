@@ -147,6 +147,7 @@ void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *e
   if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0) return 0;
   queue_node* node = queue->first;
   queue_node* prev = NULL;
+  uint64_t index = 0;
   while (node != NULL)
   {
     if (removeCondition(node->value, element)) 
@@ -158,11 +159,16 @@ void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *e
       {
         prev->next = node->next;
       }
+      if (index == (getQueueSize(queue) - 1))
+      {
+        queue->last = prev;
+      }
       void* nodeValue = node->value;
       free(node);
       queue->size -= 1;
       return nodeValue;
     }
+    index += 1;
     prev = node;
     node = node->next;
   }

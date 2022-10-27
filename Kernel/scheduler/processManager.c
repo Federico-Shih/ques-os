@@ -44,25 +44,29 @@ void initScheduler()
 }
 
 // Libera la memoria de un proceso particular
-void freeProcess(pcb* process) {
-  for (int i = 0; i < process->argc; i += 1) {
+void freeProcess(pcb *process)
+{
+  for (int i = 0; i < process->argc; i += 1)
+  {
     free(process->argv[i]);
   }
   free(process->argv);
   // Previamente se hizo malloc en el stack del proceso
   free((void *)((char *)process->rbp - STACK_SIZE + 1));
   free((void *)process);
-  printline("K");
 }
 
 // Programa una tarea a realizar
 void *scheduleTask(void *currStackPointer)
 {
-  if (queue == NULL) return currStackPointer;
+  if (queue == NULL)
+    return currStackPointer;
   // Se fija si hay un proceso actual en existencia. Si no lo hay no hay cambio de contexto.
-  if (currentProcessPCB != NULL) {
+  if (currentProcessPCB != NULL)
+  {
     // Intento correrlo y descuento la cantidad de ciclos
-    if (currentProcessPCB->state == READY && currentCycles > 0) {
+    if (currentProcessPCB->state == READY && currentCycles > 0)
+    {
       currentCycles -= 1;
       return currStackPointer;
     }
@@ -71,31 +75,38 @@ void *scheduleTask(void *currStackPointer)
     currentProcessPCB->rsp = currStackPointer;
 
     // Si el proceso actual es el idle ignorarlo.
-    if (currentProcessPCB->pid != idleProcessPCB->pid) {
+    if (currentProcessPCB->pid != idleProcessPCB->pid)
+    {
       // Libero el proceso actual si esta terminado
-      if (currentProcessPCB->state == TERMINATED) {
+      if (currentProcessPCB->state == TERMINATED)
+      {
         // Reactivo el padre si el hijo actual estaba en foreground
-        pcb* parent = getProcess(queue, currentProcessPCB->ppid);
-        if (parent != NULL && currentProcessPCB->foreground &&  parent->state == BLOCKED) {
+        pcb *parent = getProcess(queue, currentProcessPCB->ppid);
+        if (parent != NULL && currentProcessPCB->foreground && parent->state == BLOCKED)
+        {
           changeState(parent->pid, READY);
         }
-        printline("F");
         freeProcess(currentProcessPCB);
-      } else {
+      }
+      else
+      {
         enqueue(queue, (void *)currentProcessPCB);
       }
-    } else {
+    }
+    else
+    {
       idleProcessPCB = currentProcessPCB;
     }
   }
 
-  if (readyCount > 0) 
+  if (readyCount > 0)
   {
     currentProcessPCB = (pcb *)dequeue(queue);
 
     // Como readyCount > 0, me aseguro que existe algun proceso
-    while (currentProcessPCB->state != READY) {
-      if (currentProcessPCB->state == TERMINATED) 
+    while (currentProcessPCB->state != READY)
+    {
+      if (currentProcessPCB->state == TERMINATED)
       {
         freeProcess(currentProcessPCB);
       }
@@ -104,13 +115,13 @@ void *scheduleTask(void *currStackPointer)
         enqueue(queue, (void *)currentProcessPCB);
       }
       currentProcessPCB = dequeue(queue);
-    }  
-  } 
-  else 
+    }
+  }
+  else
   {
     currentProcessPCB = idleProcessPCB;
   }
-  
+
   currentCycles = currentProcessPCB->priority;
   return currentProcessPCB->rsp;
 }
@@ -118,17 +129,20 @@ void *scheduleTask(void *currStackPointer)
 // Comienza una tarea
 int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground)
 {
-  if (process == NULL) return -1;
-  
-  pcb* newProcess = initializeBlock(argv[0], foreground, currentProcessPCB != NULL ? currentProcessPCB->fileDescriptors : NULL);
-  
-  if (newProcess == NULL) {
+  if (process == NULL)
+    return -1;
+
+  pcb *newProcess = initializeBlock(argv[0], foreground, currentProcessPCB != NULL ? currentProcessPCB->fileDescriptors : NULL);
+
+  if (newProcess == NULL)
+  {
     return -1;
   }
 
   char **args = malloc(sizeof(char *) * argc);
-  
-  if (cpyArgs(args, argv, argc) == -1) {
+
+  if (cpyArgs(args, argv, argc) == -1)
+  {
     freeProcess(newProcess);
     return -1;
   }
@@ -137,26 +151,30 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   newProcess->argv = args;
 
   initializeStack(process, argc, args, newProcess->rbp);
-  
+
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
   // Bloqueo el padre.
 
-  if (newProcess->foreground) {
+  if (newProcess->foreground)
+  {
     blockTask(newProcess->ppid);
   }
 
   return newProcess->pid;
-} 
+}
+
+static int printPCB(pcb *process);
 
 // Imprime el estado y datos de todas las tareas actuales
 int printTasks()
 {
   pcb *aux;
   toBegin(queue);
-  while(hasNext(queue)){
+  while (hasNext(queue))
+  {
     aux = next(queue);
-    printTask(aux->pid);
+    printPCB(aux);
   }
   return 0;
 }
@@ -165,11 +183,16 @@ int printTasks()
 int printTask(int pid)
 {
   pcb *process = getProcess(queue, pid);
-  if( process != NULL )
+  return printPCB(process);
+}
+
+int printPCB(pcb *process)
+{
+  if (process != NULL)
   {
     printf(
-      "Nombre: %s\nPID: %d\nPPID: %d\nForeground: %s\nRSP: %x\nRBP: "
-        "%x\nPrioridad: %d\nEstado: %s\n\n",
+        "Nombre: %s | PID: %d | PPID: %d | Foreground: %s | RSP: %x | RBP: "
+        "%x | Prioridad: %d | Estado: %s \n",
         process->name, process->pid, process->ppid,
         foregToBool((int)process->foreground), (uint64_t)process->rsp,
         (uint64_t)process->rbp, process->priority,
@@ -189,14 +212,14 @@ char *stateToStr(process_state state)
 {
   switch (state)
   {
-    case READY:
-      return "READY";
-    case BLOCKED:
-      return "BLOCKED";
-    case TERMINATED:
-      return "TERMINATED";
-    default:
-      return "TROYAN HORSE INCOMING!";
+  case READY:
+    return "READY";
+  case BLOCKED:
+    return "BLOCKED";
+  case TERMINATED:
+    return "TERMINATED";
+  default:
+    return "TROYAN HORSE INCOMING!";
   }
 }
 
@@ -206,45 +229,45 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
-int popCondition(pcb *queueElement, int pid)
+int popCondition(pcb *queueElement, int *pid)
 {
-  return queueElement->pid == pid;
+  return queueElement->pid == *pid;
 }
 
 // Termina el proceso especificado
 int killTask(int pid)
 {
-  printline("T");
   int id = changeState(pid, TERMINATED);
-
   // No se encontro el proceso
-  if(id == -1)
-    return -1; 
+  if (id == -1)
+    return -1;
 
-  if(id == currentProcessPCB->pid)
+  if (id == currentProcessPCB->pid)
+  {
     _callTimerTick();
-    return id;
+  }
 
+  pcb *killedTask = (pcb *)popElement(queue, (comparator)popCondition, &id);
+  freeProcess(killedTask);
 
-  pcb* removedElement = (pcb *)popElement(queue, (conditionFunction) popCondition, id);
-  freeProcess(removedElement);
   return id;
 }
 
 // Cambia la prioridad del proceso especificado
 int nice(int pid, int newPriority)
 {
-  if( newPriority < 0)
+  if (newPriority < 0)
     newPriority = 0;
-  if( newPriority > MAX_PRIO)
+  if (newPriority > MAX_PRIO)
     newPriority = MAX_PRIO;
 
-  pcb *process = getProcess(queue, pid);   
+  pcb *process = getProcess(queue, pid);
 
-  if(process == NULL) {
+  if (process == NULL)
+  {
     return -1;
-  } 
-  process->priority = newPriority; 
+  }
+  process->priority = newPriority;
   return 0;
 }
 
@@ -252,9 +275,9 @@ int nice(int pid, int newPriority)
 int blockTask(int pid)
 {
   int id = changeState(pid, BLOCKED);
-  if( id == -1 )
+  if (id == -1)
     return -1;
-  if( id == currentProcessPCB->pid)
+  if (id == currentProcessPCB->pid)
     _callTimerTick();
   return 0;
 }
@@ -274,23 +297,38 @@ int yield()
 }
 
 // Termina el proceso actual
-int killCurrent() {
+int killCurrent()
+{
   return killTask(currentProcessPCB->pid);
 }
 
+int currentForegroundCondition(pcb *process, void *_)
+{
+  return process->foreground && process->state == READY;
+}
 
-static void processWrapper(void (*process)(int, char**), int argc, char **argv) 
+int killCurrentForeground()
+{
+  if (currentProcessPCB->foreground)
+  {
+    return killCurrent();
+  }
+  pcb* foregroundProcess = (pcb *)find(queue, (comparator)currentForegroundCondition, NULL);
+  return changeState(foregroundProcess->pid, TERMINATED);
+}
+
+static void processWrapper(void (*process)(int, char **), int argc, char **argv)
 {
   process(argc, argv);
   killCurrent();
 }
 
 // Inicializa el stack
-void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp)
+void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp)
 {
   // Ubico el stackframe correctamente
   stackFrame *sf = (stackFrame *)rbp - 1;
-  
+
   // Cargo el stackframe inicial
   sf->gs = 0x001;
   sf->fs = 0x002;
@@ -318,14 +356,16 @@ void initializeStack(void (*process)(int, char**), int argc, char **argv, void *
 }
 
 // Inicializa el bloque de memoria
-pcb* initializeBlock(char* name, int foreground, int *fd) 
+pcb *initializeBlock(char *name, int foreground, int *fd)
 {
-  if (foreground > 1) return NULL;
-  pcb* newProcess = malloc(sizeof(pcb));
+  if (foreground > 1)
+    return NULL;
+  pcb *newProcess = malloc(sizeof(pcb));
 
-  if (newProcess == NULL) return NULL;
-  newProcess->ppid = (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0; 
-  
+  if (newProcess == NULL)
+    return NULL;
+  newProcess->ppid = (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
+
   strcpy(newProcess->name, name);
 
   newProcess->pid = pidCounter++;
@@ -333,13 +373,14 @@ pcb* initializeBlock(char* name, int foreground, int *fd)
   newProcess->state = READY;
 
   newProcess->priority = (foreground) ? FOREGROUND_PRIORITY : BACKGROUND_PRIORITY;
-  void* tempRbp = malloc(sizeof(char) * STACK_SIZE);
+  void *tempRbp = malloc(sizeof(char) * STACK_SIZE);
 
-  /* 
+  /*
     Alocar file descriptors
   */
 
-  if (tempRbp == NULL) {
+  if (tempRbp == NULL)
+  {
     // memoryDump();
     free(newProcess);
     return NULL;
@@ -352,21 +393,19 @@ pcb* initializeBlock(char* name, int foreground, int *fd)
 }
 
 // Cambia el estado del proceso especificado. Devuelve el pid del proceso.
-int changeState(int pid, process_state newState) {
+int changeState(int pid, process_state newState)
+{
   pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
-  if (process == NULL || process->state == TERMINATED )
+  if (process == NULL || process->state == TERMINATED)
     return -1;
-  
-  if (process->pid != currentProcessPCB->pid) {
-    // Cambia el contador de cuantos procesos listos hay para saber cuando activar el idle
-    if (process->state != READY && newState == READY) {
-      readyCount += 1;
-    }
 
-    if (process->state == READY && newState != READY) {
-      readyCount -= 1;
-    }
-  } else if (newState == TERMINATED) {
+  if (process->state != READY && newState == READY)
+  {
+    readyCount += 1;
+  }
+
+  if (process->state == READY && newState != READY)
+  {
     readyCount -= 1;
   }
 
@@ -375,13 +414,17 @@ int changeState(int pid, process_state newState) {
 }
 
 // Realizo una copia de los argumentos
-int cpyArgs(char **dest, char **from, int count) {
-  for (int i = 0; i < count; i += 1) {
+int cpyArgs(char **dest, char **from, int count)
+{
+  for (int i = 0; i < count; i += 1)
+  {
     dest[i] = malloc(sizeof(char) * (strlen(from[i]) + 1));
-    if (dest[i] == NULL) {
+    if (dest[i] == NULL)
+    {
       i--;
       // Libero la memoria existente hasta ahora
-      while(i >= 0) {
+      while (i >= 0)
+      {
         free(dest[i]);
         i -= 1;
       }
@@ -396,10 +439,10 @@ int cpyArgs(char **dest, char **from, int count) {
 pcb *getProcess(queueADT queue, int pid)
 {
   toBegin(queue);
-  while(hasNext(queue))
+  while (hasNext(queue))
   {
-    pcb *process =(pcb *) next(queue);
-    if(pid == process->pid)
+    pcb *process = (pcb *)next(queue);
+    if (pid == process->pid)
       return process;
   }
   return NULL;
