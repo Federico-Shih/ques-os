@@ -135,7 +135,9 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
             yield();
             return 0;
         case SYS_SEMOPEN:
-            return semOpen((int) arg0, (uint64_t) arg1);
+            return semOpen((char *) arg0, (int) arg1);
+        case SYS_SEMINIT:
+            return semInit((int)arg0);
         case SYS_SEMWAIT:
             return semWait((int) arg0);
         case SYS_SEMPOST:

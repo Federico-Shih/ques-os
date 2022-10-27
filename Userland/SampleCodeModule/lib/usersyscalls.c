@@ -116,14 +116,21 @@ int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, cha
 
 // Syscalls de manejo de semaforos
 
-int sys_semOpen(int id, int initialValue)
+int sys_semOpen(char *id, int initialValue)
 {
-  return _syscall(SYS_SEMOPEN, id, initialValue, 0, 0, 0);
+  return _syscall(SYS_SEMOPEN, (uint64_t)id, (uint64_t)initialValue, 0, 0, 0);
 }
+
+int sys_semInit(int initialValue)
+{
+  return _syscall(SYS_SEMINIT, initialValue, 0, 0, 0, 0);
+}
+
 int sys_semWait(int id)
 {
   return _syscall(SYS_SEMWAIT, id, 0, 0, 0, 0);
 }
+
 int sys_semPost(int id)
 {
   return _syscall(SYS_SEMPOST, id, 0, 0, 0, 0);

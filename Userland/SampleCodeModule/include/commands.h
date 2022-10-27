@@ -3,6 +3,7 @@
 #define DUMP_SIZE 32
 #define LAST_MEM 0x80000000
 #define MAX_HELP_LENGTH 250
+#define HELP_PAGE 8
 
 #include <stdbool.h>
 
@@ -47,5 +48,6 @@ void kill(unsigned int argc, char *argv[]);
 void block(unsigned int argc, char *argv[]);
 void resume(unsigned int argc, char *argv[]);
 void nice(unsigned int argc, char *argv[]);
+void loop();
 
 #endif

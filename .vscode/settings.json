@@ -25,6 +25,7 @@
     "test_util.h": "c",
     "lib.h": "c",
     "prime.h": "c",
-    "tests.h": "c"
+    "tests.h": "c",
+    "inforeg.h": "c"
   }
 }

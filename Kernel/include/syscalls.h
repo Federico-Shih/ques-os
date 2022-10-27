@@ -32,6 +32,7 @@ typedef enum {
   SYS_YIELD,
   // Semaphores
   SYS_SEMOPEN,
+  SYS_SEMINIT,
   SYS_SEMWAIT,
   SYS_SEMPOST,
   SYS_SEMCLOSE,

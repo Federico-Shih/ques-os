@@ -2,7 +2,8 @@
 #define SEM_H
 
 int initSemSystem();
-int semOpen(int id, int initialValue);
+int semOpen(char *semaphoreName, int initialValue);
+int semInit(int initialValue);
 int semWait(int id);
 int semPost(int id);
 int semClose(int id);

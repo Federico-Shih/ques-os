@@ -62,7 +62,11 @@ int runCommandLine(int argCount, char** args) {
   command.args = args;
   command.runner = foundCommand->runner;
 
-  sys_startTask(command.runner, command.argCount, command.args, foreground);
+  int pid = sys_startTask(command.runner, command.argCount, command.args, foreground);
+  if (pid == -1)
+  {
+    _fprint(2, "ERROR STARTING TASK\n");
+  }
   return 1;
 }
 

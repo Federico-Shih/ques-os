@@ -16,7 +16,7 @@ uint64_t getQueueSize(queueADT queue);
 // Remove first element
 void* dequeue(queueADT queue);
 // Add element to the end
-void enqueue(queueADT queue, void* value);
+int enqueue(queueADT queue, void* value);
 // Shows actual element
 void* peek(queueADT queue);
 // Resets the queue iterator to the first element.

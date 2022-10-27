@@ -141,6 +141,19 @@ long _atoi(const char *str) {
   return res;
 }
 
+int isNumber(const char *str)
+{
+  if (!str) return 0;
+  for (int i = 0; str[i] != '\0'; i += 1)
+  {
+    if (str[i] && !IS_DIGIT(str[i]))
+    {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 int _strcasecmp(const char *str1, const char* str2) {
   while (*str1 != '\0' && *str2 != '\0' && toLower(*str1) == toLower(*str2)) {
     str1 += 1;

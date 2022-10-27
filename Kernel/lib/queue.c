@@ -28,6 +28,8 @@ queueADT initQueue()
   return queue;
 }
 
+// Esta funcion depende de que el valor dentro de tu queue no tenga mallocs anidados.
+// Para limpiar mallocs anidados, usar dequeue y limpiarlo vos mismo.
 int freeQueue(queueADT queue)
 {
   if (queue == NULL)
@@ -59,9 +61,13 @@ void *dequeue(queueADT queue)
   return res;
 }
 
-void enqueue(queueADT queue, void *value)
+int enqueue(queueADT queue, void *value)
 {
   queue_node *newNode = malloc(sizeof(queue_node));
+  if (newNode == NULL)
+  {
+    return -1;
+  }
   newNode->value = value;
   newNode->next = NULL;
   if (queue->size == 0)
@@ -75,6 +81,7 @@ void enqueue(queueADT queue, void *value)
     queue->last = newNode;
   }
   queue->size += 1;
+  return 0;
 }
 
 void *peek(queueADT queue)

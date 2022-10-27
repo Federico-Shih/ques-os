@@ -31,7 +31,7 @@ static int getUnusedSemId();
 int initPipeSystem(){
     if(pipeQueue == NULL){
         pipeQueue = initQueue();
-        allPipesSem = semOpen(getUnusedSemId(), 1);
+        allPipesSem = semInit(1);
     }
     return pipeQueue != NULL;
 }
@@ -142,8 +142,8 @@ static t_pipe *createPipe(int id) {
   pipe->id = id;
   pipe->readIndex = pipe->writeIndex = pipe->totalProcesses = 0;
 
-  pipe->readSemId = semOpen(getUnusedSemId(), 0);
-  pipe->writeIndex = semOpen(getUnusedSemId(), PIPE_BUFFER_SIZE);
+  pipe->readSemId = semInit(0);
+  pipe->writeIndex = semInit(PIPE_BUFFER_SIZE);
   if(pipe->readSemId == -1 || pipe->writeSemId == -1)
     return NULL;
 
