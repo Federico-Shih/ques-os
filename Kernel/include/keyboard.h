@@ -26,8 +26,6 @@ typedef struct bufferStruct{
     uint16_t buffer[BUFFER_LENGTH];
 }bufferStruct;
 
-typedef enum {CHARBUFFER, SCANCODEBUFFER} bufferIndex;
-
 //busca el numero de caracter en mi array y lo imprime
 void printKey(uint8_t key);
 
@@ -39,7 +37,6 @@ int getFromBuffer();
 void cleanBuffer();
 int bufferSize();
 int removeFromBuffer();
-void toggleBuffer(bufferIndex buf);
 
 
 #endif

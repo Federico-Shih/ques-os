@@ -14,7 +14,6 @@ typedef enum {
   SYS_PRINTMEM, 
   SYS_SET_CURSOR, 
   SYS_WAIT,
-  SYS_GETKEY,
   // Memory Manager
   SYS_MALLOC,
   SYS_FREE,

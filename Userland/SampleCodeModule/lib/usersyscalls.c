@@ -41,11 +41,6 @@ int sys_showCursor(int active)
   return _syscall(SYS_SET_CURSOR, (uint64_t)active, 0, 0, 0, 0);
 }
 
-int sys_getKey(uint8_t fd, int* buffer, size_t count)
-{
-  return _syscall(SYS_GETKEY, fd, (uint64_t)buffer, 1, 0, 0);
-}
-
 // Syscalls de manejo de memoria (heap)
 
 void *sys_malloc(size_t memory)

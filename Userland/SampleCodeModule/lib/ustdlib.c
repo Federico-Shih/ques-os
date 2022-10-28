@@ -101,16 +101,6 @@ int getChar() {
   return c;
 }
 
-int getKey() {
-  int key;
-  int ret;
-
-  do {
-    ret = sys_getKey(STDIN, &key, 1);
-  } while (ret != 1);
-  return key;
-}
-
 char *_itoa(uint64_t num, int base) 
 { 
     static char Representation[]= "0123456789ABCDEF";

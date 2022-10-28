@@ -79,16 +79,10 @@ static char shift_kbd_US [128] =
                 0,  /* All other keys are undefined */
         };
 
-static bufferStruct bufferArray[2] ={{0}};
-static bufferIndex actualBuf = CHARBUFFER;
+static bufferStruct buffer = {0};
 static int isSpecial = 0;
 static int shiftFlag = 0;
 static int controlFlag = 0;
-
-void toggleBuffer(bufferIndex buf){
-    actualBuf = buf;
-    cleanBuffer();
-}
 
 //para que no printee cosas raras cuando toco una tecla no imprimible como el control
 int isPrintable(uint8_t teclahex){
@@ -129,20 +123,15 @@ void keyboardHandler(uint64_t rsp){
         killCurrentForeground();
     }
     else {
-        if(actualBuf == CHARBUFFER){
-                if (shiftFlag && isPrintable(teclahex)) //si es algo imprimible (no de retorno)
-                    loadInBuffer(shift_kbd_US[teclahex]);
-                else if (isPrintable(teclahex))
-                    loadInBuffer(kbd_US[teclahex]);
-        }
-        else if(actualBuf == SCANCODEBUFFER){
-            loadInBuffer(teclahex);
-        }
+        if (shiftFlag && isPrintable(teclahex)) //si es algo imprimible (no de retorno)
+            loadInBuffer(shift_kbd_US[teclahex]);
+        else if (isPrintable(teclahex))
+            loadInBuffer(kbd_US[teclahex]);
     }
 }
 
 void loadInBuffer(uint8_t teclahex){
-    bufferStruct * aux = &bufferArray[actualBuf];
+    bufferStruct * aux = &buffer;
     // write_i puede seguir escribiendo incluso wrappeando al menos que llegue al read_i
     if (!(aux->overflow) || aux->write_i < aux->read_i) {
         aux->buffer[(aux->write_i)++] = teclahex;
@@ -155,37 +144,27 @@ void loadInBuffer(uint8_t teclahex){
 
 int getFromBuffer(){
     int c = 0;
-
-    if(actualBuf == CHARBUFFER){
-        do{
-            c = removeFromBuffer();
-            blinkCursor();
-            _hlt();
-        } while (c == -1);
-        stopCursor();
-    }
-    else if(actualBuf == SCANCODEBUFFER){
-        do{
-            c = removeFromBuffer();
-            _hlt();
-        } while (c == -1);
-    }
-
+    do{
+        c = removeFromBuffer();
+        blinkCursor();
+        _hlt();
+    } while (c == -1);
+    stopCursor();
     return c;
 }
 
 void cleanBuffer(){
-    bufferStruct * aux = &bufferArray[actualBuf];
+    bufferStruct * aux = &buffer;
     aux->overflow = 0;
     aux->write_i = aux->read_i = 0;
 }
 
 int bufferSize(){
-    return bufferArray[actualBuf].write_i;
+    return buffer.write_i;
 }
 
 int removeFromBuffer(){
-    bufferStruct * aux = &bufferArray[actualBuf];
+    bufferStruct * aux = &buffer;
     // Si hay overflow significa que el write_i ya overfloweo una vez, osea hay mas caracteres
     if(aux->overflow || aux->read_i < aux->write_i){
         uint8_t c = aux->buffer[aux->read_i++];
@@ -196,5 +175,5 @@ int removeFromBuffer(){
         return c;
     }
     
-    return -1;          //empty buffer
+    return -1; //empty buffer
 }

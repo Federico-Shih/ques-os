@@ -50,17 +50,6 @@ int sys_read(FILE_DESCRIPTOR fd, char* buffer, size_t count){
     return i;
 }
 
-int sys_readKey(FILE_DESCRIPTOR fd, int* buffer, size_t count){
-    if (buffer == 0 || count == 0 || fd != 0) return -1;
-
-    int i = 0;
-    int c;
-    while (i < count && (c = getFromBuffer()) != -1) {
-        buffer[i++] = c;
-    }
-    return i;
-}
-
 int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size) {
     if (buffer == 0 || size == 0 || fd > 4) {
         return -1;
@@ -78,7 +67,6 @@ int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size) {
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4) {
     switch (rax) {
         case SYS_READ:
-            toggleBuffer(CHARBUFFER);
             return sys_read((FILE_DESCRIPTOR)arg0, (char *)arg1, (size_t)arg2);
         case SYS_WRITE:
             return sys_write((FILE_DESCRIPTOR)arg0, (char *)arg1, (size_t)arg2);
@@ -98,9 +86,6 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         case SYS_WAIT:
             sys_wait((uint64_t)arg0);
             return 0;
-        case SYS_GETKEY:
-            toggleBuffer(SCANCODEBUFFER);
-            return sys_readKey((FILE_DESCRIPTOR)arg0, (int*)arg1, (size_t)arg2);
         case SYS_MALLOC:
             return (uint64_t)malloc(arg0);
         case SYS_FREE:
