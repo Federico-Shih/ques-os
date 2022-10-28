@@ -142,7 +142,6 @@ int semPost(int id)
     if (pid != -1)
     {
       release(&(sem->lock));
-      (sem->value)++;
       return 0;
     }
   }
