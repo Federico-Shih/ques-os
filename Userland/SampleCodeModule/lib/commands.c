@@ -60,6 +60,7 @@ static command_t commands[] = {
     {"test_mm", &test_mm, "test_mm: recibe una cantidad de memoria y empieza a testear"},
     {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
     {"test_processes", &test_processes, "test_processes: testea el scheduler"},
+    {"test_sync", &test_sync, "test_sync: testea semaforos y race conditions"},
     {"", NULL, ""},
 };
 

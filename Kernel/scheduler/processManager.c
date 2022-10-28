@@ -366,7 +366,7 @@ int currentForegroundCondition(pcb *process, void *_)
 
 int killCurrentForeground()
 {
-  if (currentProcessPCB->foreground)
+  if (currentProcessPCB->foreground && (currentProcessPCB->pid != userlandPid) && (currentProcessPCB->pid != initPid))
   {
     return killCurrent();
   }

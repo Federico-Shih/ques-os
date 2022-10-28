@@ -32,7 +32,7 @@ extern int _xchg(int *lock, int value);
 static void printBlockedSemInfo(queueADT queue);
 int findSemCondition(void *queueElement, void *value);
 static int getNextSemaphoreId();
-int findSemNameCondition(char *queueElement, char *value);
+int findSemNameCondition(t_sem *queueElement, char *value);
 
 // devuelve != 0 si funciono, 0 si hubo error
 int initSemSystem()
@@ -210,9 +210,9 @@ int findSemCondition(void *queueElement, void *value)
   return ((t_sem *)queueElement)->id == *((int *)value);
 }
 
-int findSemNameCondition(char *queueElement, char *value)
+int findSemNameCondition(t_sem *queueElement, char *value)
 {
-  return strcasecmp(queueElement, value);
+  return strcasecmp(queueElement->name, value) == 0;
 }
 
 // crea un nuevo semaforo

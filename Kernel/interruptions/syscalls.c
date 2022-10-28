@@ -21,6 +21,7 @@ void sys_wait(uint64_t seconds){
     int currentSeconds = startingSeconds;
     while((currentSeconds - startingSeconds) <= seconds){
         yield();
+        _hlt();
         currentSeconds = seconds_elapsed();
     }
 }
