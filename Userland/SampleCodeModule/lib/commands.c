@@ -61,7 +61,9 @@ static command_t commands[] = {
     {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
     {"test_processes", &test_processes, "test_processes: testea el scheduler"},
     {"test_sync", &test_sync, "test_sync: testea semaforos y race conditions"},
-    {"cat", &cat, "cat: Imprime el stdin tal como lo recibe."},
+    {"cat", &cat, "cat: imprime el stdin tal como lo recibe"},
+    {"wc", &wc, "wc: cuenta la cantidad de lineas escritas. Escriba stop para terminar y recibir el numero"},
+    {"filter", &filter, "filter: filtra las vocales del input"},
     {"", NULL, ""},
 };
 
@@ -269,8 +271,57 @@ void cat(unsigned int argc, char *argv[])
   if (argc != 1)
     _fprintf(0, "Uso incorrecto de comando");
   int c;
-  while((c = getChar()))
+  while ( (c = getChar()) )
     _putc(STDOUT, c);
+}
+
+void wc(unsigned int argc, char *argv[])
+{
+  if (argc != 1)
+    _fprintf(0, "Uso incorrecto de comando");
+  int c, counter = 1;
+  int flag1 = 0, flag2 = 0, flag3 = 0;
+  while ( (c = getChar()) )
+  {
+    if ( c == '\n' )
+      counter++;
+    if ( c == 's' || flag1 )
+    {
+      flag1 = 1;
+      if ( (c == 't' && flag1) || flag2 )
+      {
+        flag2 = 1;
+        if ( (c == 'o' && flag2) || flag3 )
+        {
+          flag3 = 1;
+          if ( c== 'p' && flag3 )
+          {
+            _putc(STDOUT, c);
+            _fprintf(STDOUT, "\nLa cantidad de lineas escritas fue %d", counter);
+            return;
+          }
+        }
+      }
+    }
+    _putc(STDOUT, c);
+  }
+  return;
+}
+
+void filter(unsigned int argc, char *argv[])
+{
+  if (argc != 1)
+    _fprintf(0, "Uso incorrecto de comando");
+  int c;
+  while ( (c = getChar() ))
+  {
+    if( c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
+      _fprintf(STDOUT, "\n - Letra filtrada! Sus movimientos estan siendo monitoreados - \n");
+    }
+    else{
+      _putc(STDOUT, c);
+    }
+  }
 }
 
 void loop()
