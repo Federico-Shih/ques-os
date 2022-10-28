@@ -27,5 +27,6 @@ int getKey();
 int _strlen(const char* str);
 int isNumber(const char *str);
 void _hlt();
+char * strcpy(char *strDest, const char *strSrc);
 
 #endif

@@ -8,6 +8,7 @@
 #include "prime.h"
 #include "inforeg.h"
 #include "tests.h"
+#include "phylo.h"
 
 static command_t commands[] = {
     {"date&time", &dateAndTime, "date&time : Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
@@ -61,6 +62,7 @@ static command_t commands[] = {
     {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
     {"test_processes", &test_processes, "test_processes: testea el scheduler"},
     {"test_sync", &test_sync, "test_sync: testea semaforos y race conditions"},
+    {"phylo", &phylo, "phylo: filosofos comensales"},
     {"cat", &cat, "cat: imprime el stdin tal como lo recibe"},
     {"wc", &wc, "wc: cuenta la cantidad de lineas escritas. Escriba stop para terminar y recibir el numero"},
     {"filter", &filter, "filter: filtra las vocales del input"},

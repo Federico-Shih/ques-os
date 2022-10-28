@@ -189,6 +189,12 @@ int strToHex(const char *str){
     return val;   
 }
 
+char * strcpy(char *strDest, const char *strSrc)
+{
+    char *temp = strDest;
+    while( (*(strDest++) = *(strSrc++)) ); 
+    return temp;
+}
 
 int toLower(int chr){
     return (chr >='A' && chr<='Z') ? (chr + 32) : (chr);    
