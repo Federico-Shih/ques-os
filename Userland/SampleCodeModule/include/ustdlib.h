@@ -26,5 +26,6 @@ int _strcasecmp(const char *str1, const char* str2);
 int _strlen(const char* str);
 int isNumber(const char *str);
 void _hlt();
+char * strcpy(char *strDest, const char *strSrc);
 
 #endif

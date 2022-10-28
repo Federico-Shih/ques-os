@@ -72,7 +72,7 @@ int sys_resume(int pid);
 void sys_yield();
 int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground);
 int sys_semOpen(char *semaphoreName, int initialValue);
-int semInit(int initialValue);
+int sys_semInit(int initialValue);
 int sys_semWait(int id);
 int sys_semPost(int id);
 int sys_semClose(int id);
