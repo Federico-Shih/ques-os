@@ -152,7 +152,7 @@ static t_pipe *createPipe(int id) {
   pipe->readIndex = pipe->writeIndex = pipe->totalProcesses = 0;
 
   pipe->readSemId = semInit(0);
-  pipe->writeIndex = semInit(PIPE_BUFFER_SIZE);
+  pipe->writeSemId = semInit(PIPE_BUFFER_SIZE);
   if(pipe->readSemId == -1 || pipe->writeSemId == -1)
     return NULL;
 

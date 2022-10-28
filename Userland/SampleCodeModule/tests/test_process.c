@@ -52,7 +52,6 @@ void test_processes(unsigned int argc, char *argv[])
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0)
     {
-
       for (rq = 0; rq < max_processes; rq++)
       {
         action = GetUniform(100) % 2;
@@ -100,5 +99,6 @@ void test_processes(unsigned int argc, char *argv[])
         }
       }
     }
+    sys_wait(1);
   }
 }

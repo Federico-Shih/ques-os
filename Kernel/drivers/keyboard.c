@@ -5,6 +5,7 @@
 #include "syscalls.h"
 #include "processManager.h"
 #include "pipes.h"
+#include "time.h"
 
 // Tablas que mapean scancodes a chars
 static char kbd_US [128] =
@@ -88,8 +89,6 @@ int bufferSemaphore;
 
 void initKeyboardSystem(){
     stdin = pipeOpen(STDIN_PIPENO);
-    pipeRead(STDIN_PIPENO); //todo delete this
-    pipeRead(STDIN_PIPENO);
 }
 
 //para que no printee cosas raras cuando toco una tecla no imprimible como el control
@@ -139,12 +138,14 @@ void keyboardHandler(uint64_t rsp){
 }
 
 void writeStdin(char c){
-    print(&c, 1);
     pipePutchar(STDIN_PIPENO, c);
 }
 
 char readStdin(){
-    return pipeRead(STDIN_PIPENO);
+    setCursor(1);
+    char input = pipeRead(STDIN_PIPENO);
+    setCursor(0);
+    return input;
 }
 
 // void loadInBuffer(uint8_t teclahex){

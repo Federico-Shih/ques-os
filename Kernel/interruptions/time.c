@@ -1,9 +1,11 @@
-#include <time.h>
+#include "time.h"
+#include "console.h"
 
 static unsigned long ticks = 0;
 
 void timer_handler() {
 	ticks++;
+	blinkCursor();
 }
 
 int ticks_elapsed() {
