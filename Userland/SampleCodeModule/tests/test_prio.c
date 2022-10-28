@@ -49,4 +49,7 @@ void test_prio(){
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_kill(pids[i]);
+  
+  for(i = 0; i < TOTAL_PROCESSES; i++)
+    waitpid(pids[i]);
 }

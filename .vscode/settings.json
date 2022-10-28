@@ -26,6 +26,11 @@
     "lib.h": "c",
     "prime.h": "c",
     "tests.h": "c",
-    "inforeg.h": "c"
+    "inforeg.h": "c",
+    "semaphore.h": "c",
+    "time.h": "c",
+    "snapshot.h": "c",
+    "keyboard.h": "c",
+    "initprocess.h": "c"
   }
 }

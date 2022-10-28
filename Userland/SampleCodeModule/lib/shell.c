@@ -66,6 +66,11 @@ int runCommandLine(int argCount, char** args) {
   if (pid == -1)
   {
     _fprint(2, "ERROR STARTING TASK\n");
+    return 0;
+  }
+  if (foreground)
+  {
+    waitpid(pid);
   }
   return 1;
 }

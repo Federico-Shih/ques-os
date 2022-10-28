@@ -30,6 +30,7 @@ typedef enum {
   SYS_BLOCK,
   SYS_RESUME,
   SYS_YIELD,
+  SYS_WAITPID,
   // Semaphores
   SYS_SEMOPEN,
   SYS_SEMINIT,
@@ -82,5 +83,6 @@ int sys_pipeWrite(int pipeId, char *str);
 int sys_pipeClose(int pipeId);
 int sys_pipeRead(int pipeId);
 void sys_printPipeInfo();
+int waitpid(int pid);
 
 #endif

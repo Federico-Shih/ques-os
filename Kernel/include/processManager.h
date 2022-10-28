@@ -2,15 +2,19 @@
 #define PROCESS_MANAGER_H
 
 #include <stdint.h>
-#include <queue.h>
+#include "queue.h"
+#include "sem.h"
 
 #define MAX_PRIO 20
 
+// La diferencia entre TERMINATED y EXITED es que TERMINATED puede ser liberado y EXITED tiene que ser waiteado.
+// Un proceso permanentemente en EXITED es un proceso huerfano.
 typedef enum
 {
   READY,
   BLOCKED,
-  TERMINATED
+  EXITED,
+  TERMINATED,
 } process_state;
 
 typedef enum { BACKGROUND_PRIORITY = 1, FOREGROUND_PRIORITY } priority_type;
@@ -28,6 +32,7 @@ typedef struct pcb
   void *rbp;
   int argc;
   char **argv;
+  int semId;
 } pcb;
 
 
@@ -61,6 +66,8 @@ typedef struct {
 // Obtiene un proceso en especifico
 pcb* getProcess(queueADT queue, int pid);
 
+queueADT getProcessQueue();
+
 // Inicializa el scheduler y la queue
 void initScheduler();
 
@@ -82,7 +89,6 @@ int printTask(int pid);
 // Obtiene el pid del proceso actual
 int getpid();
 
-// 
 int killTask(int pid);
 
 int nice(int pid, int priorityLevel);
@@ -111,5 +117,11 @@ void _callTimerTick();
 pcb* initializeBlock(char* name, int foreground, int *fd);
 
 void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
+
+int waitpid(int pid);
+
+int setUserlandPid(int pid);
+
+int terminateTask(int pid);
 
 #endif

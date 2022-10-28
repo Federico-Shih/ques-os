@@ -20,7 +20,7 @@ void sys_wait(uint64_t seconds){
     int startingSeconds = seconds_elapsed();
     int currentSeconds = startingSeconds;
     while((currentSeconds - startingSeconds) <= seconds){
-        _hlt();
+        yield();
         currentSeconds = seconds_elapsed();
     }
 }
@@ -119,7 +119,7 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
             printTask((int) arg0);
             return 0;
         case SYS_KILL:
-            return killTask((int) arg0);
+            return terminateTask((int) arg0);
         case SYS_EXIT:
             return killCurrent();
         case SYS_NICE:
@@ -134,6 +134,8 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         case SYS_YIELD:
             yield();
             return 0;
+        case SYS_WAITPID:
+            return waitpid((int) arg0);
         case SYS_SEMOPEN:
             return semOpen((char *) arg0, (int) arg1);
         case SYS_SEMINIT:

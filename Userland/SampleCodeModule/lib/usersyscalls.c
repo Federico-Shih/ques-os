@@ -144,6 +144,11 @@ void sys_printSemInfo()
   _syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
 }
 
+int waitpid(int pid)
+{
+  return (int)_syscall(SYS_WAITPID, (uint64_t)pid, 0, 0, 0, 0);
+}
+
 // Syscalls de manejo de pipes
 
 int sys_pipeOpen(int pipeId)

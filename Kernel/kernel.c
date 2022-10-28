@@ -10,6 +10,8 @@
 #include <memoryManager.h>
 #include <processManager.h>
 #include <interrupts.h>
+#include "sem.h"
+#include "initProcess.h"
 
 
 extern uint8_t text;
@@ -28,7 +30,6 @@ static void * const memoryManagerModuleAddress = (void*)0x600000;
 #define HEAP_SIZE 0x100000
 
 typedef int (*EntryPoint)();
-
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
@@ -111,11 +112,16 @@ int main()
 
 	// print("Press enter to log in\n", 22);
 	// while(getFromBuffer() != '\n');
+	initSemSystem();
 	initScheduler();
 	//initSem and initPipe
 	ncClear();
+
 	char *args[] = {"Init userland"};
- 	startTask(sampleCodeModuleAddress, 1, args, 1);
+ 	int userlandPid = startTask(sampleCodeModuleAddress, 1, args, 1);
+	setUserlandPid(userlandPid);
+
+	// Activo interrupciones para empezar el scheduler
 	load_idt();
 	_hlt(); // Fuerzo a que el scheduler empiece
 	printline("Failureeee\n");

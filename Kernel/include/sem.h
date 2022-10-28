@@ -4,6 +4,7 @@
 int initSemSystem();
 int semOpen(char *semaphoreName, int initialValue);
 int semInit(int initialValue);
+int semValue(int id);
 int semWait(int id);
 int semPost(int id);
 int semClose(int id);

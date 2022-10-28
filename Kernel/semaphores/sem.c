@@ -72,6 +72,10 @@ int semInit(int initialValue)
   acquire(&allSemsLock);
   t_sem *sem = createSem(initialValue, "");
   release(&allSemsLock);
+  if (sem == NULL)
+  {
+    return -1;
+  }
   return sem->id;
 }
 
@@ -138,12 +142,21 @@ int semPost(int id)
     if (pid != -1)
     {
       release(&(sem->lock));
+      (sem->value)++;
       return 0;
     }
   }
   (sem->value)++;
   release(&(sem->lock));
   return 0;
+}
+
+int semValue(int id)
+{
+  t_sem *sem = findSem(id);
+  if (sem == NULL)
+    return -1;
+  return sem->value;
 }
 
 void printSemInfo()

@@ -30,6 +30,7 @@ typedef enum {
   SYS_BLOCK,
   SYS_RESUME,
   SYS_YIELD,
+  SYS_WAITPID,
   // Semaphores
   SYS_SEMOPEN,
   SYS_SEMINIT,
