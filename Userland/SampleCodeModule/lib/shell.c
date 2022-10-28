@@ -80,12 +80,12 @@ void runShell() {
   help(1, NULL);
   _putc(STDOUT, '\n');
   while (1) {
-    sys_showCursor(1);
+    // sys_showCursor(1);
     _print("QUESOS>");
     char* args[MAX_ARGS];
     int count = getCommandLine(args);
     _putc(STDOUT, '\n');
-    sys_showCursor(0);
+    // sys_showCursor(0);
     runCommandLine(count, args);
     _putc(STDOUT, '\n');
   }

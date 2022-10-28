@@ -31,6 +31,8 @@
     "time.h": "c",
     "snapshot.h": "c",
     "keyboard.h": "c",
-    "initprocess.h": "c"
+    "initprocess.h": "c",
+    "pipes.h": "c",
+    "naiveconsole.h": "c"
   }
 }

@@ -68,6 +68,15 @@ int pipeWrite(int pipeId, char *str) {
     return 0;
 }
 
+int pipePutchar(int pipeId, char c){
+    t_pipe * pipe;
+    if((pipe = getPipe(pipeId)) == NULL)
+        return -1;
+
+    writeToPipe(pipe, c);
+    return 0;
+}
+
 //devuelve el char leido si funciono, -1 si hubo error
 int pipeRead(int pipeId) {
     t_pipe * pipe;

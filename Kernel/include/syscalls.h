@@ -53,7 +53,7 @@ uint8_t sys_dateAndTime(uint64_t rtcID);
 int sys_inforeg(uint64_t *buffer);
 void snapshotRegisters(uint64_t* rsp);
 void sys_getMem(uint64_t direc, uint8_t * buffer, uint64_t bytes);
-int sys_read(FILE_DESCRIPTOR fd, char* buffer, size_t count);
+char sys_read();
 int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size);
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4);
 void sys_wait(uint64_t seconds);

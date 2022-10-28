@@ -50,7 +50,7 @@ typedef enum {
 
 extern uint64_t _syscall(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 
-int sys_read(uint8_t fd, char* buffer, size_t count);
+char sys_read();
 int sys_write(uint8_t fd, const char* buffer, size_t count);
 int sys_clear(uint8_t fd);
 int sys_inforeg(uint64_t* buffer);

@@ -20,11 +20,8 @@
 extern uint8_t _getKey(); //en libasm.asm
 extern uint8_t _hasKey();
 
-typedef struct bufferStruct{
-    int write_i, read_i;
-    int overflow; // necesario para chequear que read_i sea menor que write_i ciclicamente
-    uint16_t buffer[BUFFER_LENGTH];
-}bufferStruct;
+//necessary for keyboard functions to work
+void initKeyboardSystem();
 
 //busca el numero de caracter en mi array y lo imprime
 void printKey(uint8_t key);
@@ -32,11 +29,7 @@ void printKey(uint8_t key);
 void printKeyMayus(uint8_t key);
 
 void keyboardHandler(uint64_t rsp);
-void loadInBuffer(uint8_t c);
-int getFromBuffer();
-void cleanBuffer();
-int bufferSize();
-int removeFromBuffer();
-
+void writeStdin(char c);
+char readStdin();
 
 #endif

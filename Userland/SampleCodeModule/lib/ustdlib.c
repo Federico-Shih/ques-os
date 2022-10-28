@@ -92,13 +92,8 @@ void clear_screen(unsigned int fd) {
   sys_clear(fd);
 }
 
-int getChar() {
-  char c;
-  int ret;
-  do {
-    ret = sys_read(STDIN, &c, 1);
-  } while (ret != 1);
-  return c;
+char getChar() {
+  return sys_read();
 }
 
 char *_itoa(uint64_t num, int base) 

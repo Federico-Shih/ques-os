@@ -1,8 +1,8 @@
 #include <usersyscalls.h>
 
-int sys_read(uint8_t fd, char *buffer, size_t count)
+char sys_read()
 {
-  return _syscall(SYS_READ, fd, (uint64_t)buffer, 1, 0, 0);
+  return _syscall(SYS_READ, 0, 0, 0, 0, 0);
 }
 
 int sys_write(uint8_t fd, const char *buffer, size_t count)

@@ -14,7 +14,7 @@ enum {
 
 void clear_screen(unsigned int fd);
 void _fprint(uint8_t fd, const char *str);
-int getChar();
+char getChar();
 void _putc(uint8_t fd, char c);
 void _fprintf(uint8_t fd, char *,...);              
 int toLower(int chr);

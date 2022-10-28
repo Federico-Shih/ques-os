@@ -4,6 +4,7 @@
 #include "interrupts.h"
 #include "syscalls.h"
 #include "processManager.h"
+#include "pipes.h"
 
 // Tablas que mapean scancodes a chars
 static char kbd_US [128] =
@@ -79,10 +80,17 @@ static char shift_kbd_US [128] =
                 0,  /* All other keys are undefined */
         };
 
-static bufferStruct buffer = {0};
+static int stdin;
 static int isSpecial = 0;
 static int shiftFlag = 0;
 static int controlFlag = 0;
+int bufferSemaphore;
+
+void initKeyboardSystem(){
+    stdin = pipeOpen(STDIN_PIPENO);
+    pipeRead(STDIN_PIPENO); //todo delete this
+    pipeRead(STDIN_PIPENO);
+}
 
 //para que no printee cosas raras cuando toco una tecla no imprimible como el control
 int isPrintable(uint8_t teclahex){
@@ -124,56 +132,65 @@ void keyboardHandler(uint64_t rsp){
     }
     else {
         if (shiftFlag && isPrintable(teclahex)) //si es algo imprimible (no de retorno)
-            loadInBuffer(shift_kbd_US[teclahex]);
+            writeStdin(shift_kbd_US[teclahex]);
         else if (isPrintable(teclahex))
-            loadInBuffer(kbd_US[teclahex]);
+            writeStdin(kbd_US[teclahex]);
     }
 }
 
-void loadInBuffer(uint8_t teclahex){
-    bufferStruct * aux = &buffer;
-    // write_i puede seguir escribiendo incluso wrappeando al menos que llegue al read_i
-    if (!(aux->overflow) || aux->write_i < aux->read_i) {
-        aux->buffer[(aux->write_i)++] = teclahex;
-        if(aux->write_i == BUFFER_LENGTH){
-            aux->write_i = 0; // overflow protection
-            aux->overflow = 1;
-        }
-    }
+void writeStdin(char c){
+    print(&c, 1);
+    pipePutchar(STDIN_PIPENO, c);
 }
 
-int getFromBuffer(){
-    int c = 0;
-    do{
-        c = removeFromBuffer();
-        blinkCursor();
-        _hlt();
-    } while (c == -1);
-    stopCursor();
-    return c;
+char readStdin(){
+    return pipeRead(STDIN_PIPENO);
 }
 
-void cleanBuffer(){
-    bufferStruct * aux = &buffer;
-    aux->overflow = 0;
-    aux->write_i = aux->read_i = 0;
-}
+// void loadInBuffer(uint8_t teclahex){
+//     bufferStruct * aux = &buffer;
+//     // write_i puede seguir escribiendo incluso wrappeando al menos que llegue al read_i
+//     if (!(aux->overflow) || aux->write_i < aux->read_i) {
+//         aux->buffer[(aux->write_i)++] = teclahex;
+//         if(aux->write_i == BUFFER_LENGTH){
+//             aux->write_i = 0; // overflow protection
+//             aux->overflow = 1;
+//         }
+//     }
+// }
 
-int bufferSize(){
-    return buffer.write_i;
-}
+// int getFromBuffer(){
+//     int c = 0;
+//     do{
+//         c = removeFromBuffer();
+//         blinkCursor();
+//         _hlt();
+//     } while (c == -1);
+//     stopCursor();
+//     return c;
+// }
 
-int removeFromBuffer(){
-    bufferStruct * aux = &buffer;
-    // Si hay overflow significa que el write_i ya overfloweo una vez, osea hay mas caracteres
-    if(aux->overflow || aux->read_i < aux->write_i){
-        uint8_t c = aux->buffer[aux->read_i++];
-        if (aux->read_i == BUFFER_LENGTH) {
-            aux->overflow = 0;
-            aux->read_i = 0;
-        }
-        return c;
-    }
+// void cleanBuffer(){
+//     bufferStruct * aux = &buffer;
+//     aux->overflow = 0;
+//     aux->write_i = aux->read_i = 0;
+// }
+
+// int bufferSize(){
+//     return buffer.write_i;
+// }
+
+// int removeFromBuffer(){
+//     bufferStruct * aux = &buffer;
+//     // Si hay overflow significa que el write_i ya overfloweo una vez, osea hay mas caracteres
+//     if(aux->overflow || aux->read_i < aux->write_i){
+//         uint8_t c = aux->buffer[aux->read_i++];
+//         if (aux->read_i == BUFFER_LENGTH) {
+//             aux->overflow = 0;
+//             aux->read_i = 0;
+//         }
+//         return c;
+//     }
     
-    return -1; //empty buffer
-}
+//     return -1; //empty buffer
+// }

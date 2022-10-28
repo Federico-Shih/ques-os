@@ -11,6 +11,8 @@
 #include <processManager.h>
 #include <interrupts.h>
 #include "sem.h"
+#include "pipes.h"
+#include "keyboard.h"
 #include "initProcess.h"
 
 
@@ -113,6 +115,8 @@ int main()
 	// print("Press enter to log in\n", 22);
 	// while(getFromBuffer() != '\n');
 	initSemSystem();
+	initPipeSystem();
+	initKeyboardSystem();
 	initScheduler();
 	//initSem and initPipe
 	ncClear();
@@ -124,6 +128,6 @@ int main()
 	// Activo interrupciones para empezar el scheduler
 	load_idt();
 	_hlt(); // Fuerzo a que el scheduler empiece
-	printline("Failureeee\n");
+	printline("System failure.\n");
 	return 0;
 }
