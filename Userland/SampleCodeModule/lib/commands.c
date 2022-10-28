@@ -61,6 +61,7 @@ static command_t commands[] = {
     {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
     {"test_processes", &test_processes, "test_processes: testea el scheduler"},
     {"test_sync", &test_sync, "test_sync: testea semaforos y race conditions"},
+    {"cat", &cat, "cat: Imprime el stdin tal como lo recibe."},
     {"", NULL, ""},
 };
 
@@ -261,6 +262,15 @@ void nice(unsigned int argc, char *argv[])
     _fprint(2, "No se ingreso un valor de nice\n");
   }
   sys_nice(_atoi(argv[1]), _atoi(argv[2]));
+}
+
+void cat(unsigned int argc, char *argv[])
+{
+  if (argc != 1)
+    _fprintf(0, "Uso incorrecto de comando");
+  int c;
+  while((c = getChar()))
+    _putc(STDOUT, c);
 }
 
 void loop()

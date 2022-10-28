@@ -48,6 +48,7 @@ void kill(unsigned int argc, char *argv[]);
 void block(unsigned int argc, char *argv[]);
 void resume(unsigned int argc, char *argv[]);
 void nice(unsigned int argc, char *argv[]);
+void cat(unsigned int argc, char *argv[]);
 void loop();
 
 #endif

@@ -118,13 +118,13 @@ void memoryDump() {
   for (int i = currentBlocks - 1; i >= 0; i--) {
     list = &orders[i];
     if (!listIsEmpty(list)) {
-      printf("    Orden %d\n", i + MIN_ALLOC_LOG2);
-      printf("    Bloques libres de tamano 2^%d\n", i + MIN_ALLOC_LOG2);
+      printf("Orden %d", i + MIN_ALLOC_LOG2);
+      printf("Bloques libres de tamano 2^%d", i + MIN_ALLOC_LOG2);
       for (listAux = list->next, idx = 1; listAux != list;
            idx++, listAux = listAux->next) {
         if (listAux->free) {
-          printf("    Numero de bloque: %d | ", idx);
-          printf("    Estado: libre\n");
+          printf("Numero de bloque: %d | ", idx);
+          printf("Estado: libre\n");
           freeSpace += idx * (1 << (MIN_ALLOC_LOG2 + i));
         }
       }
