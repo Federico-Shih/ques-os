@@ -4,6 +4,7 @@
 #include "console.h"
 #include "memoryManager.h"
 #include "initProcess.h"
+#include "pipes.h"
 
 #define STACK_SIZE (1024 * 4)
 
@@ -19,14 +20,11 @@ static pcb *currentProcessPCB = NULL;
 
 // Cantidad de procesos listos
 static int readyCount = 0;
-
-static int printPCB(pcb *process);
-
 static int userlandPid = -1;
-
 static int initPid = -1;
 
-int initSemId = -1;
+static int printPCB(pcb *process);
+static int sendTaskToInit(int pid);
 
 // Proceso inactivo
 void idleProcess(int argc, char **argv)
@@ -40,13 +38,6 @@ void initScheduler()
 {
   queue = initQueue();
   if (queue == NULL)
-  {
-    return;
-  }
-
-  initSemId = semOpen(INIT_SEM, 0);
-
-  if (initSemId == -1)
   {
     return;
   }
@@ -78,9 +69,20 @@ void freeProcess(pcb *process)
   {
     free(process->argv[i]);
   }
+  semPost(process->semId);
   free(process->argv);
   semClose(process->semId);
-
+  sendTaskToInit(process->pid);
+  if (process->fileDescriptors[0] != STDIN_PIPENO)
+  {
+    pipeClose(process->fileDescriptors[0]);
+  }
+  if (process->fileDescriptors[1] != STDOUT_PIPENO)
+  {
+    pipePutchar(process->fileDescriptors[1], -1);
+    pipeClose(process->fileDescriptors[1]);
+  }
+  pidCounter -= currentProcessPCB->pid == (pidCounter - 1);
   // Previamente se hizo malloc en el stack del proceso
   free((void *)((char *)process->rbp - STACK_SIZE + 1));
   free((void *)process);
@@ -183,6 +185,7 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
 int printTasks()
 {
   pcb *aux;
+  printPCB(currentProcessPCB);
   toBegin(queue);
   while (hasNext(queue))
   {
@@ -262,10 +265,9 @@ static int sendTaskToInit(int pid)
   toBegin(queue);
   int hasParent = 0;
   pcb *killedProcess = (pcb *)getProcess(queue, pid);
-  while (hasNext(queue))
+  pcb *process = currentProcessPCB;
+  do
   {
-    pcb *process = (pcb *)next(queue);
-    // Proceso no es huerfano.
     if (process->pid == killedProcess->ppid && (process->state != TERMINATED || process->state != EXITED))
       hasParent = 1;
 
@@ -274,7 +276,9 @@ static int sendTaskToInit(int pid)
     {
       process->ppid = initPid;
     }
-  }
+    process = (pcb *)next(queue);
+  } while (hasNext(queue));
+
   // Proceso es huerfano
   if (!hasParent)
   {
@@ -290,8 +294,6 @@ int killTask(int pid)
   // No se encontro el proceso
   if (id == -1)
     return -1;
-  semPost(initSemId);
-  sendTaskToInit(id);
 
   if (id == currentProcessPCB->pid)
   {
@@ -305,13 +307,11 @@ int terminateTask(int pid)
   int id = changeState(pid, TERMINATED);
   if (id == -1)
     return -1;
+
   if (id == currentProcessPCB->pid)
   {
     _callTimerTick();
   }
-
-  pcb *terminatedProcess = (pcb *)popElement(queue, (comparator)popCondition, &id);
-  freeProcess(terminatedProcess);
   return id;
 }
 
@@ -367,20 +367,22 @@ int killCurrent()
 
 int currentForegroundCondition(pcb *process, void *_)
 {
-  return process->foreground && process->state == READY && process->pid != initPid && process->pid != userlandPid;
+  return process->foreground && process->pid != initPid && process->pid != userlandPid;
 }
 
 void terminateChildren(int pid)
 {
   toBegin(queue);
-  while(hasNext(queue))
+  pcb *current = currentProcessPCB;
+  do
   {
-    pcb *current = (pcb *)next(queue);
     if (current->ppid == pid)
     {
       changeState(current->pid, TERMINATED);
+      current->ppid = initPid;
     }
-  }
+    current = (pcb *)next(queue);
+  } while (hasNext(queue));
 }
 
 int killCurrentForeground()
@@ -396,7 +398,7 @@ int killCurrentForeground()
     return -1;
   }
   terminateChildren(foregroundProcess->pid);
-  return changeState(foregroundProcess->pid, TERMINATED);
+  return killTask(foregroundProcess->pid);
 }
 
 int waitpid(int pid)
