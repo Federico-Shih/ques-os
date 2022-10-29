@@ -9,6 +9,9 @@
 #include "inforeg.h"
 #include "tests.h"
 #include "phylo.h"
+#include "colors.h"
+
+static color_t ERROR_COLORS[] = {RED, BLACK};
 
 static command_t commands[] = {
     {"date&time", &dateAndTime, "date&time : Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
@@ -82,7 +85,7 @@ void divZero()
   int aux1 = 1;
   int aux2 = 0;
   int o = aux1 / aux2;
-  _fprintf(0, "%d\n", o);
+  _fprintf("%d\n", o);
 }
 
 void invalidOpcode()
@@ -95,7 +98,7 @@ void printmem(unsigned int argc, char *argv[])
   if (argc < 1)
   {
     char *error_message = "No se dio una direccion de memoria\n";
-    sys_write(STDERR, error_message, _strlen(error_message));
+    sys_write(error_message, _strlen(error_message), ERROR_COLORS);
     return;
   }
   char *address = argv[0];
@@ -105,10 +108,10 @@ void printmem(unsigned int argc, char *argv[])
   if (memDir == -1 || memDir >= LAST_MEM)
   {
     char *error_message = "\nLa direccion ingresada no es alcanzable \n";
-    sys_write(STDERR, error_message, _strlen(error_message));
+    sys_write(error_message, _strlen(error_message), ERROR_COLORS);
     return;
   }
-  _fprintf(STDOUT, "\nDump de 32 bytes a partir de la direccion: %s\n\n", address);
+  _fprintf("\nDump de 32 bytes a partir de la direccion: %s\n\n", address);
 
   uint8_t buffer[DUMP_SIZE];
   sys_printMem(memDir, buffer, DUMP_SIZE);
@@ -116,11 +119,11 @@ void printmem(unsigned int argc, char *argv[])
   {
     if (i % 8 == 0)
     {
-      _fprintf(STDOUT, "\n x%d:  ", i);
+      _fprintf("\n x%d:  ", i);
     }
-    _fprintf(STDOUT, "0x%x  ", buffer[i]);
+    _fprintf("0x%x  ", buffer[i]);
   }
-  _fprintf(STDOUT, "\n");
+  _fprintf("\n");
 }
 
 void dateAndTime()
@@ -128,11 +131,11 @@ void dateAndTime()
   uint64_t date = sys_dateAndTime(DAY_RTC_ID);
   uint64_t month = sys_dateAndTime(MONTH_RTC_ID);
   uint64_t year = sys_dateAndTime(YEAR_RTC_ID);
-  _fprintf(STDOUT, "La fecha de hoy es: %d/%d/%d", date, month, year);
+  _fprintf("La fecha de hoy es: %d/%d/%d", date, month, year);
   uint64_t hour = sys_dateAndTime(HOUR_RTC_ID);
   uint64_t minute = sys_dateAndTime(MINUTE_RTC_ID);
   uint64_t second = sys_dateAndTime(SECOND_RTC_ID);
-  _fprintf(STDOUT, "\n Y el horario de este momento es: %d:%d:%d\n", hour, minute, second);
+  _fprintf("\n Y el horario de este momento es: %d:%d:%d\n", hour, minute, second);
 }
 
 void help(unsigned int argc, char *argv[])
@@ -155,7 +158,7 @@ void help(unsigned int argc, char *argv[])
       }
       else
       {
-        _fprintf(STDOUT, "%s no existe\n", argv[1]);
+        _fprintf("%s no existe\n", argv[1]);
         return;
       }
     }
@@ -164,15 +167,15 @@ void help(unsigned int argc, char *argv[])
   int length = getCommandsLength();
   if (page > length / HELP_PAGE)
   {
-    _fprint(STDOUT, "No existe esta pagina de comandos: \n");
+    _fprintf( "No existe esta pagina de comandos: \n");
     return;
   }
-  _fprint(STDOUT, "Lista de posibles comandos: \n");
+  _fprintf( "Lista de posibles comandos: \n");
   for (uint8_t i = 0; commands[i + page * HELP_PAGE].runner != NULL && i < HELP_PAGE; i++)
   {
-    _fprintf(STDOUT, "%s\n", commands[i + page * HELP_PAGE].help);
+    _fprintf("%s\n", commands[i + page * HELP_PAGE].help);
   }
-  _fprintf(STDOUT, "Pagina nro %d de %d, help [pagina] para mas comandos.\n", page, length / HELP_PAGE);
+  _fprintf("Pagina nro %d de %d, help [pagina] para mas comandos.\n", page, length / HELP_PAGE);
 }
 
 void infoReg()
@@ -182,8 +185,8 @@ void infoReg()
 
   for (int i = 0; i < TOTAL_REGISTERS; i++)
   {
-    _fprintf(STDOUT, "%s", registerNames[i]);
-    _fprintf(STDOUT, "%x\n", registers[i]);
+    _fprintf("%s", registerNames[i]);
+    _fprintf("%x\n", registers[i]);
   }
 }
 
@@ -225,7 +228,7 @@ void kill(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprint(0, "No se ingreso un pid\n");
+    _fprintf( "No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -236,7 +239,7 @@ void block(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprint(0, "No se ingreso un pid\n");
+    _fprintf( "No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -247,7 +250,7 @@ void resume(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprint(0, "No se ingreso un pid\n");
+    _fprintf( "No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -258,12 +261,12 @@ void nice(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprint(2, "No se ingreso un pid\n");
+    _fprintf( "No se ingreso un pid\n");
     return;
   }
   if (argc == 2)
   {
-    _fprint(2, "No se ingreso un valor de nice\n");
+    _fprintf( "No se ingreso un valor de nice\n");
   }
   sys_nice(_atoi(argv[1]), _atoi(argv[2]));
 }
@@ -271,16 +274,16 @@ void nice(unsigned int argc, char *argv[])
 void cat(unsigned int argc, char *argv[])
 {
   if (argc != 1)
-    _fprintf(0, "Uso incorrecto de comando");
+    _fprintf("Uso incorrecto de comando");
   int c;
   while ( (c = getChar()) )
-    _putc(STDOUT, c);
+    _putc(c);
 }
 
 void wc(unsigned int argc, char *argv[])
 {
   if (argc != 1)
-    _fprintf(0, "Uso incorrecto de comando");
+    _fprintf("Uso incorrecto de comando");
   int c, counter = 1;
   int flag1 = 0, flag2 = 0, flag3 = 0;
   while ( (c = getChar()) )
@@ -298,14 +301,14 @@ void wc(unsigned int argc, char *argv[])
           flag3 = 1;
           if ( c== 'p' && flag3 )
           {
-            _putc(STDOUT, c);
-            _fprintf(STDOUT, "\nLa cantidad de lineas escritas fue %d", counter);
+            _putc(c);
+            _fprintf("\nLa cantidad de lineas escritas fue %d", counter);
             return;
           }
         }
       }
     }
-    _putc(STDOUT, c);
+    _putc(c);
   }
   return;
 }
@@ -313,15 +316,15 @@ void wc(unsigned int argc, char *argv[])
 void filter(unsigned int argc, char *argv[])
 {
   if (argc != 1)
-    _fprintf(0, "Uso incorrecto de comando");
+    _fprintf("Uso incorrecto de comando");
   int c;
   while ( (c = getChar() ))
   {
     if( c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
-      _fprintf(STDOUT, "\n - Letra filtrada! Sus movimientos estan siendo monitoreados - \n");
+      _fprintf("\n - Letra filtrada! Sus movimientos estan siendo monitoreados - \n");
     }
     else{
-      _putc(STDOUT, c);
+      _putc(c);
     }
   }
 }
@@ -330,7 +333,7 @@ void loop()
 {
   while (1)
   {
-    _fprintf(0, "Hola soy %d\n", sys_getpid());
+    _fprintf("Hola soy %d\n", sys_getpid());
     sys_wait(3);
   }
 }

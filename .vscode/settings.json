@@ -33,6 +33,7 @@
     "keyboard.h": "c",
     "initprocess.h": "c",
     "pipes.h": "c",
-    "naiveconsole.h": "c"
+    "naiveconsole.h": "c",
+    "colors.h": "c"
   }
 }

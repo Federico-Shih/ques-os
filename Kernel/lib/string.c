@@ -21,6 +21,15 @@ char * strcpy(char *strDest, const char *strSrc)
     return temp;
 }
 
+char *strncpy(char *strDest, const char *strSrc, size_t n)
+{
+    int i;
+    for (i = 0; strSrc[i] && i < n; i += 1)
+      strDest[i] = strSrc[i];
+    strDest[i] = '\0';
+    return strDest;
+}
+
 int strcasecmp(const char *str1, const char* str2) {
   while (*str1 != '\0' && *str2 != '\0' && toLower(*str1) == toLower(*str2)) {
     str1 += 1;

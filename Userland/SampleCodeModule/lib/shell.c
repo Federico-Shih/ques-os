@@ -21,18 +21,18 @@ int getCommandLine(char** strings) {
       case '\b':
         if (i != 0) {
           i--;
-          _putc(STDOUT, c);
+          _putc(c);
         }
         break;
       case ' ':
         buffer[i++] = '\0';
         strings[res_index++] = startString;
         startString = buffer + i;
-        _putc(STDOUT, c);
+        _putc(c);
         break;
       default:
         buffer[i++] = c;
-        _putc(STDOUT, c);
+        _putc(c);
     }
   }
   if (i == 0) return 0;
@@ -48,7 +48,7 @@ int runCommandLine(int argCount, char** args) {
   command_t* foundCommand = getCommand(args[0]);
 
   if (foundCommand == NULL) {
-    _fprintf(STDOUT, "%s no es un comando valido\n", args[0]);
+    _fprintf("%s no es un comando valido\n", args[0]);
     return 0;
   }
 
@@ -62,10 +62,10 @@ int runCommandLine(int argCount, char** args) {
   command.args = args;
   command.runner = foundCommand->runner;
 
-  int pid = sys_startTask(command.runner, command.argCount, command.args, foreground);
+  int pid = sys_startTask(command.runner, command.argCount, command.args, foreground, NULL);
   if (pid == -1)
   {
-    _fprint(2, "ERROR STARTING TASK\n");
+    _fprintf( "ERROR STARTING TASK\n");
     return 0;
   }
   if (foreground)
@@ -78,16 +78,16 @@ int runCommandLine(int argCount, char** args) {
 void runShell() {
   clear_screen(1);
   help(1, NULL);
-  _putc(STDOUT, '\n');
+  _putc('\n');
   while (1) {
     // sys_showCursor(1);
     _print("QUESOS>");
     char* args[MAX_ARGS];
     int count = getCommandLine(args);
-    _putc(STDOUT, '\n');
+    _putc('\n');
     // sys_showCursor(0);
     runCommandLine(count, args);
-    _putc(STDOUT, '\n');
+    _putc('\n');
   }
 }
 

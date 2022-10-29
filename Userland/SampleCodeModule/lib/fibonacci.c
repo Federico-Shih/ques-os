@@ -7,15 +7,15 @@ void fibonacci(){
   uint64_t b = 1;
   uint64_t c;
   int count = 2;
-  _fprintf(STDOUT, "n %d: %u\n", 1, 0);
+  _fprintf("n %d: %u\n", 1, 0);
   sys_wait(1);
-  _fprintf(STDOUT, "n %d: %u\n", 2, 1);
+  _fprintf("n %d: %u\n", 2, 1);
   while(1){
     c = a + b;
     a = b;
     b = c;
     count++;
     sys_wait(1);
-    _fprintf(STDOUT,"n %d: %u\n",count ,c);
+    _fprintf("n %d: %u\n",count ,c);
   }
 }

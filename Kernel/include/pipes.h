@@ -3,6 +3,7 @@
 
 #define PIPE_BUFFER_SIZE 1024
 #define STDIN_PIPENO 0
+#define STDOUT_PIPENO 1
 
 #include <stdint.h>
 

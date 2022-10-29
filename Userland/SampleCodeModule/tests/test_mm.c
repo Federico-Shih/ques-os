@@ -46,7 +46,7 @@ void test_mm(unsigned int argc, char *argv[]){
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)){
-          _fprintf(0, "test_mm ERROR\n");
+          _fprintf("test_mm ERROR\n");
           return;
         }
 

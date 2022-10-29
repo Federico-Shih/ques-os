@@ -35,11 +35,11 @@ void test_processes(unsigned int argc, char *argv[])
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++)
     {
-      p_rqs[rq].pid = sys_startTask(&endless_loop, 1, argvAux, 0);
+      p_rqs[rq].pid = sys_startTask(&endless_loop, 1, argvAux, 0, NULL);
 
       if (p_rqs[rq].pid == -1)
       {
-        _fprintf(0, "test_processes: ERROR creating process\n");
+        _fprintf("test_processes: ERROR creating process\n");
         return;
       }
       else
@@ -63,7 +63,7 @@ void test_processes(unsigned int argc, char *argv[])
           {
             if (sys_kill(p_rqs[rq].pid) == -1)
             {
-              _fprintf(0, "test_processes: ERROR killing process\n");
+              _fprintf("test_processes: ERROR killing process\n");
               return;
             }
             p_rqs[rq].state = KILLED;
@@ -76,7 +76,7 @@ void test_processes(unsigned int argc, char *argv[])
           {
             if (sys_block(p_rqs[rq].pid) == -1)
             {
-              _fprintf(0, "test_processes: ERROR blocking process\n");
+              _fprintf("test_processes: ERROR blocking process\n");
               return;
             }
             p_rqs[rq].state = BLOCKED;
@@ -92,7 +92,7 @@ void test_processes(unsigned int argc, char *argv[])
         {
           if (sys_resume(p_rqs[rq].pid) == -1)
           {
-            _fprintf(0, "test_processes: ERROR unblocking process\n");
+            _fprintf("test_processes: ERROR unblocking process\n");
             return;
           }
           p_rqs[rq].state = RUNNING;

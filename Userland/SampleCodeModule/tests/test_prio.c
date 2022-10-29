@@ -21,31 +21,31 @@ void test_prio(){
   uint64_t i;
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
-    pids[i] = sys_startTask(printWrapper, 0, argv, 0);
+    pids[i] = sys_startTask(printWrapper, 0, argv, 0, NULL);
   bussy_wait(WAIT);
-  _fprintf(0, "\nCHANGING PRIORITIES...\n");
+  _fprintf("\nCHANGING PRIORITIES...\n");
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_nice(pids[i], prio[i]);
 
   bussy_wait(WAIT);
-  _fprintf(0, "\nBLOCKING...\n");
+  _fprintf("\nBLOCKING...\n");
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_block(pids[i]);
 
-  _fprintf(0, "CHANGING PRIORITIES WHILE BLOCKED...\n");
+  _fprintf("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_nice(pids[i], MEDIUM);
 
-  _fprintf(0, "UNBLOCKING...\n");
+  _fprintf("UNBLOCKING...\n");
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_resume(pids[i]);
 
   bussy_wait(WAIT);
-  _fprintf(0, "\nKILLING...\n");
+  _fprintf("\nKILLING...\n");
 
   for(i = 0; i < TOTAL_PROCESSES; i++)
     sys_kill(pids[i]);

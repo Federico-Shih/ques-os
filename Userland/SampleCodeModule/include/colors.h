@@ -27,6 +27,4 @@
 
 typedef uint8_t color_t;
 
-#define ERROR_COLORS { RED, BLACK };
-
 #endif //COLORS_H

@@ -10,16 +10,16 @@ int _strlen(const char* str) {
 }
 
 void _print(const char *str) {
-  _fprint(STDOUT, str);
+  _fprint(str);
 }
 
-void _fprint(uint8_t fd, const char* str) {
+void _fprint(const char* str) {
   unsigned int length = _strlen(str);
-  sys_write(fd, str, length);
+  sys_write(str, length, NULL);
 }
 
 // Inspirado de https://stackoverflow.com/questions/1735236/how-to-write-my-own-printf-in-c
-void _fprintf(uint8_t fd, char* format, ...) 
+void _fprintf(char* format, ...) 
 { 
     //Module 1: Initializing Myprintf's arguments 
     va_list arg; 
@@ -35,7 +35,7 @@ void _fprintf(uint8_t fd, char* format, ...)
     { 
         if (*traverse == '%') {
           if (hasFormat == 1) {
-            _putc(STDOUT, '%');
+            _putc('%');
           }
           hasFormat = 1;
         } else if (hasFormat) {
@@ -43,38 +43,38 @@ void _fprintf(uint8_t fd, char* format, ...)
           switch(*traverse) 
           { 
               case 'c' : i = va_arg(arg,int);     //Fetch char argument
-                          _putc(fd, i);
+                          _putc(i);
                           break; 
 
               case 'd' : i = va_arg(arg,int);         //Fetch Decimal/Integer argument
                           if(i<0) 
                           { 
                               i = -i;
-                              _putc(fd, '-'); 
+                              _putc('-'); 
                           } 
-                          _fprint(fd, _itoa(i,10));
+                          _fprint(_itoa(i,10));
                           break; 
 
               case 'o': i = va_arg(arg, int); //Fetch Octal representation
-                          _fprint(fd, _itoa(i,8));
+                          _fprint(_itoa(i,8));
                           break; 
 
               case 's': s = va_arg(arg,char *);       //Fetch string
-                          _fprint(fd, s); 
+                          _fprint(s); 
                           break; 
 
               case 'x': i = va_arg(arg, uint64_t); //Fetch Hexadecimal representation
-                          _fprint(fd, _itoa(i,16));
+                          _fprint(_itoa(i,16));
                           break;
               case 'u':    //Fetch uint64_t representation
-                          _fprint(fd, _itoa(va_arg(arg, uint64_t), 10));
+                          _fprint(_itoa(va_arg(arg, uint64_t), 10));
                           break;
               default:
-                          _putc(STDOUT, '%');
+                          _putc('%');
           }
           hasFormat = 0;
         } else {
-          _putc(STDOUT, *traverse);
+          _putc(*traverse);
         }
 
     } 
@@ -84,8 +84,8 @@ void _fprintf(uint8_t fd, char* format, ...)
     return;
 } 
 
-void _putc(uint8_t fd, char c) {
-  sys_write(fd, &c, 1);
+void _putc(char c) {
+  sys_write(&c, 1, NULL);
 }
 
 void clear_screen(unsigned int fd) {
@@ -180,6 +180,7 @@ char * strcpy(char *strDest, const char *strSrc)
     while( (*(strDest++) = *(strSrc++)) ); 
     return temp;
 }
+
 
 int toLower(int chr){
     return (chr >='A' && chr<='Z') ? (chr + 32) : (chr);    

@@ -112,7 +112,7 @@ void endless_loop_print(uint64_t wait){
   int64_t pid = sys_getpid();
 
   while(1){
-    _fprintf(0, "%d ",pid);
+    _fprintf("%d ",pid);
     bussy_wait(wait);
   }
 }

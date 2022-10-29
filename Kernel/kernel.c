@@ -122,7 +122,8 @@ int main()
 	ncClear();
 
 	char *args[] = {"Init userland"};
- 	int userlandPid = startTask(sampleCodeModuleAddress, 1, args, 1);
+	int userlandFd[2] = {0, 1};
+ 	int userlandPid = startTask(sampleCodeModuleAddress, 1, args, 1, userlandFd);
 	setUserlandPid(userlandPid);
 
 	// Activo interrupciones para empezar el scheduler

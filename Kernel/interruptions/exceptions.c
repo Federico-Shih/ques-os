@@ -13,6 +13,8 @@
 static void zero_division();
 static void invalid_opcode();
 
+color_t error[] = { RED, BLACK };
+
 void exceptionDispatcher(int exception, uint64_t rsp) {
 	if (exception == ZERO_EXCEPTION_ID){
 		zero_division();
@@ -25,11 +27,11 @@ void exceptionDispatcher(int exception, uint64_t rsp) {
 
 static void invalid_opcode(){
 	char * msg = "\nException: invalid operand code.\n";
-	sys_write(STDERR, msg , strlen(msg));
+	sys_write(msg , strlen(msg), error);
 }
 
 static void zero_division() {
 	char * msg = "\nException: division by zero.\n";
-	sys_write(STDERR, msg, strlen(msg)); 
+	sys_write(msg , strlen(msg), error);
 }
 

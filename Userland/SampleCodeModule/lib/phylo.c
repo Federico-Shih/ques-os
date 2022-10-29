@@ -78,7 +78,7 @@ int addPhilosofer(int index)
   {
     char *args[2] = { "philosofer" };
     args[1] = _itoa(index, 10);
-    int processPid = sys_startTask(&philoMain, 2, args, 0);
+    int processPid = sys_startTask(&philoMain, 2, args, 0, NULL);
     if (processPid == -1)
       return 0;
     philosofers[currentPhilosofers].pid = processPid;
@@ -114,11 +114,11 @@ void printTable()
     for (int i = 0; i < currentPhilosofers; i += 1)
     {
       if (philosofers[i].state == EATING)
-        _fprintf(1, "%c ", 'E');
+        _fprintf( "%c ", 'E');
       else
-        _fprintf(1, "%c ", '.');
+        _fprintf( "%c ", '.');
     }
-    _putc(1, '\n');
+    _putc('\n');
     sys_wait(PRINT_TIME);
   }
 }
@@ -135,7 +135,7 @@ void phylo()
   }
 
   char *args[] = { "Print table" }; 
-  sys_startTask(&printTable, 1, args, 0);
+  sys_startTask(&printTable, 1, args, 0, NULL);
   while(1)
     sys_yield();
 }

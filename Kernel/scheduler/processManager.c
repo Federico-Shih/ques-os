@@ -52,10 +52,11 @@ void initScheduler()
   }
 
   char *idleArgv[] = {"idle"};
-  startTask(idleProcess, 1, idleArgv, 0);
+  int emptyFd[2] = {0};
+  startTask(idleProcess, 1, idleArgv, 0, emptyFd);
 
   char *initArgs[] = {"Init"};
-  initPid = startTask(&init, 1, initArgs, 0);
+  initPid = startTask(&init, 1, initArgs, 0, emptyFd);
   readyCount -= 1;
   idleProcessPCB = (pcb *)dequeue(queue);
 }
@@ -63,6 +64,11 @@ void initScheduler()
 queueADT getProcessQueue()
 {
   return queue;
+}
+
+pcb *getCallingProcess()
+{
+  return currentProcessPCB;
 }
 
 // Libera la memoria de un proceso particular
@@ -137,12 +143,12 @@ void *scheduleTask(void *currStackPointer)
 }
 
 // Comienza una tarea
-int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground)
+int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
   if (process == NULL)
     return -1;
 
-  pcb *newProcess = initializeBlock(argv[0], foreground, currentProcessPCB != NULL ? currentProcessPCB->fileDescriptors : NULL);
+  pcb *newProcess = initializeBlock(argv[0], foreground, fd == NULL ? currentProcessPCB->fileDescriptors : fd);
 
   if (newProcess == NULL)
   {

@@ -13,10 +13,10 @@ enum {
 #define IS_HEXDIGIT(x) (IS_DIGIT(x) || (x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f'))
 
 void clear_screen(unsigned int fd);
-void _fprint(uint8_t fd, const char *str);
+void _fprint(const char *str);
 char getChar();
-void _putc(uint8_t fd, char c);
-void _fprintf(uint8_t fd, char *,...);              
+void _putc(char c);
+void _fprintf(char *,...);              
 int toLower(int chr);
 int strToHex(const char *str);
 char* _itoa(uint64_t, int);      

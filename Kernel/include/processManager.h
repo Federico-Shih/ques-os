@@ -68,6 +68,8 @@ pcb* getProcess(queueADT queue, int pid);
 
 queueADT getProcessQueue();
 
+pcb* getCallingProcess();
+
 // Inicializa el scheduler y la queue
 void initScheduler();
 
@@ -77,8 +79,15 @@ void initScheduler();
 */
 void *scheduleTask(void *currStackPointer);
 
-// Empieza un proceso. Recibe el puntero del proceso, argumentos, si es foreground o no.
-int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground);
+/*
+Empieza un proceso. 
+Args:
+- Puntero a la funcion del proceso
+- argc y argv
+- Si es foreground o background
+- File descriptors. Si se envia NULL, hereda los filedescriptors del padre.
+*/ 
+int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
 
 // Imprime todos los procesos actuales
 int printTasks();

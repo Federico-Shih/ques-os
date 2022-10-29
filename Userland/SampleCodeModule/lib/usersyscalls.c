@@ -5,9 +5,9 @@ char sys_read()
   return _syscall(SYS_READ, 0, 0, 0, 0, 0);
 }
 
-int sys_write(uint8_t fd, const char *buffer, size_t count)
+int sys_write(const char *buffer, uint64_t size, color_t *colors)
 {
-    return _syscall(SYS_WRITE, fd, (uint64_t)buffer, count, 0, 0);
+    return _syscall(SYS_WRITE, (uint64_t)buffer, (uint64_t)size, (uint64_t)colors, 0, 0);
 }
 
 int sys_clear(uint8_t fd)
@@ -104,9 +104,9 @@ void sys_yield()
 {
   _syscall(SYS_YIELD, 0 , 0 , 0, 0, 0);
 }
-int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground)
+int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
-  return _syscall(SYS_CREATE_PROCESS, (uint64_t)process, (uint64_t)argc, (uint64_t)argv, (uint64_t)foreground, 0);
+  return _syscall(SYS_CREATE_PROCESS, (uint64_t)process, (uint64_t)argc, (uint64_t)argv, (uint64_t)foreground, (uint64_t)fd);
 }
 
 // Syscalls de manejo de semaforos

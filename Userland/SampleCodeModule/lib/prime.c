@@ -29,12 +29,12 @@ bool isPrime(int num){
 
 void primes(){
   int num = 2;
-  _fprintf(STDOUT, "prime : %d\n",num);
+  _fprintf("prime : %d\n",num);
   num++;
   sys_wait(1);
   while(1){
     if (isPrime(num)) {
-      _fprintf(STDOUT, "prime : %d\n", num);
+      _fprintf("prime : %d\n", num);
       sys_wait(1);
     }
     num += 2;

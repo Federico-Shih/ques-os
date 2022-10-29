@@ -54,7 +54,7 @@ int sys_inforeg(uint64_t *buffer);
 void snapshotRegisters(uint64_t* rsp);
 void sys_getMem(uint64_t direc, uint8_t * buffer, uint64_t bytes);
 char sys_read();
-int sys_write(FILE_DESCRIPTOR fd, const char* buffer, uint64_t size);
+int sys_write(const char *buffer, uint64_t size, color_t *colors);
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4);
 void sys_wait(uint64_t seconds);
 

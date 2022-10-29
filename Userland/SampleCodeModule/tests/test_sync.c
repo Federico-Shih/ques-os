@@ -35,7 +35,7 @@ void my_process_inc(unsigned int argc, char *argv[])
   if (use_sem)
     if ((sharedSem = sys_semOpen(SEM_ID, 1)) == -1)
     {
-      _fprintf(2, "test_sync: ERROR opening semaphore\n");
+      _fprintf( "test_sync: ERROR opening semaphore\n");
       return ;
     }
 
@@ -63,12 +63,12 @@ void test_sync(unsigned int argc, char *argv[])
 
   if (argc != 3)
   {
-    _fprint(2, "# de args equivocados.");
+    _fprintf( "# de args equivocados.");
     return;
   }
   if ((n = satoi(argv[1])) <= 0)
   {
-    _fprint(2, "arg0 no es > 0");
+    _fprintf( "arg0 no es > 0");
     return;
   }
 
@@ -80,8 +80,8 @@ void test_sync(unsigned int argc, char *argv[])
   int i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-    pids[i] = sys_startTask(&my_process_inc, 4, argvDec, 0);
-    pids[i + TOTAL_PAIR_PROCESSES] = sys_startTask(&my_process_inc, 4, argvInc, 0);
+    pids[i] = sys_startTask(&my_process_inc, 4, argvDec, 0, NULL);
+    pids[i + TOTAL_PAIR_PROCESSES] = sys_startTask(&my_process_inc, 4, argvInc, 0, NULL);
   }
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
@@ -90,7 +90,7 @@ void test_sync(unsigned int argc, char *argv[])
     waitpid(pids[i + TOTAL_PAIR_PROCESSES]);
   }
 
-  _fprintf(1, "Final value: %d\n", global);
+  _fprintf( "Final value: %d\n", global);
 
   return;
 }

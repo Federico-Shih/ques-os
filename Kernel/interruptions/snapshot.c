@@ -30,7 +30,7 @@ int loadRegisters(uint64_t *buffer){
 
 void printRegisters(uint64_t *rsp){
 	for(int i = 0; i < TOTAL_REGISTERS; i++){
-		sys_write(STDOUT, registerNames[i], strlen(registerNames[i]));
+		sys_write(registerNames[i], strlen(registerNames[i]), NULL);
 		printBase(rsp[i],16);
 		printChar('\n');
 	}
