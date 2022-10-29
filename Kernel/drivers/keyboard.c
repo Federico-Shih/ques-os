@@ -120,14 +120,19 @@ void keyboardHandler(uint64_t rsp){
         controlFlag = 1;
     else if(teclahex == LCTRL + RELEASE)
         controlFlag = 0;
-    else if(controlFlag && (kbd_US[teclahex]=='r')){
-        snapshotRegisters((uint64_t*) rsp);
-        controlFlag = 0;
-    }
-    else if (controlFlag && (kbd_US[teclahex] == 'c'))
-    {
-        controlFlag = 0;
-        killCurrentForeground();
+    else if(controlFlag){
+        switch (kbd_US[teclahex])
+        {
+        case 'r':
+            snapshotRegisters((uint64_t*) rsp);
+            break;
+        case 'c':
+            killCurrentForeground();
+            break;
+        case 'd':
+            writeStdin(-1);
+            break;
+        }
     }
     else {
         if (shiftFlag && isPrintable(teclahex)) //si es algo imprimible (no de retorno)

@@ -292,7 +292,7 @@ void wc(unsigned int argc, char *argv[])
   }
   int c, counter = 1, word = 0;
   int flag1 = 0, flag2 = 0, flag3 = 0;
-  while ( (c = getChar()) )
+  while ( (c = getChar()) != - 1)
   {
     if ( c == '\n' )
       counter++;

@@ -16,7 +16,7 @@ int getCommandLine(char** strings) {
   int c;
   int i = 0;
   int res_index = 0;
-  while ((c = getChar()) != '\n' && i < BUFFER_LENGTH - 1 && res_index < MAX_ARGS) {
+  while ((c = getChar()) != '\n' && c != -1 && i < BUFFER_LENGTH - 1 && res_index < MAX_ARGS) {
     switch(c) {
       case '\b':
         if (i != 0) {
