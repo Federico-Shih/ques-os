@@ -87,7 +87,7 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
     case SYS_READ:
         return sys_read((char *)arg0);
     case SYS_WRITE:
-        return sys_write((char *)arg0, (uint64_t)arg1, (color_t)arg2);
+        return sys_write((char *)arg0, (uint64_t)arg1, (color_t *)arg2);
     case SYS_CLEAN_SCREEN:
         clearScreen((FILE_DESCRIPTOR)arg0);
         return 0;

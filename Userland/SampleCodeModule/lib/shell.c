@@ -52,16 +52,12 @@ int runCommandLine(int argCount, char** args) {
     return 0;
   }
 
-  int foreground = 1;
-  // Si tiene un & 
-  foreground = _strcasecmp(args[argCount - 1], "&") != 0;
-
+  int foreground = _strcasecmp(args[argCount - 1], "&") != 0;
   // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
   caller command;
   command.argCount = argCount - (1 - foreground); 
   command.args = args;
   command.runner = foundCommand->runner;
-
   int pid = sys_startTask(command.runner, command.argCount, command.args, foreground, NULL);
   if (pid == -1)
   {

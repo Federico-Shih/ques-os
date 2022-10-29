@@ -370,10 +370,24 @@ int currentForegroundCondition(pcb *process, void *_)
   return process->foreground && process->state == READY && process->pid != initPid && process->pid != userlandPid;
 }
 
+void terminateChildren(int pid)
+{
+  toBegin(queue);
+  while(hasNext(queue))
+  {
+    pcb *current = (pcb *)next(queue);
+    if (current->ppid == pid)
+    {
+      changeState(current->pid, TERMINATED);
+    }
+  }
+}
+
 int killCurrentForeground()
 {
   if (currentProcessPCB->foreground && (currentProcessPCB->pid != userlandPid) && (currentProcessPCB->pid != initPid))
   {
+    terminateChildren(currentProcessPCB->pid);
     return killCurrent();
   }
   pcb *foregroundProcess = (pcb *)find(queue, (comparator)currentForegroundCondition, NULL);
@@ -381,7 +395,8 @@ int killCurrentForeground()
   {
     return -1;
   }
-  return changeState(foregroundProcess->pid, EXITED);
+  terminateChildren(foregroundProcess->pid);
+  return changeState(foregroundProcess->pid, TERMINATED);
 }
 
 int waitpid(int pid)
