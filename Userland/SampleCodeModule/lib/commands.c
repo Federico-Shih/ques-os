@@ -274,7 +274,10 @@ void nice(unsigned int argc, char *argv[])
 void cat(unsigned int argc, char *argv[])
 {
   if (argc != 1)
+  {
     _fprintf("Uso incorrecto de comando");
+    return;
+  }
   int c;
   while ( (c = getChar()) )
     _putc(c);
@@ -283,8 +286,11 @@ void cat(unsigned int argc, char *argv[])
 void wc(unsigned int argc, char *argv[])
 {
   if (argc != 1)
+  {
     _fprintf("Uso incorrecto de comando");
-  int c, counter = 1;
+    return;
+  }
+  int c, counter = 1, word = 0;
   int flag1 = 0, flag2 = 0, flag3 = 0;
   while ( (c = getChar()) )
   {
@@ -293,17 +299,29 @@ void wc(unsigned int argc, char *argv[])
     if ( c == 's' || flag1 )
     {
       flag1 = 1;
+      if(c == 's')
+        word++;
       if ( (c == 't' && flag1) || flag2 )
       {
         flag2 = 1;
+        if(c == 't')
+          word++;
         if ( (c == 'o' && flag2) || flag3 )
         {
           flag3 = 1;
+          if(c == 'o')
+            word++;
           if ( c== 'p' && flag3 )
           {
-            _putc(c);
-            _fprintf("\nLa cantidad de lineas escritas fue %d", counter);
-            return;
+            if(c == 'p')
+              word++;
+            if(word == 4){
+              _putc(c);
+              _fprintf("\nLa cantidad de lineas escritas fue %d", counter);
+              return;
+            }else{
+              word = 0;
+            }
           }
         }
       }
@@ -316,7 +334,10 @@ void wc(unsigned int argc, char *argv[])
 void filter(unsigned int argc, char *argv[])
 {
   if (argc != 1)
+  {
     _fprintf("Uso incorrecto de comando");
+    return;
+  }
   int c;
   while ( (c = getChar() ))
   {
