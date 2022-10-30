@@ -279,7 +279,7 @@ void cat(unsigned int argc, char *argv[])
     return;
   }
   int c;
-  while ( (c = getChar()) )
+  while ( (c = getChar()) != -1 )
     _putc(c);
 }
 
@@ -290,44 +290,14 @@ void wc(unsigned int argc, char *argv[])
     _fprintf("Uso incorrecto de comando");
     return;
   }
-  int c, counter = 1, word = 0;
-  int flag1 = 0, flag2 = 0, flag3 = 0;
+  int c, counter = 1;
   while ( (c = getChar()) != - 1)
   {
     if ( c == '\n' )
       counter++;
-    if ( c == 's' || flag1 )
-    {
-      flag1 = 1;
-      if(c == 's')
-        word++;
-      if ( (c == 't' && flag1) || flag2 )
-      {
-        flag2 = 1;
-        if(c == 't')
-          word++;
-        if ( (c == 'o' && flag2) || flag3 )
-        {
-          flag3 = 1;
-          if(c == 'o')
-            word++;
-          if ( c== 'p' && flag3 )
-          {
-            if(c == 'p')
-              word++;
-            if(word == 4){
-              _putc(c);
-              _fprintf("\nLa cantidad de lineas escritas fue %d", counter);
-              return;
-            }else{
-              word = 0;
-            }
-          }
-        }
-      }
-    }
-    _putc(c);
+      _putc(c);
   }
+  _fprintf("La cantidad de lineas escritas fueron: %d",counter);
   return;
 }
 
@@ -339,7 +309,7 @@ void filter(unsigned int argc, char *argv[])
     return;
   }
   int c;
-  while ( (c = getChar() ))
+  while ( (c = getChar()) != -1)
   {
     if( c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
       _fprintf("\n - Letra filtrada! Sus movimientos estan siendo monitoreados - \n");

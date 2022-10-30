@@ -8,6 +8,9 @@ typedef enum {
 
 void runShell();
 void initShell();
+int findPipe(int argc, char **argv);
+int linkPipe(int argc, char **argv, int pipeIndex);
+int runPipeCommand(int argc, char **argv, int fdin, int fdout);
 
 
 typedef struct caller {
