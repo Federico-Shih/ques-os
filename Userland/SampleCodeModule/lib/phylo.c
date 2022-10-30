@@ -128,12 +128,25 @@ void printTable()
     sys_wait(PRINT_TIME);
   }
 }
-
+static color_t standard[] = {WHITE, BLACK};
+static color_t phyloAdd[] = {BLUE, BLACK};
+static color_t phyloRemove[] = {BROWN, BLACK};
+static color_t phyloQuit[] = {GREEN, BLACK};
 void phylo()
 {
   gateMutex = sys_semInit(4);
   if (gateMutex == -1)
     return;
+
+  sys_write("Pulse la tecla", 14, standard);
+  sys_write(" a ", 3, phyloAdd);
+  sys_write("para agregar un filosofo comensal. \n", 36, standard);
+  sys_write("Pulse la tecla", 14, standard);
+  sys_write(" d ", 3, phyloRemove);
+  sys_write("para eliminar un filosofo comensal. \n", 37, standard);
+  sys_write("Pulse la tecla", 14, standard);
+  sys_write(" q ", 3, phyloQuit);
+  sys_write("para cerrar la mesa. \n", 23, standard);
 
   for (int i = 0; i < INITIAL_PHILO; i += 1)
   {
@@ -148,13 +161,16 @@ void phylo()
     if (c == 'a')
     {
       addPhilosofer();
+      sys_write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
     }
     else if (c == 'd')
     {
       removePhilosofer();
+      sys_write("Un filosofo ha concluido su tiempo en la mesa del queso. \n", 59, phyloRemove);
     }
     else if (c == 'q')
     {
+      sys_write("Y en ese momento\nuna gran ola llego,\nretirando a los filosofos\nhacia un lugar mejor. \n", 90, phyloQuit);
       break;
     }
   }

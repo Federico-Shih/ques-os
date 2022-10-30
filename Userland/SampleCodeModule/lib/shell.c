@@ -4,6 +4,7 @@
 #include <usersyscalls.h>
 #include <RTCID.h>
 #include <commands.h>
+#include <colors.h>
 
 #define BUFFER_LENGTH 256
 #define MAX_ARGS 32
@@ -97,12 +98,13 @@ int runCommandLine(int argCount, char** args) {
 }
 
 void runShell() {
+  color_t cheeseColor[] = {YELLOW, BLACK};
   clear_screen(1);
   help(1, NULL);
   _putc('\n');
   while (1) {
     // sys_showCursor(1);
-    _print("QUESOS>");
+    sys_write("QUESOS>", 7, cheeseColor);
     char* args[MAX_ARGS];
     int count = getCommandLine(args);
     _putc('\n');

@@ -14,61 +14,61 @@
 static color_t ERROR_COLORS[] = {RED, BLACK};
 
 static command_t commands[] = {
-    {"date&time", &dateAndTime, "date&time : Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
-    {"divZero", &divZero, "divzero: Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion. "},
+    {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
+    {"divZero", &divZero, "Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion. "},
     {
         "fibonacci",
         &fibonacci,
-        "fibonacci: Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. ",
+        "Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. ",
     },
     {
         "hello",
         &holaMundo,
-        "hello: Imprime un saludo al usuario. ",
+        "Imprime un saludo al usuario. ",
     },
     {
         "help",
         &help,
-        "help: Imprime una lista detallada de los comandos  y modulos ejecutables del programa. ",
+        "Imprime una lista detallada de los comandos  y modulos ejecutables del programa. ",
     },
-    {"inforeg", &infoReg, "inforeg: Imprime los registros registros capturados al presionar ctrl + r. "},
+    {"inforeg", &infoReg, "Imprime los registros registros capturados al presionar ctrl + r. "},
     {
         "invalidOpcode",
         &invalidOpcode,
-        "invalidOpcode: Lanza la excepcion de invalid operand code e imprime los registros al momento de ejecucion. ",
+        "Lanza la excepcion de invalid operand code e imprime los registros al momento de ejecucion. ",
     },
     {
         "prime",
         &primes,
-        "prime: imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. ",
+        "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. ",
     },
-    {"printmem", &printmem, "printmem [DIRECCION DE MEMORIA]: Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
-    {"clear", &clearScreen, "clear: Limpia la pantalla "},
+    {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
+    {"clear", &clearScreen, "Limpia la pantalla. "},
     {
         "mem",
         &sys_memDump,
-        "mem: imprime el estado de memoria",
+        "Imprime el estado de memoria. ",
     },
     {
         "ps",
         &sys_printProcesses,
-        "ps: imprime el estado de los procesos",
+        "Imprime el estado de los procesos. ",
     },
-    {"kill", &kill, "kill: recibe un pid y mata al proceso"},
-    {"block", &block, "block: recibe un pid y bloquea al proceso"},
-    {"resume", &resume, "resume: recibe un pid y resume el proceso"},
-    {"nice", &nice, "nice: recibe un pid y un valor de prioridad y modifica la prioridad del proceso"},
-    {"loop", &loop, "loop: te saluda cada cierto tiempo"},
-    {"sem", &sys_printSemInfo, "sem: imprime informacion sobre los semaforos"},
-    {"pipes", &sys_printPipeInfo, "pipes: imprime estado de los pipes"},
-    {"test_mm", &test_mm, "test_mm: recibe una cantidad de memoria y empieza a testear"},
-    {"test_prio", &test_prio, "test_prio: testea las prioridades del scheduler"},
-    {"test_processes", &test_processes, "test_processes: testea el scheduler"},
-    {"test_sync", &test_sync, "test_sync: testea semaforos y race conditions"},
-    {"phylo", &phylo, "phylo: filosofos comensales"},
-    {"cat", &cat, "cat: imprime el stdin tal como lo recibe"},
-    {"wc", &wc, "wc: cuenta la cantidad de lineas escritas. Escriba stop para terminar y recibir el numero"},
-    {"filter", &filter, "filter: filtra las vocales del input"},
+    {"kill", &kill, "Recibe un pid y mata al proceso. "},
+    {"block", &block, "Recibe un pid y bloquea al proceso. "},
+    {"resume", &resume, "Recibe un pid y resume el proceso. "},
+    {"nice", &nice, "Recibe un pid y un valor de prioridad y modifica la prioridad del proceso. "},
+    {"loop", &loop, "Te saluda cada cierto tiempo. "},
+    {"sem", &sys_printSemInfo, "Imprime informacion sobre los semaforos. "},
+    {"pipes", &sys_printPipeInfo, "Imprime estado de los pipes. "},
+    {"test_mm", &test_mm, "Recibe una cantidad de memoria y empieza a testear. "},
+    {"test_prio", &test_prio, "Testea las prioridades del scheduler. "},
+    {"test_processes", &test_processes, "Testea el scheduler. "},
+    {"test_sync", &test_sync, "Testea semaforos y race conditions. "},
+    {"phylo", &phylo, "Filosofos comensales. "},
+    {"cat", &cat, "Imprime el stdin tal como lo recibe. "},
+    {"wc", &wc, "Cuenta la cantidad de lineas escritas. Escriba stop para terminar y recibir el numero. "},
+    {"filter", &filter, "Filtra las vocales del input. "},
     {"", NULL, ""},
 };
 
@@ -173,7 +173,7 @@ void help(unsigned int argc, char *argv[])
   _fprintf( "Lista de posibles comandos: \n");
   for (uint8_t i = 0; commands[i + page * HELP_PAGE].runner != NULL && i < HELP_PAGE; i++)
   {
-    _fprintf("%s\n", commands[i + page * HELP_PAGE].help);
+    _fprintf("- %s: %s\n", commands[i + page * HELP_PAGE].name, commands[i + page * HELP_PAGE].help);
   }
   _fprintf("Pagina nro %d de %d, help [pagina] para mas comandos.\n", page, length / HELP_PAGE);
 }
@@ -311,7 +311,6 @@ void filter(unsigned int argc, char *argv[])
   while ( (c = getChar()) != -1)
   {
     if( c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
-      _fprintf("\n - Letra filtrada! Sus movimientos estan siendo monitoreados - \n");
     }
     else{
       _putc(c);
