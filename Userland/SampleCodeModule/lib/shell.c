@@ -81,11 +81,9 @@ int runCommandLine(int argCount, char** args) {
 
   int foreground = _strcasecmp(args[argCount - 1], "&") != 0;
   // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
-  caller command;
-  command.argCount = argCount - (1 - foreground); 
-  command.args = args;
-  command.runner = foundCommand->runner;
-  int pid = sys_startTask(command.runner, command.argCount, command.args, foreground, NULL);
+  unsigned int argc = argCount - (1 - foreground); 
+  char **argv = args;
+  int pid = sys_startTask(foundCommand->runner, argc, argv, foreground, NULL);
   if (pid == -1)
   {
     _fprintf( "ERROR STARTING TASK\n");
@@ -129,10 +127,10 @@ int findPipe(int argc, char **argv)
   return -1;
 }
 
+// command arg1 arg2 ... argn-1 | command2 argn+2 argn+3 ... argc - 1
+
 int linkPipe(int argc, char **argv, int pipeIndex)
 {
-  char *arguments[MAX_ARGS];
-  int argCount;
   int pids[2];
 
   int pipe = sys_pipeOpen(shellPipeId++);
@@ -143,41 +141,33 @@ int linkPipe(int argc, char **argv, int pipeIndex)
     return -1;
   }
 
-  // en 0 hasta pipe esta el primero comando
-  for (int i = 0; i < pipeIndex; i++) {
-    arguments[i] = argv[i];
-    argCount++;
-  }
+  int foreground = _strcasecmp(argv[argc - 1], "&") != 0;
 
-  pids[0] = runPipeCommand(argCount, arguments, 0, pipe);
+  pids[0] = runPipeCommand(pipeIndex, argv, 0, pipe, foreground);
   if(pids[0] == -1){
     sys_pipeClose(pipe);
     return -1;
   }
 
-  // de pipe hasta el final esta el segundo comando
-  for (int i = pipeIndex + 1, j = 0; i < argc; i++, j++) {
-    arguments[j] = argv[i];
-    argCount++;
-  }
-
-  pids[1] = runPipeCommand(argCount, arguments, pipe, 1);
+  int secondCommandArgc = argc - pipeIndex - 1 - (1 - foreground);
+  pids[1] = runPipeCommand(secondCommandArgc, &(argv[pipeIndex + 1]), pipe, 1, foreground);
   if (pids[1] == -1) {
+    sys_kill(pids[0]);
     sys_pipeClose(pipe);
     return -1;
   }
 
-
-  // esta bien????
-  waitpid(pids[1]);
-  waitpid(pids[0]);
-
-  sys_pipeClose(pipe);
+  if (foreground)
+  {
+    waitpid(pids[0]);
+    waitpid(pids[1]);
+    sys_pipeClose(pipe);
+  }
 
   return 1;
 }
 
-int runPipeCommand(int argc, char **argv, int fdin, int fdout)
+int runPipeCommand(int argc, char **argv, int fdin, int fdout, int foreground)
 {
   int fd[2];
   fd[0] = fdin;
@@ -189,13 +179,5 @@ int runPipeCommand(int argc, char **argv, int fdin, int fdout)
     _fprintf("%s no es un comando valido\n", argv[0]);
     return 0;
   }
-
-  int foreground = _strcasecmp(argv[argc - 1], "&") != 0;
-  // Arma el "llamado" a la funcion, pasandoles los argumentos y la cantidad de argumentos
-  caller command;
-  command.argCount = argc - (1 - foreground); 
-  command.args = argv;
-  command.runner = foundCommand->runner;
-
-  return sys_startTask(command.runner, command.argCount, command.args, foreground, fd);
+  return sys_startTask(foundCommand->runner, argc, argv, foreground, fd);
 }

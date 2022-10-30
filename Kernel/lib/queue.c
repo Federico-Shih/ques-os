@@ -139,7 +139,7 @@ int includes(queueADT queue, int (*findCondition)(void *, void *), void *element
 
 int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
 {
-  void* poppedElement = popElement(queue, removeCondition, removeElement);
+  void* poppedElement = takeElement(queue, removeCondition, element);
   if (poppedElement != NULL)
   {
     free(poppedElement);
@@ -149,12 +149,11 @@ int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *
 }
 
 
-void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
+void* takeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
 {
-  if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0) return 0;
+  if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0) return NULL;
   queue_node* node = queue->first;
   queue_node* prev = NULL;
-  uint64_t index = 0;
   while (node != NULL)
   {
     if (removeCondition(node->value, element)) 
@@ -166,7 +165,7 @@ void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *e
       {
         prev->next = node->next;
       }
-      if (index == (getQueueSize(queue) - 1))
+      if (node->next == NULL)
       {
         queue->last = prev;
       }
@@ -175,7 +174,6 @@ void* popElement(queueADT queue, int (*removeCondition)(void *, void *), void *e
       queue->size -= 1;
       return nodeValue;
     }
-    index += 1;
     prev = node;
     node = node->next;
   }

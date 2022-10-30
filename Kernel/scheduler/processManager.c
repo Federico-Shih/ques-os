@@ -69,19 +69,23 @@ void freeProcess(pcb *process)
   {
     free(process->argv[i]);
   }
-  semPost(process->semId);
+  // Si fue terminado prematuramente
+  if (semValue(process->semId) == 0)
+    semPost(process->semId);
+
   free(process->argv);
   semClose(process->semId);
   sendTaskToInit(process->pid);
-  if (process->fileDescriptors[0] != STDIN_PIPENO)
-  {
-    pipeClose(process->fileDescriptors[0]);
-  }
   if (process->fileDescriptors[1] != STDOUT_PIPENO)
   {
     pipePutchar(process->fileDescriptors[1], -1);
-    pipeClose(process->fileDescriptors[1]);
+    // pipeClose(process->fileDescriptors[1]);
   }
+  // if (process->fileDescriptors[0] != STDIN_PIPENO)
+  // {
+  //   pipeClose(process->fileDescriptors[0]);
+  // }
+
   pidCounter -= currentProcessPCB->pid == (pidCounter - 1);
   // Previamente se hizo malloc en el stack del proceso
   free((void *)((char *)process->rbp - STACK_SIZE + 1));
@@ -108,13 +112,9 @@ void *scheduleTask(void *currStackPointer)
 
     // Si el proceso actual es el idle ignorarlo.
     if (currentProcessPCB->pid != idleProcessPCB->pid)
-    {
       enqueue(queue, (void *)currentProcessPCB);
-    }
     else
-    {
       idleProcessPCB = currentProcessPCB;
-    }
   }
 
   if (readyCount > 0)
@@ -411,8 +411,7 @@ int waitpid(int pid)
   }
   // Espero a que termine
   semWait(childProcess->semId);
-  childProcess->state = TERMINATED;
-  return pid;
+  return changeState(childProcess->pid, TERMINATED);
 }
 
 static void processWrapper(void (*process)(int, char **), int argc, char **argv)
@@ -501,18 +500,23 @@ pcb *initializeBlock(char *name, int foreground, int *fd)
 int changeState(int pid, process_state newState)
 {
   pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
-  if (process == NULL || process->state == TERMINATED || process->state == EXITED)
+  if (process == NULL || (process->state == EXITED && newState != TERMINATED) || process->state == TERMINATED)
     return -1;
+
+  if (newState == EXITED)
+    semPost(process->semId);
+  
+  if (newState == TERMINATED)
+  {
+    if (process->fileDescriptors[1] != STDOUT_PIPENO)
+        pipePutchar(process->fileDescriptors[1], -1);
+  }
 
   if (process->state != READY && newState == READY)
     readyCount += 1;
 
   if (process->state == READY && newState != READY)
     readyCount -= 1;
-
-  // Avisar que ya puede ser eliminado
-  if (newState == EXITED)
-    semPost(process->semId);
 
   process->state = newState;
   return process->pid;

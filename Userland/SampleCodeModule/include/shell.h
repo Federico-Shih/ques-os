@@ -10,14 +10,7 @@ void runShell();
 void initShell();
 int findPipe(int argc, char **argv);
 int linkPipe(int argc, char **argv, int pipeIndex);
-int runPipeCommand(int argc, char **argv, int fdin, int fdout);
+int runPipeCommand(int argc, char **argv, int fdin, int fdout, int foreground);
 
-
-typedef struct caller {
-  void (*runner)(unsigned int count, char** args);
-  char** args;
-  unsigned int argCount;
-  unsigned int screenId;
-} caller;
 
 #endif

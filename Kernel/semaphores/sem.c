@@ -91,7 +91,7 @@ int semClose(int id)
   acquire(&allSemsLock);
   if (strlen(sem->name) == 0 || sem->attachedProcesses == 1)
   {
-    t_sem *closedSemaphore = popElement(semQueue, findSemCondition, &id);
+    t_sem *closedSemaphore = (t_sem *)takeElement(semQueue, findSemCondition, &id);
     destroySem(closedSemaphore);
   }
   else

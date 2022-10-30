@@ -25,7 +25,6 @@ static t_pipe *createPipe(int id);
 static void writeToPipe(t_pipe * pipe, char c);
 static int findPipeCondition(void * queueElement, void * value);
 static t_pipe * getPipe(int pipeId);
-static int getUnusedSemId();
 
 // devuelve != 0 si funciono, 0 si hubo error
 int initPipeSystem(){
@@ -105,12 +104,12 @@ int pipeClose(int pipeId) {
 
     semWait(allPipesSem);
     pipe->totalProcesses--;
-
-    if (pipe->totalProcesses == 0){
+    
+    if (pipe->totalProcesses <= 0){
         semClose(pipe->readSemId);
         semClose(pipe->writeSemId);
+        removeElement(pipeQueue, findPipeCondition, (void *)&pipeId); //todo fijarse si falta algun free
     }
-    removeElement(pipeQueue, findPipeCondition, &pipeId); //todo fijarse si falta algun free
     semPost(allPipesSem);
     return 0;
 }
@@ -158,14 +157,6 @@ static t_pipe *createPipe(int id) {
 
   enqueue(pipeQueue, pipe);
   return pipe;
-}
-
-//los id de semaforos empiezan en el num maximo y van disminuyendo
-//para que no se pisen con los creados por el usuario
-//todo algun checkeo para que el usuario no pueda usar sems tan grandes
-static int getUnusedSemId(){
-    static int sem_id = UINT32_MAX;
-    return sem_id--;
 }
 
 // -------------- para funciones de la cola de pipes -----------------

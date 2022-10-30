@@ -295,7 +295,6 @@ void wc(unsigned int argc, char *argv[])
   {
     if ( c == '\n' )
       counter++;
-      _putc(c);
   }
   _fprintf("La cantidad de lineas escritas fueron: %d",counter);
   return;

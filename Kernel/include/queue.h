@@ -36,7 +36,7 @@ int includes(queueADT queue, comparator func, void* element);
 int removeElement(queueADT queue, comparator func, void *element);
 
 // Removes first element from array that fulfills removeCondition and returns
-void* popElement(queueADT queue, comparator func, void *element);
+void* takeElement(queueADT queue, comparator func, void *element);
 
 
 #endif
