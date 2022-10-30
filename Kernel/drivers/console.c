@@ -122,7 +122,7 @@ void printBase(uint64_t value, uint32_t base) {
 // Imprime un string
 void print(char* str, size_t count) {
   for (int i = 0; i < count; i += 1) {
-    printChar(str[i]);
+    sys_write(str, 1, NULL);
   }
 }
 
@@ -142,7 +142,8 @@ void newLine() {
 
 // Imprime caracter en default
 void printChar(char c) {
-  printCharColor(c, LGREY, BLACK, 1);
+  // printCharColor(c, LGREY, BLACK, 1);
+  sys_write(&c, 1, NULL);
 }
 
 // Comienza desde cero la pantalla principal
@@ -353,12 +354,12 @@ static int scan(char const *fmt, va_list arg) {
     if ('%' == ch) {
       switch (ch = *fmt++) {
         case '%':
-          printChar('%');
+          sys_write('%', 1, NULL);
           length++;
           break;
         case 'c':
           char_temp = va_arg(arg, int);
-          printChar(char_temp);
+          sys_write(char_temp, 1, NULL);
           length++;
           break;
         case 's':

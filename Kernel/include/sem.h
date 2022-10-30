@@ -11,5 +11,7 @@ int semClose(int id);
 void printSemInfo();
 void acquire(int *lock);
 void release(int *lock);
+//prints de pids of blocked processes by a specific semaphore
+void printBlockedPids(int id);
 
 #endif

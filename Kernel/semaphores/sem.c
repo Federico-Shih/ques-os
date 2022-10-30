@@ -5,6 +5,7 @@
 #include "queue.h"
 #include "console.h"
 #include "string.h"
+#include "syscalls.h"
 
 typedef struct t_sem
 {
@@ -159,34 +160,33 @@ int semValue(int id)
 }
 
 void printSemInfo()
-{ // todo race conditions aca
+{
   if (toBegin(semQueue) != 0)
   {
     printf("No hay semaforos\n");
     return;
   }
+  t_sem * sem = NULL;
   while (hasNext(semQueue))
   {
-    t_sem *sem = (t_sem *)next(semQueue);
-    printf("Id del semaforo: %d\n", sem->id);
-    printf("Valor del semaforo: %d\n", (int)sem->value);
-    printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
-    printf("Lock del semaforo: %d\n", sem->lock);
-    printf("Procesos bloqueados: \n");
-    printBlockedSemInfo(sem->blockedPidsQueue);
-    printf("\n\n");
+    sem = next(semQueue);
+    sys_write("hola\n", 5, NULL);
+  //   printf("Id del semaforo: %d\n", sem->id);
+  //   printf("Valor del semaforo: %d\n", (int)sem->value);
+  //   printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
+  //   printf("Lock del semaforo: %d\n", sem->lock);
+  //   printf("IDs de procesos bloqueados: ");
+  //   printBlockedSemInfo(sem->blockedPidsQueue);
+  //   printf("\b\b\n");
   }
 }
 
-static void printBlockedSemInfo(queueADT queue)
-{
-  if (toBegin(queue) != 0)
-    printf("No hay procesos bloqueados. \n");
-  while (hasNext(queue))
-  {
-    int *pid = (int *)next(queue);
-    printf("Id del proceso bloqueado: %d\n", *pid);
-  }
+void printBlockedPids(int id){
+  t_sem *sem = findSem(id);
+  if (sem == NULL)
+    return;
+
+  printBlockedSemInfo(sem->blockedPidsQueue);
 }
 
 // ----------------------- AUXILIARY FUNCTIONS ---------------------------------------------
@@ -251,6 +251,17 @@ static int destroySem(t_sem *semaphore)
 static int getNextSemaphoreId()
 {
   return semId++;
+}
+
+static void printBlockedSemInfo(queueADT queue)
+{
+  if (toBegin(queue) != 0 || !hasNext(queue))
+    printf("[No hay procesos bloqueados]  ");
+  while (hasNext(queue))
+  {
+    int *pid = (int *)next(queue);
+    printf("%d, ", *pid);
+  }
 }
 
 // ----------------------------------- LOCK RELATED FUNCTIONS ------------------------------------------------

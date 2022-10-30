@@ -66,7 +66,7 @@ int sys_write(const char *buffer, uint64_t size, color_t *colors)
     int i;
     if (currentProcess->fileDescriptors[1] == STDOUT_PIPENO)
     {
-        color_t textColor = (colors) ? colors[0] : WHITE;
+        color_t textColor = (colors) ? colors[0] : LGREY;
         color_t bgColor = (colors) ? colors[1] : BLACK;
 
         for (i = 0; i < size && buffer[i]; i += 1)

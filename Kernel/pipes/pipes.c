@@ -116,19 +116,28 @@ int pipeClose(int pipeId) {
 
 void printPipeInfo(){
     semWait(allPipesSem);
-    printf("\n\nActive Pipe Status\n\n");
+    printf("Active Pipe Status\n");
     toBegin(pipeQueue);
     t_pipe * pipe = NULL;
     while(hasNext(pipeQueue)){
         pipe = next(pipeQueue);
         printf("Pipe ID: %d\n", pipe->id);
-        printf("Amount of attached processes: %d\n", pipe->totalProcesses);
-        printf("Read semaphore ID: %d\n", pipe->readSemId);
-        printf("Write semaphore ID: %d\n", pipe->writeSemId);
-        printf("Pipe buffer content: ");
-        for (int i = pipe->readIndex; i != pipe->writeIndex;
-            i = (i + 1) % PIPE_BUFFER_SIZE) {
-            printChar(pipe->buffer[i]);
+        printf("ID semaforo de lectura: %d\n", pipe->readSemId);
+        printf("ID semaforo de escritura: %d\n", pipe->writeSemId);
+        printf("Procesos con el semaforo abierto: %d\n", pipe->totalProcesses);
+        printf("Lista de procesos bloqueados:\n");
+        printf("\tBloqueados para escribir: ");
+        printBlockedPids(pipe->writeSemId);
+        printf("\b\b\n\tBloqueados para leer: ");
+        printBlockedPids(pipe->readSemId);
+        printf("\b\b\nContenido del buffer: ");
+        if(pipe->readIndex == pipe->writeIndex)
+            printf("[Vacio]");
+        else{
+            for (int i = pipe->readIndex; i != pipe->writeIndex;
+                i = (i + 1) % PIPE_BUFFER_SIZE) {
+                printChar(pipe->buffer[i]);
+            }
         }
     }
     semPost(allPipesSem);
