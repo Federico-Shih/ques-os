@@ -79,12 +79,12 @@ void freeProcess(pcb *process)
   if (process->fileDescriptors[1] != STDOUT_PIPENO)
   {
     pipePutchar(process->fileDescriptors[1], -1);
-    // pipeClose(process->fileDescriptors[1]);
+    pipeClose(process->fileDescriptors[1]);
   }
-  // if (process->fileDescriptors[0] != STDIN_PIPENO)
-  // {
-  //   pipeClose(process->fileDescriptors[0]);
-  // }
+  if (process->fileDescriptors[0] != STDIN_PIPENO)
+  {
+    pipeClose(process->fileDescriptors[0]);
+  }
 
   pidCounter -= currentProcessPCB->pid == (pidCounter - 1);
   // Previamente se hizo malloc en el stack del proceso
@@ -172,6 +172,7 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
 
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
+
 
   // Si el proceso es un proceso background del Userland(shell), le doy al init que lo evalue
   if (currentProcessPCB->pid == userlandPid && !foreground)
@@ -481,6 +482,17 @@ pcb *initializeBlock(char *name, int foreground, int *fd)
 
   newProcess->fileDescriptors[0] = fd[0];
   newProcess->fileDescriptors[1] = fd[1];
+
+  if (fd[0] != STDIN_PIPENO)
+  {
+    pipeOpen(fd[0]);
+  }
+
+  if (fd[1] !=STDOUT_PIPENO)
+  {
+    pipeOpen(fd[1]);
+  }
+
   newProcess->semId = semInit(0);
 
   if (newProcess->semId == -1)

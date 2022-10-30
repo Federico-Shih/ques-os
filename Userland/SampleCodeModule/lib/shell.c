@@ -161,9 +161,8 @@ int linkPipe(int argc, char **argv, int pipeIndex)
   {
     waitpid(pids[0]);
     waitpid(pids[1]);
-    sys_pipeClose(pipe);
   }
-
+  sys_pipeClose(pipe);
   return 1;
 }
 
