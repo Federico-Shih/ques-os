@@ -166,7 +166,6 @@ void printSemInfo()
   while (hasNext(it))
   {
     sem = next(it);
-    // sys_write("hola\n", 5, NULL);
     printf("Id: %d | ", sem->id);
     printf("Valor: %d | ", (int)sem->value);
     printf("# de procesos vinculados: %d | ", sem->attachedProcesses);

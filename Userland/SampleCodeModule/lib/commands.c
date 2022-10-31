@@ -294,13 +294,12 @@ void wc(unsigned int argc, char *argv[])
     _fprintf("Uso incorrecto de comando");
     return;
   }
-  int c, counter = 3;
+  int c, counter = 1;
   while ( (c = getChar()) != - 1)
   {
     if ( c == '\n' )
       counter++;
   }
-  counter /= 2; //todo arreglar
   _fprintf("La cantidad de lineas escritas fueron: %d",counter);
   return;
 }
