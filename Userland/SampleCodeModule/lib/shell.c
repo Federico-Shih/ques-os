@@ -10,10 +10,14 @@
 #define MAX_ARGS 32
 
 static int shellPipeId = 100;
+static char buffer[BUFFER_LENGTH];
+
+static void cleanBuffer(){
+  buffer[0] = '\0';
+}
 
 int getCommandLine(char** strings) {
-  static char buffer[BUFFER_LENGTH];
-  buffer[BUFFER_LENGTH - 1] = '\0'; // Por las dudas
+  buffer[BUFFER_LENGTH - 1] = '\0';
 
   char* startString = buffer; // Guarda el puntero al string que esta obteniendo
   int c;
@@ -23,7 +27,7 @@ int getCommandLine(char** strings) {
     switch(c) {
       case '\b':
         if (i != 0) {
-          i--;
+          buffer[i] = '\0';
           _putc(c);
         }
         break;
@@ -115,12 +119,11 @@ void runShell() {
   help(1, NULL);
   _putc('\n');
   while (1) {
-    // sys_showCursor(1);
     sys_write("QUESOS>", 7, cheeseColor);
+    cleanBuffer(); //si sobraron cosas en llamadas a programas anteriores se borra
     char* args[MAX_ARGS];
     int count = getCommandLine(args);
     _putc('\n');
-    // sys_showCursor(0);
     runCommandLine(count, args);
     _putc('\n');
   }
