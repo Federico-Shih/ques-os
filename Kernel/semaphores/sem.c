@@ -166,7 +166,6 @@ void printSemInfo()
   while (hasNext(it))
   {
     sem = next(it);
-    // sys_write("hola\n", 5, NULL);
     printf("Id del semaforo: %d\n", sem->id);
     printf("Valor del semaforo: %d\n", (int)sem->value);
     printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);

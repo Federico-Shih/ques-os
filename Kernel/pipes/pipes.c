@@ -1,7 +1,6 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "pipes.h"
-#include "console.h"
 #include "sem.h"
 #include <stdint.h>
 #include "queue.h"
@@ -123,24 +122,25 @@ void printPipeInfo(){
     t_pipe * pipe = NULL;
     while(hasNext(it)){
         pipe = (t_pipe *)next(it);
-        printf("Pipe ID: %d\n", pipe->id);
-        printf("ID semaforo de lectura: %d\n", pipe->readSemId);
-        printf("ID semaforo de escritura: %d\n", pipe->writeSemId);
-        printf("Procesos con el semaforo abierto: %d\n", pipe->totalProcesses);
-        printf("Lista de procesos bloqueados:\n");
-        printf("\tBloqueados para escribir: ");
-        printBlockedPids(pipe->writeSemId);
-        printf("\b\b\n\tBloqueados para leer: ");
-        printBlockedPids(pipe->readSemId);
-        printf("\b\b\nContenido del buffer: ");
-        if(pipe->readIndex == pipe->writeIndex)
-            printf("[Vacio]");
-        else{
-            for (int i = pipe->readIndex; i != pipe->writeIndex;
-                i = (i + 1) % PIPE_BUFFER_SIZE) {
-                printChar(pipe->buffer[i]);
-            }
-        }
+        printf("Pipe ID: %d\n\n\n", pipe->id);
+        // printf("ID semaforo de lectura: %d\n", pipe->readSemId);
+        // printf("ID semaforo de escritura: %d\n", pipe->writeSemId);
+        // printf("Procesos con el semaforo abierto: %d\n", pipe->totalProcesses);
+        // printf("Lista de procesos bloqueados:\n");
+        // printf("\tBloqueados para escribir: ");
+        // printBlockedPids(pipe->writeSemId);
+        // printf("\b\b\n\tBloqueados para leer: ");
+        // printBlockedPids(pipe->readSemId);
+        // printf("\b\b\nContenido del buffer: ");
+        // if(pipe->readIndex == pipe->writeIndex)
+        //     printf("[Vacio]");
+        // else{
+        //     for (int i = pipe->readIndex; i != pipe->writeIndex;
+        //         i = (i + 1) % PIPE_BUFFER_SIZE) {
+        //         printChar(pipe->buffer[i]);
+        //     }
+        // }
+        // printf("\n\n");
     }
     free(it);
     semPost(allPipesSem);

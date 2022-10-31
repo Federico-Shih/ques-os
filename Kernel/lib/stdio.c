@@ -83,6 +83,8 @@ static int scan(char const *fmt, va_list arg) {
 
   char ch;
   int length = 0;
+  int thisLength;
+  char toPrint;
 
   char buffer[512];
 
@@ -90,35 +92,39 @@ static int scan(char const *fmt, va_list arg) {
     if ('%' == ch) {
       switch (ch = *fmt++) {
         case '%':
-          printChar('%');
+          toPrint = '%';
+          sysWrite(&toPrint, 1, NULL);
           length++;
           break;
         case 'c':
           char_temp = va_arg(arg, int);
-          printChar(char_temp);
+          sysWrite(&char_temp, 1, NULL);
           length++;
           break;
         case 's':
           string_temp = va_arg(arg, char *);
-          printline(string_temp);
-          length += strlen(string_temp);
+          thisLength = strlen(string_temp);
+          sysWrite(string_temp, length, NULL);
+          length += thisLength;
           break;
         case 'd':
           int_temp = va_arg(arg, int);
           intToStr(int_temp, buffer, 10);
-          printline(buffer);
-          length += strlen(buffer);
+          thisLength = strlen(buffer);
+          sysWrite(buffer, length, NULL);
+          length += thisLength;
           break;
         case 'x':
           int_temp = va_arg(arg, int);
           intToStr(int_temp, buffer, 16);
-          print("0x", 2);
-          printline(buffer);
-          length += strlen(buffer);
+          sysWrite("0x", 2, NULL);
+          thisLength = strlen(buffer);
+          sysWrite(buffer, thisLength, NULL);
+          length += thisLength;
           break;
       }
     } else {
-      printChar(ch);
+      sysWrite(&ch, 1, NULL);
       length++;
     }
   }

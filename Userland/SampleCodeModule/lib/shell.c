@@ -67,6 +67,18 @@ int runCommandLine(int argCount, char** args) {
       return 0;
     }
 
+    command_t* foundCommand = getCommand(args[0]);
+    if (foundCommand == NULL) {
+      _fprintf("%s no es un comando valido\n", args[0]);
+    return 0;
+    }
+
+    foundCommand = getCommand(args[pipeIndex + 1]);
+    if (foundCommand == NULL) {
+      _fprintf("%s no es un comando valido\n", args[pipeIndex+1]);
+    return 0;
+    }
+
     if( linkPipe(argCount, args, pipeIndex) == -1 )
     {
       _fprintf("Error al intentar establecer el pipe");
