@@ -34,6 +34,8 @@
     "initprocess.h": "c",
     "pipes.h": "c",
     "naiveconsole.h": "c",
-    "colors.h": "c"
+    "colors.h": "c",
+    "buddybtree.h": "c",
+    "stdio.h": "c"
   }
 }

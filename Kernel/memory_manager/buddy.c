@@ -2,7 +2,7 @@
 
 #include "memoryManager.h"
 #include "buddyBTree.h"
-#include "console.h"
+#include "stdio.h"
 
 // min 16 bytes -> 2^4
 #define MIN_ALLOC_LOG2 4

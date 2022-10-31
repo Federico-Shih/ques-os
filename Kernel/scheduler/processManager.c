@@ -1,10 +1,10 @@
 #include "processManager.h"
 #include "interrupts.h"
 #include "string.h"
-#include "console.h"
 #include "memoryManager.h"
 #include "initProcess.h"
 #include "pipes.h"
+#include "stdio.h"
 
 #define STACK_SIZE (1024 * 4)
 
@@ -187,12 +187,13 @@ int printTasks()
 {
   pcb *aux;
   printPCB(currentProcessPCB);
-  toBegin(queue);
-  while (hasNext(queue))
+  iteratorADT it = toBegin(queue);
+  while (hasNext(it))
   {
-    aux = next(queue);
+    aux = (pcb *) next(it);
     printPCB(aux);
   }
+  free(it);
   return 0;
 }
 
@@ -263,12 +264,13 @@ int popCondition(pcb *queueElement, int *pid)
 // Utilizado para otorgar al init la capacidad de limpiar estos procesos
 static int sendTaskToInit(int pid)
 {
-  toBegin(queue);
+  iteratorADT it = toBegin(queue);
   int hasParent = 0;
   pcb *killedProcess = (pcb *)getProcess(queue, pid);
   pcb *process = currentProcessPCB;
   do
   {
+    // Si su proceso padre esta muerto, se envia a init
     if (process->pid == killedProcess->ppid && (process->state != TERMINATED || process->state != EXITED))
       hasParent = 1;
 
@@ -277,9 +279,9 @@ static int sendTaskToInit(int pid)
     {
       process->ppid = initPid;
     }
-    process = (pcb *)next(queue);
-  } while (hasNext(queue));
-
+    process = (pcb *)next(it);
+  } while (hasNext(it));
+  free(it);
   // Proceso es huerfano
   if (!hasParent)
   {
@@ -373,7 +375,7 @@ int currentForegroundCondition(pcb *process, void *_)
 
 void terminateChildren(int pid)
 {
-  toBegin(queue);
+  iteratorADT it = toBegin(queue);
   pcb *current = currentProcessPCB;
   do
   {
@@ -382,8 +384,9 @@ void terminateChildren(int pid)
       changeState(current->pid, TERMINATED);
       current->ppid = initPid;
     }
-    current = (pcb *)next(queue);
-  } while (hasNext(queue));
+    current = (pcb *)next(it);
+  } while (hasNext(it));
+  free(it);
 }
 
 int killCurrentForeground()
@@ -559,12 +562,16 @@ int cpyArgs(char **dest, char **from, int count)
 // Devuelve los datos del proceso especificado
 pcb *getProcess(queueADT queue, int pid)
 {
-  toBegin(queue);
-  while (hasNext(queue))
+  iteratorADT it = toBegin(queue);
+  while (hasNext(it))
   {
-    pcb *process = (pcb *)next(queue);
+    pcb *process = (pcb *)next(it);
     if (pid == process->pid)
+    {
+      free(it);
       return process;
+    }
   }
+  free(it);
   return NULL;
 }

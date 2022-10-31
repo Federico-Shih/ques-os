@@ -1,7 +1,7 @@
 #include <snapshot.h>
 #include <syscalls.h>
-#include <console.h>
 #include <string.h>
+#include "stdio.h"
 
 static char* registerNames[] = {
   "R15: ", "R14: ", "R13: ", "R12: ", "R11: ", "R10: ",
@@ -28,11 +28,12 @@ int loadRegisters(uint64_t *buffer){
     return 0;
 }
 
+// TODO: REMOVE OR FIX
 void printRegisters(uint64_t *rsp){
-	for(int i = 0; i < TOTAL_REGISTERS; i++){
-		sys_write(registerNames[i], strlen(registerNames[i]), NULL);
-		printBase(rsp[i],16);
-		printChar('\n');
-	}
-	printChar('\n');
+	// for(int i = 0; i < TOTAL_REGISTERS; i++){
+	// 	sysWrite(registerNames[i], strlen(registerNames[i]), NULL);
+	// 	printBase(rsp[i],16);
+	// 	printChar('\n');
+	// }
+	// printChar('\n');
 }

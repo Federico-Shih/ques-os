@@ -1,10 +1,10 @@
 
-#include <console.h>
 #include <syscalls.h>
 #include <naiveConsole.h>
 #include <snapshot.h>
 #include <string.h>
 #include <processManager.h>
+#include "stdio.h"
 
 #define ZERO_EXCEPTION_ID 0
 #define INVALID_OPCODE_ID 6
@@ -27,11 +27,11 @@ void exceptionDispatcher(int exception, uint64_t rsp) {
 
 static void invalid_opcode(){
 	char * msg = "\nException: invalid operand code.\n";
-	sys_write(msg , strlen(msg), error);
+	sysWrite(msg , strlen(msg), error);
 }
 
 static void zero_division() {
 	char * msg = "\nException: division by zero.\n";
-	sys_write(msg , strlen(msg), error);
+	sysWrite(msg , strlen(msg), error);
 }
 

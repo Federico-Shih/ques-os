@@ -3,7 +3,7 @@
 #include <memoryManager.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <console.h>
+#include "stdio.h"
 
 // La estructura fue inspirada de la implementación de malloc del K&R 
 typedef long Align;
@@ -132,16 +132,16 @@ void initializeMemoryManager(void *heap_base, unsigned int heap_size)
 
 void memoryDump()
 {
-  printline("\nMemory manager dump (Free List)");
+  printf("\nMemory manager dump (Free List)");
   uint64_t memoria_total = header_blocks * sizeof(Header);
   printf("\nMemoria total: %d", memoria_total);
-  printline("\n\n------------------------------------\n");
+  printf("\n\n------------------------------------\n");
 
   if (free_node == NULL) {
-    printline("No hay bloques libres");
+    printf("No hay bloques libres");
     return;
   }
-  printline("Bloques libres\n");
+  printf("Bloques libres\n");
 
   Header* current, *free_base;
 
@@ -151,9 +151,9 @@ void memoryDump()
   do {
     cant += current->data.size;
     printf("Bloque nro: %d | Base: ", i);
-    printBase((uint64_t)current, 16);
+    printf("%x", (uint64_t)current);
     printf(" | Cantidad de bloques: %d\n", current->data.size);
-    print("------------------------------------\n", 40);
+    printf("------------------------------------\n");
     current = current->data.next;
     i += 1;
   } while (current != free_base);

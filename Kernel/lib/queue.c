@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include <queue.h>
 #include <stdint.h>
+#include "queue.h"
 
 typedef struct queue_node
 {
@@ -13,8 +13,12 @@ typedef struct queueCDT
   uint64_t size;
   queue_node *first;
   queue_node *last;
-  queue_node *next;
 } queueCDT;
+
+typedef struct iteratorCDT
+{
+  queue_node *next;
+} iteratorCDT;
 
 queueADT initQueue()
 {
@@ -92,27 +96,29 @@ void *peek(queueADT queue)
 }
 
 // Si no existe primero
-int toBegin(queueADT queue)
+iteratorADT toBegin(queueADT queue)
 {
   if (queue == NULL)
-    return -1;
-  queue->next = queue->first;
-  return 0;
-}
-
-int hasNext(queueADT queue)
-{
-  if (queue == NULL)
-    return 0;
-  return queue->next != NULL;
-}
-
-void *next(queueADT queue)
-{
-  if (queue == NULL || (!hasNext(queue)))
     return NULL;
-  void *aux = queue->next->value;
-  queue->next = queue->next->next;
+  
+  iteratorADT it = malloc(sizeof(iteratorCDT));
+  it->next = queue->first;
+  return it;
+}
+
+int hasNext(iteratorADT it)
+{
+  if (it == NULL)
+    return 0;
+  return it->next != NULL;
+}
+
+void *next(iteratorADT it)
+{
+  if (it == NULL || (!hasNext(it)))
+    return NULL;
+  void *aux = it->next->value;
+  it->next = it->next->next;
   return aux;
 }
 
@@ -121,14 +127,15 @@ void *find(queueADT queue, int (*findCondition)(void *, void *), void *element)
   if (queue == NULL || findCondition == NULL)
     return NULL;
 
-  toBegin(queue);
+  iteratorADT it = toBegin(queue);
   void *aux;
-  while (hasNext(queue))
+  while (hasNext(it))
   {
-    aux = next(queue);
+    aux = next(it);
     if (findCondition(aux, element))
       return aux;
   }
+  free(it);
   return NULL;
 }
 

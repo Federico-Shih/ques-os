@@ -4,7 +4,6 @@
 #include <time.h>
 #include <string.h>
 
-static int scan(char const *fmt, va_list arg);
 
 // Puntero a memoria del dispositivo de video
 static uint8_t * const video = (uint8_t*)0xB8000;
@@ -122,7 +121,7 @@ void printBase(uint64_t value, uint32_t base) {
 // Imprime un string
 void print(char* str, size_t count) {
   for (int i = 0; i < count; i += 1) {
-    sys_write(str, 1, NULL);
+    printChar(str[i]);
   }
 }
 
@@ -143,7 +142,7 @@ void newLine() {
 // Imprime caracter en default
 void printChar(char c) {
   // printCharColor(c, LGREY, BLACK, 1);
-  sys_write(&c, 1, NULL);
+  printCharColor(c, LGREY, BLACK, 1);
 }
 
 // Comienza desde cero la pantalla principal
@@ -272,122 +271,6 @@ static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
 	return digits;
 }
 
-int printf(char const *fmt, ...) {
-  va_list arguments;
-  int length;
-
-  va_start(arguments, fmt);
-  length = scan(fmt, arguments);
-  va_end(arguments);
-  return length;
-}
-
-// https://www.techiedelight.com/implement-itoa-function-in-c/
-
-int abs(int num) { return num < 0 ? -num : num; }
-
-// function to reverse buffer[i..j]
-char *reverse(char *buffer, int i, int j) {
-  while (i < j) swap(&buffer[i++], &buffer[j--]);
-
-  return buffer;
-}
-
-void swap(char *x, char *y) {
-  char t = *x;
-  *x = *y;
-  *y = t;
-}
-
-// Iterative function to implement itoa() function in C
-char *intToStr(int value, char *buffer, int base) {
-  // invalid input
-  if (base < 2 || base > 32) {
-    return buffer;
-  }
-
-  // consider the absolute value of the number
-  int n = abs(value);
-
-  int i = 0;
-  while (n) {
-    int r = n % base;
-
-    if (r >= 10) {
-      buffer[i++] = 65 + (r - 10);
-    } else {
-      buffer[i++] = 48 + r;
-    }
-
-    n = n / base;
-  }
-
-  // if the number is 0
-  if (i == 0) {
-    buffer[i++] = '0';
-  }
-
-  // If the base is 10 and the value is negative, the resulting string
-  // is preceded with a minus sign (-)
-  // With any other base, value is always considered unsigned
-  if (value < 0 && base == 10) {
-    buffer[i++] = '-';
-  }
-
-  buffer[i] = '\0';  // null terminate string
-
-  // reverse the string and return it
-  return reverse(buffer, 0, i - 1);
-}
-
-static int scan(char const *fmt, va_list arg) {
-  int int_temp;
-  char char_temp;
-  char *string_temp;
-
-  char ch;
-  int length = 0;
-
-  char buffer[512];
-
-  while ((ch = *fmt++)) {
-    if ('%' == ch) {
-      switch (ch = *fmt++) {
-        case '%':
-          sys_write('%', 1, NULL);
-          length++;
-          break;
-        case 'c':
-          char_temp = va_arg(arg, int);
-          sys_write(char_temp, 1, NULL);
-          length++;
-          break;
-        case 's':
-          string_temp = va_arg(arg, char *);
-          printline(string_temp);
-          length += strlen(string_temp);
-          break;
-        case 'd':
-          int_temp = va_arg(arg, int);
-          intToStr(int_temp, buffer, 10);
-          printline(buffer);
-          length += strlen(buffer);
-          break;
-        case 'x':
-          int_temp = va_arg(arg, int);
-          intToStr(int_temp, buffer, 16);
-          print("0x", 2);
-          printline(buffer);
-          length += strlen(buffer);
-          break;
-      }
-    } else {
-      printChar(ch);
-      length++;
-    }
-  }
-  return length;
-}
 
 void printline(char* str) {
   print(str, strlen(str));

@@ -5,6 +5,8 @@
 
 typedef struct queueCDT *queueADT;
 
+typedef struct iteratorCDT *iteratorADT;
+
 typedef int (*comparator)(void*, void*);
 
 //creates a new queue
@@ -21,11 +23,11 @@ int enqueue(queueADT queue, void* value);
 void* peek(queueADT queue);
 // Resets the queue iterator to the first element.
 // 1 if has elements
-int toBegin(queueADT queue);
+iteratorADT toBegin(queueADT queue);
 // 
-int hasNext(queueADT queue) ;
+int hasNext(iteratorADT iterator) ;
 // 
-void *next(queueADT queue);
+void *next(iteratorADT iterator);
 // 
 void *find(queueADT queue, comparator func, void* element);
 

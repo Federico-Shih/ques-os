@@ -3,9 +3,9 @@
 #include "processManager.h"
 #include "sem.h"
 #include "queue.h"
-#include "console.h"
 #include "string.h"
 #include "syscalls.h"
+#include "stdio.h"
 
 typedef struct t_sem
 {
@@ -161,24 +161,21 @@ int semValue(int id)
 
 void printSemInfo()
 {
-  if (toBegin(semQueue) != 0)
-  {
-    printf("No hay semaforos\n");
-    return;
-  }
+  iteratorADT it = toBegin(semQueue);
   t_sem * sem = NULL;
-  while (hasNext(semQueue))
+  while (hasNext(it))
   {
-    sem = next(semQueue);
-    sys_write("hola\n", 5, NULL);
-  //   printf("Id del semaforo: %d\n", sem->id);
-  //   printf("Valor del semaforo: %d\n", (int)sem->value);
-  //   printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
-  //   printf("Lock del semaforo: %d\n", sem->lock);
-  //   printf("IDs de procesos bloqueados: ");
-  //   printBlockedSemInfo(sem->blockedPidsQueue);
-  //   printf("\b\b\n");
+    sem = next(it);
+    // sys_write("hola\n", 5, NULL);
+    printf("Id del semaforo: %d\n", sem->id);
+    printf("Valor del semaforo: %d\n", (int)sem->value);
+    printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
+    printf("Lock del semaforo: %d\n", sem->lock);
+    printf("IDs de procesos bloqueados: ");
+    printBlockedSemInfo(sem->blockedPidsQueue);
+    printf("\b\b\n");
   }
+  free(it);
 }
 
 void printBlockedPids(int id){
@@ -255,11 +252,12 @@ static int getNextSemaphoreId()
 
 static void printBlockedSemInfo(queueADT queue)
 {
-  if (toBegin(queue) != 0 || !hasNext(queue))
+  iteratorADT it;
+  if ((it = toBegin(queue)) == NULL || !hasNext(it))
     printf("[No hay procesos bloqueados]  ");
-  while (hasNext(queue))
+  while (hasNext(it))
   {
-    int *pid = (int *)next(queue);
+    int *pid = (int *)next(it);
     printf("%d, ", *pid);
   }
 }

@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "queue.h"
 #include <stdlib.h>
+#include "stdio.h"
 
 queueADT pipeQueue = NULL;
 int allPipesSem; //para evitar condiciones de carrera en creacion, destruccion e impresion de pipes
@@ -67,6 +68,7 @@ int pipeWrite(int pipeId, char *str) {
     return 0;
 }
 
+// TODO: Para aquellas escrituras que son sucesivas, considerar cachear getPipe.
 int pipePutchar(int pipeId, char c){
     t_pipe * pipe;
     if((pipe = getPipe(pipeId)) == NULL)
@@ -117,10 +119,10 @@ int pipeClose(int pipeId) {
 void printPipeInfo(){
     semWait(allPipesSem);
     printf("Active Pipe Status\n");
-    toBegin(pipeQueue);
+    iteratorADT it = toBegin(pipeQueue);
     t_pipe * pipe = NULL;
-    while(hasNext(pipeQueue)){
-        pipe = next(pipeQueue);
+    while(hasNext(it)){
+        pipe = (t_pipe *)next(it);
         printf("Pipe ID: %d\n", pipe->id);
         printf("ID semaforo de lectura: %d\n", pipe->readSemId);
         printf("ID semaforo de escritura: %d\n", pipe->writeSemId);
@@ -140,6 +142,7 @@ void printPipeInfo(){
             }
         }
     }
+    free(it);
     semPost(allPipesSem);
 }
 

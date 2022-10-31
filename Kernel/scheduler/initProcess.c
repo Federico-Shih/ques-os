@@ -15,18 +15,18 @@ void init()
   while (1)
   {
     // Hubo una muerte de proceso
-    toBegin(processQueue);
+    iteratorADT it = toBegin(processQueue);
 
     // Los marca como para ser matados
-    while (hasNext(processQueue))
+    while (hasNext(it))
     {
-      pcb *process = next(processQueue);
+      pcb *process = (pcb *)next(it);
       if (process->ppid == getpid() && process->state == EXITED)
       {
         process->state = TERMINATED;
       }
     }
-
+    free(it);
     sys_wait(FLUSH_TIME);
   }
 }

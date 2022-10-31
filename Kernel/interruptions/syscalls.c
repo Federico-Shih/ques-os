@@ -1,14 +1,15 @@
-#include <syscalls.h>
-#include <keyboard.h>
-#include <snapshot.h>
-#include <console.h>
-#include <time.h>
-#include <interrupts.h>
-#include <memoryManager.h>
-#include <processManager.h>
-#include <sem.h>
+#include "syscalls.h"
+#include "keyboard.h"
+#include "snapshot.h"
+#include "console.h"
+#include "time.h"
+#include "interrupts.h"
+#include "memoryManager.h"
+#include "processManager.h"
+#include "sem.h"
 #include "pipes.h"
 #include "string.h"
+#include "stdio.h"
 
 uint8_t sys_dateAndTime(uint64_t rtcID)
 {
@@ -43,51 +44,15 @@ void sys_getMem(uint64_t direc, uint8_t *buffer, uint64_t bytes)
     }
 }
 
-char sys_read()
-{
-    pcb *current = getCallingProcess();
-    int readPipe = current->fileDescriptors[0];
-    if (readPipe == 0)
-    {
-        if (current->foreground)
-            return readStdin();
-        return -1;
-    }
-    else
-        return pipeRead(readPipe);
-}
-
-int sys_write(const char *buffer, uint64_t size, color_t *colors)
-{
-    if (buffer == 0 || size == 0)
-        return -1;
-
-    pcb *currentProcess = getCallingProcess();
-    int i;
-    if (currentProcess->fileDescriptors[1] == STDOUT_PIPENO)
-    {
-        color_t textColor = (colors) ? colors[0] : LGREY;
-        color_t bgColor = (colors) ? colors[1] : BLACK;
-
-        for (i = 0; i < size && buffer[i]; i += 1)
-        {
-            printCharColor(buffer[i], textColor, bgColor, 1);
-        }
-        return i;
-    }
-    char nullTerminatedBuffer[size + 1];
-    strncpy(nullTerminatedBuffer, buffer, size);
-    return pipeWrite(currentProcess->fileDescriptors[1], nullTerminatedBuffer);
-}
 
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4)
 {
     switch (rax)
     {
     case SYS_READ:
-        return sys_read((char *)arg0);
+        return sysRead((char *)arg0);
     case SYS_WRITE:
-        return sys_write((char *)arg0, (uint64_t)arg1, (color_t *)arg2);
+        return sysWrite((char *)arg0, (uint64_t)arg1, (color_t *)arg2);
     case SYS_CLEAN_SCREEN:
         clearScreen((FILE_DESCRIPTOR)arg0);
         return 0;
