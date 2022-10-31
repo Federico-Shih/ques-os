@@ -11,9 +11,12 @@
 #include "phylo.h"
 #include "colors.h"
 
-static color_t ERROR_COLORS[] = {RED, BLACK};
+static color_t ERROR_COLOURS[] = {RED, BLACK};
+static color_t CHEESE_COLOURS[] = {YELLOW, BLACK};
 
 static command_t commands[] = {
+    {"cheese", &printCheese, "mmmmm... queso..."},
+    {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
     {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
     {"divZero", &divZero, "Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion. "},
     {
@@ -26,6 +29,7 @@ static command_t commands[] = {
         &holaMundo,
         "Imprime un saludo al usuario. ",
     },
+    
     {
         "help",
         &help,
@@ -98,7 +102,7 @@ void printmem(unsigned int argc, char *argv[])
   if (argc < 1)
   {
     char *error_message = "No se dio una direccion de memoria\n";
-    sys_write(error_message, _strlen(error_message), ERROR_COLORS);
+    sys_write(error_message, _strlen(error_message), ERROR_COLOURS);
     return;
   }
   char *address = argv[0];
@@ -108,7 +112,7 @@ void printmem(unsigned int argc, char *argv[])
   if (memDir == -1 || memDir >= LAST_MEM)
   {
     char *error_message = "\nLa direccion ingresada no es alcanzable \n";
-    sys_write(error_message, _strlen(error_message), ERROR_COLORS);
+    sys_write(error_message, _strlen(error_message), ERROR_COLOURS);
     return;
   }
   _fprintf("\nDump de 32 bytes a partir de la direccion: %s\n\n", address);
@@ -316,6 +320,38 @@ void filter(unsigned int argc, char *argv[])
       _putc(c);
     }
   }
+}
+
+void printCheeseOs()
+{
+sys_write("  ______   __    __  ________   ______           ______    ______  \n", 68, CHEESE_COLOURS);
+sys_write(" /      \\ |  \\  |  \\|        \\ /      \\         /      \\  /      \\ \n", 68, CHEESE_COLOURS);
+sys_write("|  $$$$$$\\| $$  | $$| $$$$$$$$|  $$$$$$\\       |  $$$$$$\\|  $$$$$$\\\n", 68, CHEESE_COLOURS);
+sys_write("| $$  | $$| $$  | $$| $$__    | $$___\\$$______ | $$  | $$| $$___\\$$\n", 68, CHEESE_COLOURS);
+sys_write("| $$  | $$| $$  | $$| $$  \\    \\$$    \\|      \\| $$  | $$ \\$$    \\ \n", 68, CHEESE_COLOURS);
+sys_write("| $$ _| $$| $$  | $$| $$$$$    _\\$$$$$$\\$$$$$$| $$  | $$ _\\$$$$$$\\\n", 67, CHEESE_COLOURS);
+sys_write("| $$/ \\ $$| $$__/ $$| $$_____ |  \\__| $$       | $$__/ $$|  \\__| $$\n", 68, CHEESE_COLOURS);
+sys_write(" \\$$ $$ $$ \\$$    $$| $$     \\ \\$$    $$        \\$$    $$ \\$$    $$\n", 68, CHEESE_COLOURS);
+sys_write("  \\$$$$$$\\  \\$$$$$$  \\$$$$$$$$  \\$$$$$$          \\$$$$$$   \\$$$$$$\n", 67, CHEESE_COLOURS);
+sys_write("      \\$$$\n", 11, CHEESE_COLOURS);
+_fprintf("\n");
+}
+
+void printCheese()
+{
+  _fprintf("\n");
+  sys_write("    _--\"-.           \n", 22, CHEESE_COLOURS);
+  sys_write(" .-\"      \"-.        \n", 22, CHEESE_COLOURS);
+  sys_write("|\"\"--..      \'-.     \n", 22, CHEESE_COLOURS);
+  sys_write("|      \"\"--..   \'-.  \n", 22, CHEESE_COLOURS);
+  sys_write("|.-. .-\".    \"\"--..\".\n", 22, CHEESE_COLOURS);
+  sys_write("|\'./  -\'  .-.      | \n", 22, CHEESE_COLOURS);
+  sys_write("|      .-. \'.-\'   .-\'\n", 22, CHEESE_COLOURS);
+  sys_write("\'--..  \'.\'    .-  -. \n", 22, CHEESE_COLOURS);
+  sys_write("     \"\"--..   \'_\'   :\n", 22, CHEESE_COLOURS);
+  sys_write("           \"\"--..   |\n", 22, CHEESE_COLOURS);
+  sys_write("                 \"\"-\'\n", 22, CHEESE_COLOURS);
+  _fprintf("\n");
 }
 
 void loop()

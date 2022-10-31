@@ -51,6 +51,8 @@ void nice(unsigned int argc, char *argv[]);
 void cat(unsigned int argc, char *argv[]);
 void wc(unsigned int argc, char *argv[]);
 void filter(unsigned int argc, char *argv[]);
+void printCheeseOs();
+void printCheese();
 void loop();
 
 #endif
