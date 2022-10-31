@@ -129,14 +129,14 @@ void *find(queueADT queue, int (*findCondition)(void *, void *), void *element)
 
   iteratorADT it = toBegin(queue);
   void *aux;
-  while (hasNext(it))
+  int found = 0;
+  while (hasNext(it) && !found)
   {
     aux = next(it);
-    if (findCondition(aux, element))
-      return aux;
+    found = findCondition(aux, element);
   }
   free(it);
-  return NULL;
+  return (found) ? aux : NULL;
 }
 
 int includes(queueADT queue, int (*findCondition)(void *, void *), void *element)

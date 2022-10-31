@@ -173,7 +173,6 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
 
-
   // Si el proceso es un proceso background del Userland(shell), le doy al init que lo evalue
   if (currentProcessPCB->pid == userlandPid && !foreground)
   {

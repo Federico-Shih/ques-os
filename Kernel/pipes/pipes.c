@@ -132,7 +132,6 @@ void printPipeInfo(){
         printf("\b\b\n\tBloqueados para leer: ");
         printBlockedPids(pipe->readSemId);
         printf("\b\b\nCantidad de caracteres disponibles para leer: %d", ((pipe->writeIndex - pipe->readIndex)%PIPE_BUFFER_SIZE));
-
     }
     free(it);
     semPost(allPipesSem);
@@ -157,7 +156,12 @@ static t_pipe *createPipe(int id) {
   pipe->readSemId = semInit(0);
   pipe->writeSemId = semInit(PIPE_BUFFER_SIZE);
   if(pipe->readSemId == -1 || pipe->writeSemId == -1)
+  {
+    free(pipe);
+    semClose(pipe->readSemId);
+    semClose(pipe->writeSemId);
     return NULL;
+  }
 
   enqueue(pipeQueue, pipe);
   return pipe;
