@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdlib.h>
 #include <stdint.h>
 #include "queue.h"
@@ -102,6 +104,8 @@ iteratorADT toBegin(queueADT queue)
     return NULL;
   
   iteratorADT it = malloc(sizeof(iteratorCDT));
+  if (it == NULL) 
+    return NULL;
   it->curr = queue->first;
   return it;
 }

@@ -56,3 +56,8 @@ dkms.conf
 .gdb_history
 .gdbinit
 .gdbinit
+.config/PVS-Studio/30d59484437b42b
+*.log
+*.tasks
+strace_out
+index.html

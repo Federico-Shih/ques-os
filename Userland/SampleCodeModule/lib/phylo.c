@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "usersyscalls.h"
 #include "ustdlib.h"
 #include "phylo.h"
@@ -172,7 +174,7 @@ void phylo()
     }
     else if (c == 'q')
     {
-      sys_write("Y en ese momento\nuna gran ola llego,\nretirando a los filosofos\nhacia un lugar mejor. \n", 90, phyloQuit);
+      sys_write("Y en ese momento\nuna gran ola llego,\nretirando a los filosofos\nhacia un lugar mejor. \n", 87, phyloQuit);
       break;
     }
   }

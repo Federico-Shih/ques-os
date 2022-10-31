@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <math.h>
 #include "commands.h"
 #include "ustdlib.h"
@@ -175,7 +177,7 @@ void help(unsigned int argc, char *argv[])
     return;
   }
   _fprintf( "Lista de posibles comandos: \n");
-  for (uint8_t i = 0; commands[i + page * HELP_PAGE].runner != NULL && i < HELP_PAGE; i++)
+  for (uint8_t i = 0; i < HELP_PAGE && commands[i + page * HELP_PAGE].runner != NULL; i++)
   {
     _fprintf("- %s: %s\n", commands[i + page * HELP_PAGE].name, commands[i + page * HELP_PAGE].help);
   }

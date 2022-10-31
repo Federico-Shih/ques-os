@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "lib.h"
 #include "memoryManager.h"
 #include "processManager.h"
@@ -118,6 +120,8 @@ int semWait(int id)
   else
   { // bloqueo el proceso
     int *callerPID = malloc(sizeof(int));
+    if (callerPID == NULL)
+      return -1;
     *callerPID = getpid();
     enqueue(sem->blockedPidsQueue, callerPID);
     release(&(sem->lock));
