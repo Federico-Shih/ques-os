@@ -173,6 +173,7 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
 
+
   // Si el proceso es un proceso background del Userland(shell), le doy al init que lo evalue
   if (currentProcessPCB->pid == userlandPid && !foreground)
   {
@@ -292,6 +293,8 @@ static int sendTaskToInit(int pid)
 // Mata el proceso especificado. Ahora puede ser liberado.
 int killTask(int pid)
 {
+  if (pid == userlandPid || pid == initPid)
+    return -1;
   int id = changeState(pid, EXITED);
   // No se encontro el proceso
   if (id == -1)
@@ -306,6 +309,8 @@ int killTask(int pid)
 
 int terminateTask(int pid)
 {
+  if (pid == userlandPid || pid == initPid)
+    return -1;
   int id = changeState(pid, TERMINATED);
   if (id == -1)
     return -1;
