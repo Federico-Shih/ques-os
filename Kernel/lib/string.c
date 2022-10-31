@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdlib.h>
 #include "string.h"
 
@@ -24,7 +26,7 @@ char * strcpy(char *strDest, const char *strSrc)
 char *strncpy(char *strDest, const char *strSrc, size_t n)
 {
     int i;
-    for (i = 0; strSrc[i] && i < n; i += 1)
+    for (i = 0; i < n && strSrc[i]; i++)
       strDest[i] = strSrc[i];
     strDest[i] = '\0';
     return strDest;
