@@ -130,7 +130,7 @@ void *scheduleTask(void *currStackPointer)
       {
         freeProcess(currentProcessPCB);
       }
-      else if (currentProcessPCB->state != READY)
+      else
       {
         enqueue(queue, (void *)currentProcessPCB);
       }
@@ -273,7 +273,7 @@ static int sendTaskToInit(int pid)
   do
   {
     // Si su proceso padre esta muerto, se envia a init
-    if (process->pid == killedProcess->ppid && (process->state != TERMINATED || process->state != EXITED))
+    if (process->pid == killedProcess->ppid && (process->state != TERMINATED && process->state != EXITED))
       hasParent = 1;
 
     // Envia sus procesos hijos no terminados al init para ser procesados

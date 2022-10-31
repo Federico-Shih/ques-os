@@ -104,6 +104,8 @@ iteratorADT toBegin(queueADT queue)
     return NULL;
   
   iteratorADT it = malloc(sizeof(iteratorCDT));
+  if (it == NULL) 
+    return NULL;
   it->curr = queue->first;
   return it;
 }

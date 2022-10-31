@@ -133,7 +133,7 @@ int isNumber(const char *str)
   if (!str) return 0;
   for (int i = 0; str[i] != '\0'; i += 1)
   {
-    if (str[i] && !IS_DIGIT(str[i]))
+    if (!IS_DIGIT(str[i]))
     {
       return 0;
     }

@@ -120,6 +120,8 @@ int semWait(int id)
   else
   { // bloqueo el proceso
     int *callerPID = malloc(sizeof(int));
+    if (callerPID == NULL)
+      return -1;
     *callerPID = getpid();
     enqueue(sem->blockedPidsQueue, callerPID);
     release(&(sem->lock));
