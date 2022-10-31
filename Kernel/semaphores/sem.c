@@ -166,11 +166,11 @@ void printSemInfo()
   while (hasNext(it))
   {
     sem = next(it);
-    printf("Id del semaforo: %d\n", sem->id);
-    printf("Valor del semaforo: %d\n", (int)sem->value);
-    printf("Cantidad de procesos vinculados: %d\n", sem->attachedProcesses);
-    printf("Lock del semaforo: %d\n", sem->lock);
-    printf("IDs de procesos bloqueados: ");
+    // sys_write("hola\n", 5, NULL);
+    printf("Id: %d | ", sem->id);
+    printf("Valor: %d | ", (int)sem->value);
+    printf("# de procesos vinculados: %d | ", sem->attachedProcesses);
+    printf("\nProcesos bloqueados: ");
     printBlockedSemInfo(sem->blockedPidsQueue);
     printf("\b\b\n");
   }
@@ -254,11 +254,13 @@ static void printBlockedSemInfo(queueADT queue)
   iteratorADT it;
   if ((it = toBegin(queue)) == NULL || !hasNext(it))
     printf("[No hay procesos bloqueados]  ");
+
   while (hasNext(it))
   {
     int *pid = (int *)next(it);
     printf("%d, ", *pid);
   }
+  free(it);
 }
 
 // ----------------------------------- LOCK RELATED FUNCTIONS ------------------------------------------------

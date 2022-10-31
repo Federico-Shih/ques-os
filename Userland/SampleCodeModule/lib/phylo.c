@@ -134,9 +134,11 @@ static color_t phyloRemove[] = {BROWN, BLACK};
 static color_t phyloQuit[] = {GREEN, BLACK};
 void phylo()
 {
-  gateMutex = sys_semInit(4);
+  gateMutex = sys_semInit(1);
   if (gateMutex == -1)
     return;
+
+  currentPhilosofers = 0;
 
   sys_write("Pulse la tecla", 14, standard);
   sys_write(" a ", 3, phyloAdd);
@@ -154,7 +156,7 @@ void phylo()
   }
 
   char *args[] = {"Print table"};
-  sys_startTask(&printTable, 1, args, 0, NULL);
+  int tablePid = sys_startTask(&printTable, 1, args, 0, NULL);
   char c;
   while ((c = getChar()) != -1)
   {
@@ -179,5 +181,6 @@ void phylo()
   {
     freePhilosofer(i);
   }
+  sys_kill(tablePid);
   sys_semClose(gateMutex);
 }

@@ -17,7 +17,7 @@ typedef struct queueCDT
 
 typedef struct iteratorCDT
 {
-  queue_node *next;
+  queue_node *curr;
 } iteratorCDT;
 
 queueADT initQueue()
@@ -102,7 +102,7 @@ iteratorADT toBegin(queueADT queue)
     return NULL;
   
   iteratorADT it = malloc(sizeof(iteratorCDT));
-  it->next = queue->first;
+  it->curr = queue->first;
   return it;
 }
 
@@ -110,15 +110,15 @@ int hasNext(iteratorADT it)
 {
   if (it == NULL)
     return 0;
-  return it->next != NULL;
+  return it->curr != NULL;
 }
 
 void *next(iteratorADT it)
 {
   if (it == NULL || (!hasNext(it)))
     return NULL;
-  void *aux = it->next->value;
-  it->next = it->next->next;
+  void *aux = it->curr->value;
+  it->curr = it->curr->next;
   return aux;
 }
 
