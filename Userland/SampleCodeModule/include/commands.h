@@ -53,6 +53,8 @@ void wc(unsigned int argc, char *argv[]);
 void filter(unsigned int argc, char *argv[]);
 void printCheeseOs();
 void printCheese();
+void printShortcuts();
+void ejemplos();
 void loop();
 
 #endif

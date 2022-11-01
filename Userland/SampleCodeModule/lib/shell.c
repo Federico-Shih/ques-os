@@ -114,6 +114,7 @@ int runCommandLine(int argCount, char** args) {
 void runShell() {
   color_t cheeseColor[] = {YELLOW, BLACK};
   clear_screen(1);
+  sys_write("Bienvendio a QUESOS\n", 21, cheeseColor);
   help(1, NULL);
   _putc('\n');
   while (1) {

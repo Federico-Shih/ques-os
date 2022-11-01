@@ -19,51 +19,22 @@ static color_t CHEESE_COLOURS[] = {YELLOW, BLACK};
 static command_t commands[] = {
     {"cheese", &printCheese, "mmmmm... queso..."},
     {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
-    {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue llamado."},
-    {"divZero", &divZero, "Realiza una division por 0. Lanza una excepcion e imprime una captura de los registros al momento de ejecucion. "},
-    {
-        "fibonacci",
-        &fibonacci,
-        "Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. ",
-    },
-    {
-        "hello",
-        &holaMundo,
-        "Imprime un saludo al usuario. ",
-    },
-    
-    {
-        "help",
-        &help,
-        "Imprime una lista detallada de los comandos  y modulos ejecutables del programa. ",
-    },
-    {"inforeg", &infoReg, "Imprime los registros registros capturados al presionar ctrl + r. "},
-    {
-        "invalidOpcode",
-        &invalidOpcode,
-        "Lanza la excepcion de invalid operand code e imprime los registros al momento de ejecucion. ",
-    },
-    {
-        "prime",
-        &primes,
-        "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. ",
-    },
+    {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue      llamado."},
+    {"divZero", &divZero, "Realiza una division por 0. Lanza una excepcion e imprime una captura     de los registros al momento de ejecucion. "},
+    {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause      o se termine su ejecucion. "},
+    {"hello", &holaMundo, "Imprime un saludo al usuario. ",},
+    {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del        programa. "},
+    {"inforeg", &infoReg, "Imprime los registros capturados al presionar ctrl + r. "},
+    {"invalidOpcode", &invalidOpcode, "Lanza la excepcion de invalid operand code e imprime los registros al momento de ejecucion. "},
+    {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
     {"clear", &clearScreen, "Limpia la pantalla. "},
-    {
-        "mem",
-        &sys_memDump,
-        "Imprime el estado de memoria. ",
-    },
-    {
-        "ps",
-        &sys_printProcesses,
-        "Imprime el estado de los procesos. ",
-    },
+    {"mem", &sys_memDump, "Imprime el estado de memoria. "},
+    {"ps", &sys_printProcesses, "Imprime el estado de los procesos. "},
     {"kill", &kill, "Recibe un pid y mata al proceso. "},
     {"block", &block, "Recibe un pid y bloquea al proceso. "},
     {"resume", &resume, "Recibe un pid y resume el proceso. "},
-    {"nice", &nice, "Recibe un pid y un valor de prioridad y modifica la prioridad del proceso. "},
+    {"nice", &nice, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
     {"loop", &loop, "Te saluda cada cierto tiempo. "},
     {"sem", &sys_printSemInfo, "Imprime informacion sobre los semaforos. "},
     {"pipes", &sys_printPipeInfo, "Imprime estado de los pipes. "},
@@ -73,8 +44,10 @@ static command_t commands[] = {
     {"test_sync", &test_sync, "Testea semaforos y race conditions. "},
     {"phylo", &phylo, "Filosofos comensales. "},
     {"cat", &cat, "Imprime el stdin tal como lo recibe. "},
-    {"wc", &wc, "Cuenta la cantidad de lineas escritas. Escriba stop para terminar y recibir el numero. "},
-    {"filter", &filter, "Filtra las vocales del input. "},
+    {"wc", &wc, "Cuenta la cantidad de lineas escritas en stdin."},
+    {"filter", &filter, "Filtra las vocales del input."},
+    {"shortcuts", &printShortcuts, "Imprime los shortcuts que la terminal provee."},
+    {"ejemplos", &ejemplos, "Imprime ejemplos de comandos posibles"},
     {"", NULL, ""},
 };
 
@@ -176,12 +149,14 @@ void help(unsigned int argc, char *argv[])
     _fprintf( "No existe esta pagina de comandos: \n");
     return;
   }
-  _fprintf( "Lista de posibles comandos: \n");
+  _fprintf( "* Lista de posibles comandos: \n");
   for (uint8_t i = 0; i < HELP_PAGE && commands[i + page * HELP_PAGE].runner != NULL; i++)
   {
     _fprintf("- %s: %s\n", commands[i + page * HELP_PAGE].name, commands[i + page * HELP_PAGE].help);
   }
-  _fprintf("Pagina nro %d de %d, help [pagina] para mas comandos.\n", page, length / HELP_PAGE);
+  _fprintf("\nPagina nro %d de %d, help [pagina] para mas comandos.\n", page, length / HELP_PAGE);
+  _fprintf("Para observar ejemplos de comandos utilizar el comando 'ejemplos'.\n");
+  _fprintf("Para conocer los shortcuts del sistema, utilizar el comando shortcuts.\n");
 }
 
 void infoReg()
@@ -354,6 +329,26 @@ void printCheese()
   sys_write("           \"\"--..   |\n", 22, CHEESE_COLOURS);
   sys_write("                 \"\"-\'\n", 22, CHEESE_COLOURS);
   _fprintf("\n");
+}
+
+void printShortcuts()
+{
+  sys_write("\nShortcut 1: ", 13, CHEESE_COLOURS);
+  _fprintf("ctrl + c para terminar cualquier proceso foreground.\n");
+  sys_write("Shortcut 2: ", 13, CHEESE_COLOURS);
+  _fprintf("ctrl + d para enviar un EOF al proceso actual(util para los procesosfilter, wc y cat).\n");
+  sys_write("Shortcut 3: ", 13, CHEESE_COLOURS);
+  _fprintf("ctrl + r para capturar los registros en el momento.\n");
+}
+
+void ejemplos()
+{
+  sys_write("\nEjemplo 1: ", 12, CHEESE_COLOURS);
+  _fprintf("Se recomienda utilizar los comandos filter, wc y cat con el operador pipe, como por ejemplo: 'sem | filter', 'pipe | wc'.");
+  _fprintf(" De esta manera se puede\nobservar de una mejor manera su comportamiento.\n");
+  sys_write("Ejemplo 2: ", 12, CHEESE_COLOURS);
+  _fprintf("Para correr un proceso background, incluir al final del comando el \nsimbolo &, por ejemplo:'fibonacci &'.");
+  _fprintf(" Recomendacion, ejecutar el comando ps paraver que el proceso esta corriendo en background (kill 'pid') para terminarlo.\n");
 }
 
 void loop()

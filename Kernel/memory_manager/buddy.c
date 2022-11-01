@@ -135,18 +135,18 @@ void memoryDump() {
   printf("\nEspacio libre: %d\n\n", freeSpace);
 }
 
-static size_t getMinimumFittingOrder(size_t memorySize)
+static size_t getMinimumFittingOrder(size_t memNeeded)
 {
-    size_t memoryBase2 = (size_t)log2(memorySize);
+    size_t minOrder = (size_t)log2(memNeeded);
 
-    if(memoryBase2 < MIN_ALLOC_LOG2) return 0;
+    if(minOrder < MIN_ALLOC_LOG2) return 0;
 
-    memoryBase2 -= MIN_ALLOC_LOG2;
+    minOrder -= MIN_ALLOC_LOG2;
 
-    if( memorySize && !(memorySize & (memorySize - 1)))
-        return memoryBase2;
+    if( memNeeded && !(memNeeded & (memNeeded - 1)))
+        return minOrder;
     
-    return memoryBase2 + 1;
+    return minOrder + 1;
 }
 
 void addNodeToOrder(list_t *blockList, list_t *node, uint8_t blockOrder)
