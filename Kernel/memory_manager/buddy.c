@@ -132,7 +132,7 @@ void memoryDump() {
       }
     }
   }
-  printf("\nEspacio libre: %d\n\n", freeSpace);
+  printf("\nEspacio libre: %d | Memoria ocupada: %d\n\n", freeSpace, (blockMaxSize-freeSpace));
 }
 
 static size_t getMinimumFittingOrder(size_t memNeeded)
