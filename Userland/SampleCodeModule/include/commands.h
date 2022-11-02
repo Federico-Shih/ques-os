@@ -1,6 +1,6 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
-#define DUMP_SIZE 32
+#define DUMP_SIZE 34
 #define LAST_MEM 0x80000000
 #define MAX_HELP_LENGTH 250
 #define HELP_PAGE 8
@@ -55,6 +55,7 @@ void printCheeseOs();
 void printCheese();
 void printShortcuts();
 void ejemplos();
+void echo(unsigned int argc, char *argv[]);
 void loop();
 
 #endif
