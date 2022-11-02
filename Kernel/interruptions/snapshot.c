@@ -32,10 +32,10 @@ int loadRegisters(uint64_t *buffer){
 
 // TODO: REMOVE OR FIX
 void printRegisters(uint64_t *rsp){
-	// for(int i = 0; i < TOTAL_REGISTERS; i++){
-	// 	sysWrite(registerNames[i], strlen(registerNames[i]), NULL);
-	// 	printBase(rsp[i],16);
-	// 	printChar('\n');
-	// }
-	// printChar('\n');
+	for(int i = 0; i < TOTAL_REGISTERS; i++){
+	 	sysWrite(registerNames[i], strlen(registerNames[i]), NULL);
+	 	printBase(rsp[i],16);
+	 	printChar('\n');
+	 }
+	 printChar('\n');
 }

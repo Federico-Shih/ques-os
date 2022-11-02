@@ -48,6 +48,7 @@ static command_t commands[] = {
     {"filter", &filter, "Filtra las vocales del input."},
     {"shortcuts", &printShortcuts, "Imprime los shortcuts que la terminal provee."},
     {"ejemplos", &ejemplos, "Imprime ejemplos de comandos posibles"},
+    {"echo", &echo, "Imprime los argumentos a salida estandard"},
     {"", NULL, ""},
 };
 
@@ -349,6 +350,15 @@ void ejemplos()
   sys_write("Ejemplo 2: ", 12, CHEESE_COLOURS);
   _fprintf("Para correr un proceso background, incluir al final del comando el \nsimbolo &, por ejemplo:'fibonacci &'.");
   _fprintf(" Recomendacion, ejecutar el comando ps paraver que el proceso esta corriendo en background (kill 'pid') para terminarlo.\n");
+}
+
+void echo(unsigned int argc, char *argv[])
+{
+  for(int i = 1 ; i < argc; i++)
+  {
+    _fprintf("%s ", argv[i]);    
+  }
+  _fprintf("\n");
 }
 
 void loop()

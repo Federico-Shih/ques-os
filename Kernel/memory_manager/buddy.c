@@ -39,7 +39,7 @@ void initializeMemoryManager (void *heap_base, unsigned int heap_size)
     base = (list_t *)heap_base;
 
     //tamano maximo del orden mas grande
-    blockMaxSize = heap_size;
+    blockMaxSize = (size_t)heap_size;
     //cantidad de bloques disponibles (en total)
     currentBlocks = (int)log2(heap_size) - MIN_ALLOC_LOG2 + 1;
 
@@ -63,7 +63,7 @@ void *malloc(uint64_t size)
     // necesito espacio necesario mas el tamano del nodo de la lista
     size_t memNeeded = size + sizeof(list_t);
     
-    if(size == 0 || memNeeded > blockMaxSize + 1)
+    if(size == 0 || memNeeded > blockMaxSize)
         return NULL;
 
     //primero busco en que orden es mas correcto agregar ese bloque.
@@ -73,19 +73,21 @@ void *malloc(uint64_t size)
 
     if(freeBlock == -1) return NULL;
 
-    
-    list_t *node = popFromList(&orders[freeBlock]);
+    if(orders[freeBlock].prev != (list_t *)0x0 || orders[freeBlock].next != (list_t *)0x0){
+      list_t *node = popFromList(&orders[freeBlock]);
 
-    // divido el bloque libre(agrego nodos a la lista) en bloques mas pequeños hasta encontrar el bloque ideal
-    for( ; lowestFittingOrder < freeBlock ; freeBlock--)
-    {
-        node->order--;
-        addNodeToOrder(&orders[freeBlock - 1], getBuddyBlock(node), freeBlock - 1);
+      // divido el bloque libre(agrego nodos a la lista) en bloques mas pequeños hasta encontrar el bloque ideal
+      for( ; lowestFittingOrder < freeBlock ; freeBlock--)
+      {
+          node->order--;
+          addNodeToOrder(&orders[freeBlock - 1], getBuddyBlock(node), freeBlock - 1);
+      }
+
+     node->free = 0;
+
+      return (void*)(node + 1);
     }
-
-    node->free = 0;
-
-    return (void*)(node + 1);
+    return NULL;
 }
 
 void free(void *block)
