@@ -113,7 +113,7 @@ static int scan(char const *fmt, va_list arg) {
           int_temp = va_arg(arg, int);
           intToStr(int_temp, buffer, 10);
           thisLength = strlen(buffer);
-          sysWrite(buffer, length, NULL);
+          sysWrite(buffer, thisLength, NULL);
           length += thisLength;
           break;
         case 'x':

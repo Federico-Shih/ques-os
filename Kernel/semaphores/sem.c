@@ -32,7 +32,7 @@ static t_sem *findSemName(char *name);
 static t_sem *createSem(int initialValue, char *semName);
 static int destroySem(t_sem *semaphore);
 extern int _xchg(int *lock, int value);
-static void printBlockedSemInfo(queueADT queue);
+static void printBlockedSemInfo(t_sem *sem);
 int findSemCondition(void *queueElement, void *value);
 static int getNextSemaphoreId();
 int findSemNameCondition(t_sem *queueElement, char *value);
@@ -79,6 +79,7 @@ int semInit(int initialValue)
   {
     return -1;
   }
+  sem->attachedProcesses++;
   return sem->id;
 }
 
@@ -172,9 +173,10 @@ void printSemInfo()
     sem = next(it);
     printf("Id: %d | ", sem->id);
     printf("Valor: %d | ", (int)sem->value);
-    printf("# de procesos vinculados: %d | ", sem->attachedProcesses);
-    printf("\nProcesos bloqueados: ");
-    printBlockedSemInfo(sem->blockedPidsQueue);
+    printf("Nombre del semaforo: %s | ", strcasecmp(sem->name, "") ? sem->name : "[Sin nombre]");
+    printf("# de procesos vinculados: %d | ", (int)sem->attachedProcesses);
+    printf("\nIDs de procesos bloqueados: ");
+    printBlockedSemInfo(sem);
     printf("\b\b\n");
   }
   free(it);
@@ -185,7 +187,7 @@ void printBlockedPids(int id){
   if (sem == NULL)
     return;
 
-  printBlockedSemInfo(sem->blockedPidsQueue);
+  printBlockedSemInfo(sem);
 }
 
 // ----------------------- AUXILIARY FUNCTIONS ---------------------------------------------
@@ -252,15 +254,19 @@ static int getNextSemaphoreId()
   return semId++;
 }
 
-static void printBlockedSemInfo(queueADT queue)
+static void printBlockedSemInfo(t_sem *sem)
 {
-  iteratorADT it;
-  if ((it = toBegin(queue)) == NULL || !hasNext(it))
+  if (getQueueSize(sem->blockedPidsQueue) == 0){
     printf("[No hay procesos bloqueados]  ");
+    return;
+  }
+
+  iteratorADT it;
+  it = toBegin(sem->blockedPidsQueue);
 
   while (hasNext(it))
   {
-    int *pid = (int *)next(it);
+    int *pid = next(it);
     printf("%d, ", *pid);
   }
   free(it);

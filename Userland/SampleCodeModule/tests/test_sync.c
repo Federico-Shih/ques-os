@@ -4,7 +4,7 @@
 #include "usersyscalls.h"
 #include "ustdlib.h"
 
-#define SEM_ID "sem"
+#define SEM_ID "test_sync_sem"
 #define TOTAL_PAIR_PROCESSES 6
 
 int64_t global; // shared memory
