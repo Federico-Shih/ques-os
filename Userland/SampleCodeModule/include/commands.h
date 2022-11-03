@@ -36,10 +36,7 @@ void dateAndTime();
 void help(unsigned int argc, char *argv[]);
 void infoReg();
 void holaMundo();
-// TODO: ARREGLAR
 void printmem(unsigned int argc, char *argv[]);
-void divZero();
-void invalidOpcode();
 void fibonacci();
 void primes();
 char *getDescriptions(char *function);

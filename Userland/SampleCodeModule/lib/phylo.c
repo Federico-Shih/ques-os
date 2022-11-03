@@ -14,7 +14,6 @@ static int currentPhilosofers = 0;
 
 static int gateMutex;
 
-
 void philoEat(int64_t index)
 {
   philosopher[index].state = EATING;
@@ -60,24 +59,9 @@ void philoMain(unsigned int argc, char *argv[])
   }
 }
 
-int addPhilosofer()
+int startPhiloProcess()
 {
-  if (currentPhilosofers == MAX_PHILO)
-  {
-    return -1;
-  }
-  // Espero a que se libere el extremo necesario para que pueda meter otro filosofo
-  sys_semWait(gateMutex);
-
-  int semaphore = sys_semInit(1);
   philosopher[currentPhilosofers].state = DECIDING;
-
-  if (semaphore == -1)
-  {
-    return -1;
-  }
-  philosopher[currentPhilosofers].semId = semaphore;
-
   char *args[2] = {"philosofer"};
   args[1] = _itoa(currentPhilosofers, 10);
   int processPid = sys_startTask(&philoMain, 2, args, 0, NULL);
@@ -88,6 +72,25 @@ int addPhilosofer()
   }
   philosopher[currentPhilosofers].pid = processPid;
   currentPhilosofers += 1;
+  return 0;
+}
+
+int addPhilosofer()
+{
+  if (currentPhilosofers == MAX_PHILO)
+  {
+    return -1;
+  }
+
+  int semaphore = sys_semInit(1);
+  if (semaphore == -1)
+  {
+    return -1;
+  }
+  philosopher[currentPhilosofers].semId = semaphore;
+
+  sys_semWait(gateMutex);
+  startPhiloProcess();
   sys_semPost(gateMutex);
   return 0;
 }
@@ -134,6 +137,7 @@ static color_t standard[] = {WHITE, BLACK};
 static color_t phyloAdd[] = {BLUE, BLACK};
 static color_t phyloRemove[] = {BROWN, BLACK};
 static color_t phyloQuit[] = {GREEN, BLACK};
+static color_t errorPhylo[] = {BLACK, RED};
 void phylo()
 {
   gateMutex = sys_semInit(1);
@@ -152,25 +156,52 @@ void phylo()
   sys_write(" q ", 3, phyloQuit);
   sys_write("para cerrar la mesa. \n", 23, standard);
 
+  sys_semWait(gateMutex);
   for (int i = 0; i < INITIAL_PHILO; i += 1)
   {
-    addPhilosofer(i);
+      int semaphore = sys_semInit(1);
+      if (semaphore == -1)
+      {
+        _fprintf("ERROR: No se pudo inicializar semaforo.\n");
+        return;
+      }
+      philosopher[i].semId = semaphore;
+  }
+  for (int i = 0; i < INITIAL_PHILO; i += 1)
+  {
+    if (startPhiloProcess() == -1)
+    {
+      _fprintf("ERROR: No se pudo inicializar proceso de filosofo.\n");
+      return;
+    }
   }
 
   char *args[] = {"Print table"};
   int tablePid = sys_startTask(&printTable, 1, args, 0, NULL);
+  if (tablePid == -1)
+  {
+    _fprintf("ERROR: No se pudo inicializar proceso de mesa.");
+    return;
+  }
+  sys_semPost(gateMutex);
   char c;
   while ((c = getChar()) != -1)
   {
     if (c == 'a')
     {
-      addPhilosofer();
-      sys_write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
+      int addedPhilo = addPhilosofer();
+      if (addedPhilo == 0)
+        sys_write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
+      else
+        sys_write("No hay mas espacio en la mesa\n", 32, errorPhylo);
     }
     else if (c == 'd')
     {
-      removePhilosofer();
-      sys_write("Un filosofo ha concluido su tiempo en la mesa del queso. \n", 59, phyloRemove);
+      int removedPhilo = removePhilosofer();
+      if (removedPhilo == 0)
+        sys_write("Un filosofo ha concluido su tiempo en la mesa del queso. \n", 59, phyloRemove);
+      else
+        sys_write("Minima cantidad de filosofos alcanzado\n", 40, errorPhylo);
     }
     else if (c == 'q')
     {
@@ -178,7 +209,8 @@ void phylo()
       break;
     }
   }
-
+  if (c == -1)
+    _fprintf("EOF\n");
   for (int i = 0; i < currentPhilosofers; i += 1)
   {
     freePhilosofer(i);

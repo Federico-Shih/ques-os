@@ -5,7 +5,7 @@
 #include "ustdlib.h"
 
 #define SEM_ID "test_sync_sem"
-#define TOTAL_PAIR_PROCESSES 6
+#define TOTAL_PAIR_PROCESSES 4
 
 int64_t global; // shared memory
 
@@ -13,6 +13,7 @@ void slowInc(int64_t *p, int64_t inc)
 {
   uint64_t aux = *p;
   sys_yield(); // This makes the race condition highly probable
+  _fprintf(".");
   aux += inc;
   *p = aux;
 }

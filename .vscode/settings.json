@@ -36,6 +36,7 @@
     "naiveconsole.h": "c",
     "colors.h": "c",
     "buddybtree.h": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "ctype.h": "c"
   }
 }

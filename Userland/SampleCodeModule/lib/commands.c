@@ -20,12 +20,10 @@ static command_t commands[] = {
     {"cheese", &printCheese, "mmmmm... queso..."},
     {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
     {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue      llamado."},
-    {"divZero", &divZero, "Realiza una division por 0. Lanza una excepcion e imprime una captura     de los registros al momento de ejecucion. "},
     {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause      o se termine su ejecucion. "},
     {"hello", &holaMundo, "Imprime un saludo al usuario. ",},
     {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del        programa. "},
     {"inforeg", &infoReg, "Imprime los registros capturados al presionar ctrl + r. "},
-    {"invalidOpcode", &invalidOpcode, "Lanza la excepcion de invalid operand code e imprime los registros al momento de ejecucion. "},
     {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
     {"clear", &clearScreen, "Limpia la pantalla. "},
@@ -58,19 +56,6 @@ int getCommandsLength()
   for (i = 0; commands[i].runner != NULL; i += 1)
     ;
   return i;
-}
-
-void divZero()
-{
-  int aux1 = 1;
-  int aux2 = 0;
-  int o = aux1 / aux2;
-  _fprintf("%d\n", o);
-}
-
-void invalidOpcode()
-{
-  _opcodeExp();
 }
 
 void printmem(unsigned int argc, char *argv[])

@@ -1,49 +1,71 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ustdlib.h>
-#include <shell.h>
 #include <ctype.h>
-#include <usersyscalls.h>
-#include <RTCID.h>
-#include <commands.h>
-#include <colors.h>
+#include "ustdlib.h"
+#include "shell.h"
+#include "usersyscalls.h"
+#include "RTCID.h"
+#include "commands.h"
+#include "colors.h"
 
-#define BUFFER_LENGTH 256
+#define BUFFER_LENGTH 1024
 #define MAX_ARGS 32
 
 static int shellPipeId = 100;
 static char buffer[BUFFER_LENGTH];
 
-int getCommandLine(char** strings) {
+int getCommandLine(char** args) {
   buffer[BUFFER_LENGTH - 1] = '\0';
 
-  char* startString = buffer; // Guarda el puntero al string que esta obteniendo
   int c;
-  int i = 0;
-  int res_index = 0;
-  while ((c = getChar()) != '\n' && c != -1 && i < BUFFER_LENGTH - 1 && res_index < MAX_ARGS) {
+  int bufferIndex = 0;
+  while ((c = getChar()) != '\n' && c != EOF && bufferIndex < BUFFER_LENGTH) {
     switch(c) {
       case '\b':
-        if (i != 0) {
-          buffer[i--] = '\0';
+        if (bufferIndex > 0)
+        {
+          if (buffer[bufferIndex] == '\t')
+          {
+            _putc(c);
+          }
+          buffer[bufferIndex--] = '\0';
           _putc(c);
         }
         break;
-      case ' ':
-        buffer[i++] = '\0';
-        strings[res_index++] = startString;
-        startString = buffer + i;
-        _putc(c);
-        break;
       default:
-        buffer[i++] = c;
+        buffer[bufferIndex++] = c;
         _putc(c);
     }
   }
-  if (i == 0) return 0;
-  buffer[i] = '\0'; //Resuelve el ultimo string presente
-  strings[res_index++] = startString;
-  return res_index;
+  if (bufferIndex == 0) return 0;
+
+  // Transformo la linea de args en strings individuales de argumentos
+  int isPrevChar = 0;
+  int argIndex = 0;
+  char *strStart = buffer;
+  for (int i = 0; i < bufferIndex; i += 1)
+  {
+    if (buffer[i] == ' ' && isPrevChar)
+    {
+      isPrevChar = 0;
+      buffer[i] = '\0'; // le doy un fin al string
+      args[argIndex] = strStart;
+      argIndex += 1;
+    }
+    // Comienzo de un nuevo string
+    else if (!isPrevChar && buffer[i] != ' ')
+    {
+      strStart = &buffer[i];
+      isPrevChar = 1;
+    }
+  }
+  if (isPrevChar)
+  {
+    buffer[bufferIndex] = '\0';
+    args[argIndex] = strStart;
+    argIndex += 1;
+  }
+  return argIndex;
 }
 
 int runCommandLine(int argCount, char** args) {
@@ -53,7 +75,6 @@ int runCommandLine(int argCount, char** args) {
   //primero buscar pipe
   //segundo, si tiene buscar los comandos
   //tercero, correrlos
-
   int pipeIndex = findPipe(argCount, args);
 
   if(pipeIndex != -1)
@@ -117,6 +138,7 @@ void runShell() {
   sys_write("Bienvendio a QUESOS\n", 21, cheeseColor);
   help(1, NULL);
   _putc('\n');
+  int i = 0;
   while (1) {
     sys_write("QUESOS>", 7, cheeseColor);
     char* args[MAX_ARGS];
@@ -124,12 +146,13 @@ void runShell() {
     _putc('\n');
     runCommandLine(count, args);
     _putc('\n');
+    i += 1;
   }
 }
 
 void initShell() {
   runShell();
-  while(1);
+  _fprint("Ended shell\n");
 }
 
 int findPipe(int argc, char **argv)

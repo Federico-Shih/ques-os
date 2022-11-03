@@ -2,15 +2,15 @@
 #define USTDLIB_H
 
 #include <stdint.h>
-#include <stdio.h>
 #include <stdarg.h>
 
 enum {
-  STDIN = 0, STDOUT, STDERR, STDLEFT, STDRIGHT,
+  STDIN = 0, STDOUT, 
 };
 
 #define IS_DIGIT(x) (((x) >= '0' && (x) <= '9'))
 #define IS_HEXDIGIT(x) (IS_DIGIT(x) || (x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f'))
+#define EOF -1
 
 void clear_screen(unsigned int fd);
 void _fprint(const char *str);

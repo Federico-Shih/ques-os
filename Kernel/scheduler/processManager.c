@@ -311,8 +311,6 @@ int killTask(int pid)
 
 int terminateTask(int pid)
 {
-  if (pid == userlandPid || pid == initPid)
-    return -1;
   int id = changeState(pid, TERMINATED);
   if (id == -1)
     return -1;
@@ -371,7 +369,7 @@ int yield()
 // Termina el proceso actual
 int killCurrent()
 {
-  return killTask(currentProcessPCB->pid);
+  return terminateTask(currentProcessPCB->pid);
 }
 
 int currentForegroundCondition(pcb *process, void *_)
@@ -397,6 +395,8 @@ void terminateChildren(int pid)
 
 int killCurrentForeground()
 {
+  if (currentProcessPCB->pid == userlandPid || currentProcessPCB->pid == initPid)
+    return -1;
   if (currentProcessPCB->foreground && (currentProcessPCB->pid != userlandPid) && (currentProcessPCB->pid != initPid))
   {
     terminateChildren(currentProcessPCB->pid);
@@ -527,12 +527,6 @@ int changeState(int pid, process_state newState)
   if (newState == EXITED)
     semPost(process->semId);
   
-  if (newState == TERMINATED)
-  {
-    if (process->fileDescriptors[1] != STDOUT_PIPENO)
-        pipePutchar(process->fileDescriptors[1], -1);
-  }
-
   if (process->state != READY && newState == READY)
     readyCount += 1;
 
