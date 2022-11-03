@@ -335,7 +335,7 @@ void ejemplos()
   _fprintf(" De esta manera se puede\nobservar de una mejor manera su comportamiento.\n");
   sys_write("Ejemplo 2: ", 12, CHEESE_COLOURS);
   _fprintf("Para correr un proceso background, incluir al final del comando el \nsimbolo &, por ejemplo:'fibonacci &'.");
-  _fprintf(" Recomendacion, ejecutar el comando ps paraver que el proceso esta corriendo en background (kill 'pid') para terminarlo.\n");
+  _fprintf(" Recomendacion, ejecutar el comando ps para ver que el proceso esta corriendo en background (kill 'pid') para terminarlo.\n");
 }
 
 void echo(unsigned int argc, char *argv[])

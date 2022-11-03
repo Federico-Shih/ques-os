@@ -1,6 +1,6 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
-#define DUMP_SIZE 34
+#define DUMP_SIZE 33
 #define LAST_MEM 0x80000000
 #define MAX_HELP_LENGTH 250
 #define HELP_PAGE 8
