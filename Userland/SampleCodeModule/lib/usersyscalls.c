@@ -136,9 +136,9 @@ int sys_semClose(int id)
 {
   return _syscall(SYS_SEMCLOSE, id, 0, 0, 0, 0);
 }
-void sys_printSemInfo()
+userlandSemInfo * sys_getSemInfo()
 {
-  _syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
+  return _syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
 }
 
 int waitpid(int pid)
@@ -164,7 +164,7 @@ int sys_pipeClose(int pipeId)
 {
   return _syscall(SYS_PIPECLOSE, pipeId, 0, 0, 0, 0);
 }
-void sys_printPipeInfo()
+userlandPipeInfo * sys_getPipeInfo()
 {
-  _syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
+  return _syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
 }

@@ -115,27 +115,34 @@ int pipeClose(int pipeId) {
     return 0;
 }
 
-void printPipeInfo(){
+userlandPipeInfo * getPipeInfo(){
+    userlandPipeInfo * info = malloc(sizeof(userlandPipeInfo));
     semWait(allPipesSem);
-    printf("Active Pipe Status\n");
+    info->length = getQueueSize(pipeQueue);
+    info->array = malloc(sizeof(userlandPipe)*info->length);
+    info->pipeBufferSize = PIPE_BUFFER_SIZE;
+
     iteratorADT it = toBegin(pipeQueue);
     t_pipe * pipe = NULL;
+    userlandPipe aux;
+    int iterator = 0;
+
     while(hasNext(it)){
         pipe = (t_pipe *)next(it);
-        printf("Pipe ID: %d\n", pipe->id);
-        printf("ID semaforo de lectura: %d\n", pipe->readSemId);
-        printf("ID semaforo de escritura: %d\n", pipe->writeSemId);
-        printf("Procesos con el semaforo abierto: %d\n", pipe->totalProcesses);
-        printf("Lista de procesos bloqueados:\n");
-        printf("\tBloqueados para escribir: ");
-        printBlockedPids(pipe->writeSemId);
-        printf("\b\b\n\tBloqueados para leer: ");
-        printBlockedPids(pipe->readSemId);
-        printf("\b\b\nCantidad de caracteres disponibles para leer: %d", ((pipe->writeIndex - pipe->readIndex)%PIPE_BUFFER_SIZE));
+        aux.id = pipe->id;
+        aux.readIndex = pipe->readIndex;
+        aux.writeIndex = pipe->writeIndex;
+        aux.totalProcesses = pipe->totalProcesses;
+        aux.readSem = getSingleSem(pipe->readSemId);
+        aux.writeSem = getSingleSem(pipe->writeSemId);
+        info->array[iterator++] = aux;
     }
     free(it);
     semPost(allPipesSem);
+    return info;
 }
+
+
 
 // ------------ FUNCIONES AUXILIARES -----------------
 

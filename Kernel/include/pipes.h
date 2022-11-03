@@ -6,6 +6,7 @@
 #define STDOUT_PIPENO 1
 
 #include <stdint.h>
+#include "../../shared.h"
 
 int initPipeSystem();
 int pipeOpen(int pipeId);
@@ -15,4 +16,5 @@ int pipeRead(int pipeId);
 void printPipeInfo();
 int pipePutchar(int pipeId, char c);
 
+userlandPipeInfo * getPipeInfo();
 #endif

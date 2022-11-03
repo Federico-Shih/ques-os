@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "shell.h"
 #include "colors.h"
+#include "../../../shared.h"
 
 typedef enum {
   SYS_READ=0, 
@@ -77,12 +78,12 @@ int sys_semInit(int initialValue);
 int sys_semWait(int id);
 int sys_semPost(int id);
 int sys_semClose(int id);
-void sys_printSemInfo();
+userlandSemInfo * sys_getSemInfo();
 int sys_pipeOpen(int pipeId);
 int sys_pipeWrite(int pipeId, char *str);
 int sys_pipeClose(int pipeId);
 int sys_pipeRead(int pipeId);
-void sys_printPipeInfo();
+userlandPipeInfo * sys_getPipeInfo();
 int waitpid(int pid);
 
 #endif

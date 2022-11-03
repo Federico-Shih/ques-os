@@ -12,6 +12,7 @@
 #include "tests.h"
 #include "phylo.h"
 #include "colors.h"
+#include "printinfo.h"
 
 static color_t ERROR_COLOURS[] = {RED, BLACK};
 static color_t CHEESE_COLOURS[] = {YELLOW, BLACK};
@@ -19,10 +20,10 @@ static color_t CHEESE_COLOURS[] = {YELLOW, BLACK};
 static command_t commands[] = {
     {"cheese", &printCheese, "mmmmm... queso..."},
     {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
-    {"date&time", &dateAndTime, "Imprime en patalla la fecha del ano corriente y horario en que fue      llamado."},
-    {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause      o se termine su ejecucion. "},
+    {"date&time", &dateAndTime, "Imprime en pantalla la fecha del ano corriente y horario en que fue llamado."},
+    {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. "},
     {"hello", &holaMundo, "Imprime un saludo al usuario. ",},
-    {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del        programa. "},
+    {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del programa. "},
     {"inforeg", &infoReg, "Imprime los registros capturados al presionar ctrl + r. "},
     {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
@@ -34,8 +35,8 @@ static command_t commands[] = {
     {"resume", &resume, "Recibe un pid y resume el proceso. "},
     {"nice", &nice, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
     {"loop", &loop, "Te saluda cada cierto tiempo. "},
-    {"sem", &sys_printSemInfo, "Imprime informacion sobre los semaforos. "},
-    {"pipes", &sys_printPipeInfo, "Imprime estado de los pipes. "},
+    {"sem", &printSemInfo, "Imprime informacion sobre los semaforos. "},
+    {"pipes", &printPipeInfo, "Imprime estado de los pipes. "},
     {"test_mm", &test_mm, "Recibe una cantidad de memoria y empieza a testear. "},
     {"test_prio", &test_prio, "Testea las prioridades del scheduler. "},
     {"test_processes", &test_processes, "Testea el scheduler. "},
@@ -46,7 +47,7 @@ static command_t commands[] = {
     {"filter", &filter, "Filtra las vocales del input."},
     {"shortcuts", &printShortcuts, "Imprime los shortcuts que la terminal provee."},
     {"ejemplos", &ejemplos, "Imprime ejemplos de comandos posibles"},
-    {"echo", &echo, "Imprime los argumentos a salida estandard"},
+    {"echo", &echo, "Imprime los argumentos a salida estandar"},
     {"", NULL, ""},
 };
 

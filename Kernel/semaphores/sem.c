@@ -32,7 +32,6 @@ static t_sem *findSemName(char *name);
 static t_sem *createSem(int initialValue, char *semName);
 static int destroySem(t_sem *semaphore);
 extern int _xchg(int *lock, int value);
-static void printBlockedSemInfo(t_sem *sem);
 int findSemCondition(void *queueElement, void *value);
 static int getNextSemaphoreId();
 int findSemNameCondition(t_sem *queueElement, char *value);
@@ -164,30 +163,75 @@ int semValue(int id)
   return sem->value;
 }
 
-void printSemInfo()
-{
-  iteratorADT it = toBegin(semQueue);
-  t_sem * sem = NULL;
-  while (hasNext(it))
-  {
-    sem = next(it);
-    printf("Id: %d | ", sem->id);
-    printf("Valor: %d | ", (int)sem->value);
-    printf("Nombre del semaforo: %s | ", strcasecmp(sem->name, "") ? sem->name : "[Sin nombre]");
-    printf("# de procesos vinculados: %d | ", (int)sem->attachedProcesses);
-    printf("\nIDs de procesos bloqueados: ");
-    printBlockedSemInfo(sem);
-    printf("\b\b\n");
+userlandBlockedPids * getBlockedPids(int semId){
+  t_sem * sem = findSem(semId);
+  userlandBlockedPids * blockedPids = malloc(sizeof(userlandBlockedPids));
+  if (sem == NULL){
+    blockedPids->array = NULL;
+    blockedPids->length = -1;
+    return blockedPids;
   }
+
+  blockedPids->length = getQueueSize(sem->blockedPidsQueue);
+  blockedPids->array = malloc(sizeof(int)*blockedPids->length);
+
+  iteratorADT it;
+  it = toBegin(sem->blockedPidsQueue);
+
+  int iterator = 0;
+
+  while (hasNext(it)){
+    int *pid = next(it);
+    blockedPids->array[iterator++] = *pid;
+  }
+
   free(it);
+  return blockedPids;
 }
 
-void printBlockedPids(int id){
-  t_sem *sem = findSem(id);
-  if (sem == NULL)
-    return;
+userlandSem * getSingleSem(int semId){
+  t_sem *sem = findSem(semId);
+  if(sem == NULL)
+    return NULL;
 
-  printBlockedSemInfo(sem);
+  userlandSem * semToRet = malloc(sizeof(userlandSem));
+  semToRet->id = sem->id;
+  semToRet->lock = sem->lock;
+  semToRet->attachedProcesses = sem->attachedProcesses;
+  semToRet->name = malloc(strlen(sem->name)+1);
+  strcpy(semToRet->name, sem->name);
+  semToRet->value = sem->value;
+  semToRet->blockedPids = getBlockedPids(sem->id);
+  return semToRet;
+}
+
+userlandSemInfo * getSemInfo(){
+  iteratorADT it = toBegin(semQueue);
+  t_sem * semIt = NULL;
+
+  userlandSemInfo * info = malloc(sizeof(userlandSemInfo));
+  info->length = getQueueSize(semQueue);
+  info->array = malloc(sizeof(userlandSem)*info->length);
+
+  userlandSem aux;
+
+  int iterator = 0;
+
+  while (hasNext(it))
+  {
+    semIt = next(it);
+    aux.id = semIt->id;
+    aux.lock = semIt->lock;
+    aux.attachedProcesses = semIt->attachedProcesses;
+    aux.name = malloc((strlen(semIt->name)+1)*sizeof(char));
+    strcpy(aux.name, semIt->name);
+    aux.value = semIt->value;
+    aux.blockedPids = getBlockedPids(semIt->id);
+
+    info->array[iterator++] = aux;
+  }
+  free(it);
+  return info;
 }
 
 // ----------------------- AUXILIARY FUNCTIONS ---------------------------------------------
@@ -252,24 +296,6 @@ static int destroySem(t_sem *semaphore)
 static int getNextSemaphoreId()
 {
   return semId++;
-}
-
-static void printBlockedSemInfo(t_sem *sem)
-{
-  if (getQueueSize(sem->blockedPidsQueue) == 0){
-    printf("[No hay procesos bloqueados]  ");
-    return;
-  }
-
-  iteratorADT it;
-  it = toBegin(sem->blockedPidsQueue);
-
-  while (hasNext(it))
-  {
-    int *pid = next(it);
-    printf("%d, ", *pid);
-  }
-  free(it);
 }
 
 // ----------------------------------- LOCK RELATED FUNCTIONS ------------------------------------------------

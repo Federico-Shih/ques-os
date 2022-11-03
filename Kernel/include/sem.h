@@ -1,5 +1,6 @@
 #ifndef SEM_H
 #define SEM_H
+#include "../../shared.h"
 
 int initSemSystem();
 int semOpen(char *semaphoreName, int initialValue);
@@ -11,7 +12,9 @@ int semClose(int id);
 void printSemInfo();
 void acquire(int *lock);
 void release(int *lock);
-//prints de pids of blocked processes by a specific semaphore
-void printBlockedPids(int id);
+
+userlandBlockedPids * getBlockedPids(int semId);
+userlandSem * getSingleSem(int semId);
+userlandSemInfo * getSemInfo();
 
 #endif
