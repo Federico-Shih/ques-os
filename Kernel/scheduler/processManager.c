@@ -369,7 +369,7 @@ int yield()
 // Termina el proceso actual
 int killCurrent()
 {
-  return terminateTask(currentProcessPCB->pid);
+  return killTask(currentProcessPCB->pid);
 }
 
 int currentForegroundCondition(pcb *process, void *_)

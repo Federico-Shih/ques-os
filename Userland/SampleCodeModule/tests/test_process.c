@@ -50,7 +50,7 @@ void test_processes(unsigned int argc, char *argv[])
         alive++;
       }
     }
-
+    sys_wait(1);
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0)
     {
@@ -100,6 +100,11 @@ void test_processes(unsigned int argc, char *argv[])
           p_rqs[rq].state = RUNNING;
         }
       }
+    }
+
+    for (rq = 0; rq < max_processes; rq++)
+    {
+      waitpid(p_rqs[rq].pid);
     }
     sys_wait(1);
   }
