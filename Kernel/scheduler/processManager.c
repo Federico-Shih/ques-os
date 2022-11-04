@@ -187,16 +187,16 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
 // Imprime el estado y datos de todas las tareas actuales
 int printTasks()
 {
-  pcb *aux;
-  printPCB(currentProcessPCB);
-  iteratorADT it = toBegin(queue);
-  while (hasNext(it))
-  {
-    aux = (pcb *) next(it);
-    printPCB(aux);
-  }
-  free(it);
-  return 0;
+  // pcb *aux;
+  // printPCB(currentProcessPCB);
+  // iteratorADT it = toBegin(queue);
+  // while (hasNext(it))
+  // {
+  //   aux = (pcb *) next(it);
+    
+  // }
+  // free(it);
+  // return 0;
 }
 
 // Imprime el estado y datos de una tarea particular
@@ -219,6 +219,48 @@ int printPCB(pcb *process)
         stateToStr(process->state));
   }
   return 0;
+}
+
+processInfo toProcessInfo(pcb *aux)
+{
+  processInfo process;
+  process.foreground = aux->foreground;
+  strcpy(process.name, aux->name);
+  process.pid = aux->pid;
+  process.ppid = aux->ppid;
+  process.rbp = (uint64_t)aux->rbp;
+  process.rsp = (uint64_t)aux->rsp;
+  strcpy(process.state, stateToStr(aux->state));
+  return process;
+}
+
+schedulerInfo* getSchedulerInfo() 
+{
+  schedulerInfo* schedulerData = malloc(sizeof(schedulerInfo));
+  if (schedulerData == NULL)
+    return NULL;
+
+  schedulerData->length = getQueueSize(queue) + 1;
+  schedulerData->array = malloc(sizeof(processInfo) * schedulerData->length);
+  if (schedulerData->array == NULL)
+  {
+    free(schedulerData);
+    return NULL;
+  }
+
+  pcb *aux;
+
+  printPCB(currentProcessPCB);
+  iteratorADT it = toBegin(queue);
+
+  int index = 1;
+  schedulerData->array[0] = toProcessInfo(currentProcessPCB);
+  while (hasNext(it))
+  {
+    schedulerData->array[index++] = toProcessInfo((pcb *)next(it));
+  }
+  free(it);
+  return schedulerData;
 }
 
 // Se usa para identificar al userland
@@ -299,19 +341,6 @@ int killTask(int pid)
     return -1;
   int id = changeState(pid, EXITED);
   // No se encontro el proceso
-  if (id == -1)
-    return -1;
-
-  if (id == currentProcessPCB->pid)
-  {
-    _callTimerTick();
-  }
-  return id;
-}
-
-int terminateTask(int pid)
-{
-  int id = changeState(pid, TERMINATED);
   if (id == -1)
     return -1;
 

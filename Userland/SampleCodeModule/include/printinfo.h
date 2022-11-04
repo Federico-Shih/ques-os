@@ -1,6 +1,6 @@
 #ifndef GETINFO
 #define GETINFO
-#include "../../../shared.h"
+#include "shared.h"
 
 // -------- SEMAFOROS ------------------
 void printSemInfo();

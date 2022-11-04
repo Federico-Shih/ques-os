@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "queue.h"
 #include "sem.h"
+#include "shared.h"
 
 #define MAX_PRIO 20
 
@@ -95,6 +96,8 @@ int printTasks();
 // Imprime el estado de un proceso
 int printTask(int pid);
 
+schedulerInfo* getSchedulerInfo();
+
 // Obtiene el pid del proceso actual
 int getpid();
 
@@ -130,7 +133,5 @@ void initializeStack(void (*process)(int, char**), int argc, char **argv, void *
 int waitpid(int pid);
 
 int setUserlandPid(int pid);
-
-int terminateTask(int pid);
 
 #endif

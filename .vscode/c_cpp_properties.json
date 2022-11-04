@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Kernel/include",
                 "${workspaceFolder}/Userland/SampleCodeModule/tests",
-                "${workspaceFolder}/Userland/SampleCodeModule/include"
+                "${workspaceFolder}/Userland/SampleCodeModule/include",
+                "${workspaceFolder}/Shared"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

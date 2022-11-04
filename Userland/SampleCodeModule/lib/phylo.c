@@ -14,15 +14,9 @@ static int currentPhilosofers = 0;
 
 static int gateMutex;
 
-void philoEat(int64_t index)
-{
-  philosopher[index].state = EATING;
-  sys_wait(EATING);
-}
-
 static void testEat(int64_t index)
 {
-  if (philosopher[index].state == WAITING && philosopher[LEFT(index)].state != EATING &&  philosopher[RIGHT(index)].state != EATING)
+  if (philosopher[index].state == WAITING && philosopher[LEFT(index)].state != EATING && philosopher[RIGHT(index)].state != EATING)
   {
     philosopher[index].state = EATING;
     sys_semPost(philosopher[index].semId);
@@ -115,7 +109,6 @@ int removePhilosofer()
   return 0;
 }
 
-
 void printTable()
 {
   while (1)
@@ -159,13 +152,13 @@ void phylo()
   sys_semWait(gateMutex);
   for (int i = 0; i < INITIAL_PHILO; i += 1)
   {
-      int semaphore = sys_semInit(1);
-      if (semaphore == -1)
-      {
-        _fprintf("ERROR: No se pudo inicializar semaforo.\n");
-        return;
-      }
-      philosopher[i].semId = semaphore;
+    int semaphore = sys_semInit(1);
+    if (semaphore == -1)
+    {
+      _fprintf("ERROR: No se pudo inicializar semaforo.\n");
+      return;
+    }
+    philosopher[i].semId = semaphore;
   }
   for (int i = 0; i < INITIAL_PHILO; i += 1)
   {

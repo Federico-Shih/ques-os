@@ -38,4 +38,32 @@ typedef struct userlandPipeInfo {
   int pipeBufferSize;
 } userlandPipeInfo;
 
+// ------------ SCHEDULER ----------------------------
+
+/*
+
+      printf(
+        "Nombre: %s | PID: %d | PPID: %d | Foreground: %s | RSP: %x | RBP: "
+        "%x | Prioridad: %d | Estado: %s \n",
+        process->name, process->pid, process->ppid,
+        foregToBool((int)process->foreground), (uint64_t)process->rsp,
+        (uint64_t)process->rbp, process->priority,
+        stateToStr(process->state));
+*/
+
+typedef struct processInfo {
+  char name[30];
+  int pid;
+  int ppid;
+  int foreground;
+  uint64_t rsp;
+  uint64_t rbp;
+  char state[20];
+} processInfo;
+
+typedef struct schedulerInfo {
+  processInfo * array;
+  int length;
+} schedulerInfo;
+
 #endif

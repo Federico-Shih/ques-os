@@ -1,6 +1,6 @@
 #ifndef SEM_H
 #define SEM_H
-#include "../../shared.h"
+#include "shared.h"
 
 int initSemSystem();
 int semOpen(char *semaphoreName, int initialValue);

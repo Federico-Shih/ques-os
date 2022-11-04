@@ -5,50 +5,8 @@
 #include <stdbool.h>
 #include "shell.h"
 #include "colors.h"
-#include "../../../shared.h"
-
-typedef enum {
-  SYS_READ=0, 
-  SYS_WRITE, 
-  SYS_CLEAN_SCREEN, 
-  SYS_INFOREG, 
-  SYS_DATENTIME, 
-  SYS_PRINTMEM, 
-  SYS_SET_CURSOR, 
-  SYS_WAIT,
-  // Memory Manager
-  SYS_MALLOC,
-  SYS_FREE,
-  SYS_MEMDUMP,
-  // Scheduler
-  SYS_CREATE_PROCESS,
-  SYS_GETPID,
-  SYS_PRINTPROCESSES,
-  SYS_PRINTPROCESS,
-  SYS_KILL,
-  SYS_EXIT,
-  SYS_NICE,
-  SYS_BLOCK,
-  SYS_RESUME,
-  SYS_YIELD,
-  SYS_WAITPID,
-  // Semaphores
-  SYS_SEMOPEN,
-  SYS_SEMINIT,
-  SYS_SEMWAIT,
-  SYS_SEMPOST,
-  SYS_SEMCLOSE,
-  SYS_SEMPRINT,
-  // Pipes
-  SYS_PIPEOPEN,
-  SYS_PIPECLOSE,
-  SYS_PIPEREAD,
-  SYS_PIPEWRITE,
-  SYS_PIPEPRINT
-} syscall_id;
-
-
-
+#include "shared.h"
+#include "syscodes.h"
 
 extern uint64_t _syscall(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t rcx, uint64_t r8, uint64_t r9);
 

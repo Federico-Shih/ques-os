@@ -37,6 +37,7 @@
     "colors.h": "c",
     "buddybtree.h": "c",
     "stdio.h": "c",
-    "ctype.h": "c"
+    "ctype.h": "c",
+    "shared.h": "c"
   }
 }
