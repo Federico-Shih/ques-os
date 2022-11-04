@@ -43,7 +43,14 @@ static void printUserlandSem(userlandSem sem)
 void printSemInfo()
 {
     _fprint("ID | Valor | Nombre | # procesos vinculados | procesos bloqueados\n");
-    userlandSemInfo *info = sys_getSemInfo();
+    userlandSemInfo *info = getSemInfo();
+
+    if(info == NULL)
+    {
+        _fprintf("Error al recuperar informacion de los semaforos");
+        return;
+    }
+
     for (int i = 0; i < info->length; i++)
     {
         printUserlandSem(info->array[i]);
@@ -53,13 +60,13 @@ void printSemInfo()
 
 static void freeBlockedPids(userlandBlockedPids *blockedPids)
 {
-    sys_free(blockedPids->array);
-    sys_free(blockedPids);
+    free(blockedPids->array);
+    free(blockedPids);
 }
 
 static void freeUserlandSem(userlandSem sem)
 {
-    sys_free(sem.name);
+    free(sem.name);
     freeBlockedPids(sem.blockedPids);
 }
 
@@ -69,8 +76,8 @@ static void freeSemInfo(userlandSemInfo *info)
     {
         freeUserlandSem(info->array[i]);
     }
-    sys_free(info->array);
-    sys_free(info);
+    free(info->array);
+    free(info);
 }
 
 // ------------------ PIPES ---------------------------
@@ -78,16 +85,16 @@ static void freePipe(userlandPipe pipe)
 {
     freeUserlandSem(*pipe.writeSem);
     freeUserlandSem(*pipe.readSem);
-    sys_free(pipe.writeSem);
-    sys_free(pipe.readSem);
+    free(pipe.writeSem);
+    free(pipe.readSem);
 }
 
 static void freePipeInfo(userlandPipeInfo *info)
 {
     for (int i = 0; i < info->length; i++)
         freePipe(info->array[i]);
-    sys_free(info->array);
-    sys_free(info);
+    free(info->array);
+    free(info);
 }
 
 static void printPipe(userlandPipe pipe, int buffersize)
@@ -106,7 +113,12 @@ static void printPipe(userlandPipe pipe, int buffersize)
 
 void printPipeInfo()
 {
-    userlandPipeInfo *info = sys_getPipeInfo();
+    userlandPipeInfo *info = getPipeInfo();
+    if( info == NULL)
+    {
+        _fprintf("Error al recuperar informacion de los pipes");
+        return;
+    }
     for (int i = 0; i < info->length; i++)
     {
         printPipe(info->array[i], info->pipeBufferSize);
@@ -119,7 +131,7 @@ void ps()
     schedulerInfo *processes = getSchedulerInfo();
     if (processes == NULL)
     {
-        _fprint("ERROR retrieving processes.\n");
+        _fprint("ERROR recuperando datos de los procesos.\n");
         return;
     }
     _fprint("Nombre | PID | PPID | Foreground |  RSP  |  RBP  | Prio | Estado\n");
@@ -134,6 +146,23 @@ void ps()
             process.rbp, process.priority,
             process.state);
     }
-    sys_free(processes->array);
-    sys_free(processes);
+    free(processes->array);
+    free(processes);
+}
+
+void memDump()
+{
+    memoryInfo *memory = getMemoryInfo();
+
+    if(memory == NULL)
+    {
+        _fprintf("ERROR recuperando datos de la memoria.\n");
+    }
+
+    _fprintf("Informacion actual de la memoria: \n");
+    _fprintf("Memoria total: %d\n",memory->totalMem);
+    _fprintf("Memorioa libre total: %d\n", memory->availableMem);
+    _fprintf("Memoria ocupada total: %d\n", (memory->totalMem - memory->availableMem));
+
+    free(memory);
 }

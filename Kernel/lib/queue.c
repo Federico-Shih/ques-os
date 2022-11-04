@@ -102,9 +102,9 @@ iteratorADT toBegin(queueADT queue)
 {
   if (queue == NULL)
     return NULL;
-  
+
   iteratorADT it = malloc(sizeof(iteratorCDT));
-  if (it == NULL) 
+  if (it == NULL)
     return NULL;
   it->curr = queue->first;
   return it;
@@ -150,7 +150,7 @@ int includes(queueADT queue, int (*findCondition)(void *, void *), void *element
 
 int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
 {
-  void* poppedElement = takeElement(queue, removeCondition, element);
+  void *poppedElement = takeElement(queue, removeCondition, element);
   if (poppedElement != NULL)
   {
     free(poppedElement);
@@ -159,20 +159,21 @@ int removeElement(queueADT queue, int (*removeCondition)(void *, void *), void *
   return 0;
 }
 
-
-void* takeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
+void *takeElement(queueADT queue, int (*removeCondition)(void *, void *), void *element)
 {
-  if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0) return NULL;
-  queue_node* node = queue->first;
-  queue_node* prev = NULL;
+  if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0)
+    return NULL;
+  queue_node *node = queue->first;
+  queue_node *prev = NULL;
   while (node != NULL)
   {
-    if (removeCondition(node->value, element)) 
+    if (removeCondition(node->value, element))
     {
       if (prev == NULL)
       {
         queue->first = node->next;
-      } else
+      }
+      else
       {
         prev->next = node->next;
       }
@@ -180,7 +181,7 @@ void* takeElement(queueADT queue, int (*removeCondition)(void *, void *), void *
       {
         queue->last = prev;
       }
-      void* nodeValue = node->value;
+      void *nodeValue = node->value;
       free(node);
       queue->size -= 1;
       return nodeValue;

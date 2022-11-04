@@ -13,14 +13,14 @@
 #include "string.h"
 #include "stdio.h"
 
-uint8_t sys_dateAndTime(uint64_t rtcID)
+uint8_t getRTC(uint64_t rtcID)
 {
     uint8_t x = _getRTCInfo(rtcID);
     uint8_t result = ((x / 16) * 10) + (x & 0xf);
     return result;
 }
 
-void sys_wait(uint64_t seconds)
+void sleep(uint64_t seconds)
 {
     int startingSeconds = seconds_elapsed();
     int currentSeconds = startingSeconds;
@@ -32,20 +32,19 @@ void sys_wait(uint64_t seconds)
     }
 }
 
-int sys_inforeg(uint64_t *buffer)
+int inforeg(uint64_t *buffer)
 {
     loadRegisters(buffer);
     return 0;
 }
 
-void sys_getMem(uint64_t direc, uint8_t *buffer, uint64_t bytes)
+void getMem(uint64_t direc, uint8_t *buffer, uint64_t bytes)
 {
     for (uint8_t i = 0; i < bytes; i++)
     {
         buffer[i] = (uint8_t)_getMem(direc + i); // llamo 'bytes'(32) veces a _getMem con 32 posiciones de memoria distintos
     }
 }
-
 
 uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4)
 {
@@ -59,26 +58,25 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         clearScreen((FILE_DESCRIPTOR)arg0);
         return 0;
     case SYS_INFOREG:
-        return sys_inforeg((uint64_t *)arg1);
+        return inforeg((uint64_t *)arg1);
     case SYS_DATENTIME:
-        return sys_dateAndTime((uint64_t)arg0);
+        return getRTC((uint64_t)arg0);
     case SYS_PRINTMEM:
-        sys_getMem((uint64_t)arg0, (uint8_t *)arg1, (uint64_t)arg2);
+        getMem((uint64_t)arg0, (uint8_t *)arg1, (uint64_t)arg2);
         return 0;
     case SYS_SET_CURSOR:
         setCursor((int)arg0);
         return 0;
     case SYS_WAIT:
-        sys_wait((uint64_t)arg0);
+        sleep((uint64_t)arg0);
         return 0;
     case SYS_MALLOC:
         return (uint64_t)malloc(arg0);
     case SYS_FREE:
         free((void *)arg0);
         return 0;
-    case SYS_MEMDUMP:
-        memoryDump();
-        return 0;
+    case SYS_GETMEMINFO:
+        return (uint64_t)getMemoryInfo();
     case SYS_CREATE_PROCESS:
         return startTask((void (*)(int argc, char **argv))arg0, (int)arg1, (char **)arg2, (int)arg3, (int *)arg4);
     case SYS_GETPID:

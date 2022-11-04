@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef struct list_t {
+typedef struct list_t
+{
   struct list_t *prev, *next;
   uint8_t order;
   // 0 esta libre, 1 esta usado

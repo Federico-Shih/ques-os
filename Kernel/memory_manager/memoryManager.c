@@ -2,12 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #ifdef STANDARD
 
-#include <memoryManager.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "stdio.h"
+#include "memoryManager.h"
 
-// La estructura fue inspirada de la implementación de malloc del K&R 
+// La estructura fue inspirada de la implementación de malloc del K&R
 typedef long Align;
 
 typedef union header
@@ -77,38 +77,44 @@ void free(void *memory)
   }
 
   bool valid_external = false;
-  for (current_block = free_node; 
-      !(free_block > current_block && free_block < current_block->data.next); 
-      current_block = current_block->data.next)
+  for (current_block = free_node;
+       !(free_block > current_block && free_block < current_block->data.next);
+       current_block = current_block->data.next)
   {
     if (current_block == free_block || current_block->data.next == free_block)
       return;
-    if (current_block >= current_block->data.next && 
-      (free_block > current_block || free_block < current_block->data.next))
+    if (current_block >= current_block->data.next &&
+        (free_block > current_block || free_block < current_block->data.next))
     {
       valid_external = true;
       break;
     }
   }
 
-  if (!valid_external && 
-    (current_block + current_block->data.size > free_block 
-      || free_block + free_block->data.size > current_block->data.next)) {
+  if (!valid_external &&
+      (current_block + current_block->data.size > free_block || free_block + free_block->data.size > current_block->data.next))
+  {
     return;
   }
 
   // Encontramos un bloque y unir
-  if (free_block + free_block->data.size == current_block->data.next) {
+  if (free_block + free_block->data.size == current_block->data.next)
+  {
     free_block->data.size += current_block->data.next->data.size;
     free_block->data.next = current_block->data.next->data.next;
-  } else {
+  }
+  else
+  {
     free_block->data.next = current_block->data.next;
   }
 
-  if (current_block + current_block->data.size == free_block) {
+  if (current_block + current_block->data.size == free_block)
+  {
     current_block->data.size += free_block->data.size;
     current_block->data.next = free_block->data.next;
-  } else {
+  }
+  else
+  {
     current_block->data.next = free_block;
   }
 
@@ -132,25 +138,48 @@ void initializeMemoryManager(void *heap_base, unsigned int heap_size)
   libre:
 */
 
-void memoryDump()
+memoryInfo *getMemoryInfo()
 {
-  printf("\nMemory manager dump (Free List)");
+  memoryInfo *toReturn = malloc(sizeof(memoryInfo));
+
+  if(toReturn == NULL)
+    return NULL;
+
+  unsigned int cant = 0;
+  Header *current, *free_base;
+  current = free_base = free_node;
+  do
+  {
+    cant += current->data.size;
+    current = current->data.next;
+  } while (current != free_base);
+  
+  toReturn->availableMem = (cant * sizeof(Header));
+  toReturn->totalMem = (header_blocks*sizeof(Header));
+  return toReturn;
+}
+
+#endif
+
+/*printf("\nMemory manager dump (Free List)");
   uint64_t memoria_total = header_blocks * sizeof(Header);
   printf("\nMemoria total: %d", memoria_total);
   printf("\n\n------------------------------------\n");
 
-  if (free_node == NULL) {
+  if (free_node == NULL)
+  {
     printf("No hay bloques libres");
     return;
   }
   printf("Bloques libres\n");
 
-  Header* current, *free_base;
+  Header *current, *free_base;
 
   current = free_base = free_node;
   int i = 0;
   unsigned int cant = 0;
-  do {
+  do
+  {
     cant += current->data.size;
     printf("Bloque nro: %d | Base: ", i);
     printf("%x", (uint64_t)current);
@@ -161,9 +190,4 @@ void memoryDump()
   } while (current != free_base);
 
   uint64_t memoria_libre_total = cant * sizeof(Header);
-  printf("Memoria libre: %d | Memoria ocupada: %d\n", memoria_libre_total, memoria_total - memoria_libre_total);
-  return;
-}
-
-
-#endif
+  printf("Memoria libre: %d | Memoria ocupada: %d\n", memoria_libre_total, memoria_total - memoria_libre_total);*/

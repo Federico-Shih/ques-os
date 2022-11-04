@@ -20,7 +20,8 @@ void pushToList(list_t *list, list_t *entry)
 list_t *popFromList(list_t *list)
 {
   list_t *back = list->prev;
-  if (back == list) return NULL;
+  if (back == list)
+    return NULL;
   removeFromList(back);
   return back;
 }
@@ -34,7 +35,6 @@ void removeFromList(list_t *entry)
 }
 
 char listIsEmpty(list_t *list)
-{ 
-    return list->prev == list; 
+{
+  return list->prev == list;
 }
-

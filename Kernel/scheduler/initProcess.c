@@ -29,6 +29,6 @@ void init()
       }
     }
     free(it);
-    sys_wait(FLUSH_TIME);
+    sleep(FLUSH_TIME);
   }
 }

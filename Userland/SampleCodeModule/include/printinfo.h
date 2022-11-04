@@ -10,6 +10,7 @@ void printSemInfo();
 void printPipeInfo();
 
 void ps();
+void memDump();
 
 
 #endif

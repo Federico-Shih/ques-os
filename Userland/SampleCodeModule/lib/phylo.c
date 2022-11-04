@@ -19,26 +19,26 @@ static void testEat(int64_t index)
   if (philosopher[index].state == WAITING && philosopher[LEFT(index)].state != EATING && philosopher[RIGHT(index)].state != EATING)
   {
     philosopher[index].state = EATING;
-    sys_semPost(philosopher[index].semId);
+    semPost(philosopher[index].semId);
   }
 }
 
 void philoWait(int64_t index)
 {
-  sys_semWait(gateMutex);
+  semWait(gateMutex);
   philosopher[index].state = WAITING;
   testEat(index);
-  sys_semPost(gateMutex);
-  sys_semWait(philosopher[index].semId);
+  semPost(gateMutex);
+  semWait(philosopher[index].semId);
 }
 
 void philoRest(int64_t index)
 {
-  sys_semWait(gateMutex);
+  semWait(gateMutex);
   philosopher[index].state = DECIDING;
   testEat(LEFT(index));
   testEat(RIGHT(index));
-  sys_semPost(gateMutex);
+  semPost(gateMutex);
 }
 
 void philoMain(unsigned int argc, char *argv[])
@@ -47,9 +47,9 @@ void philoMain(unsigned int argc, char *argv[])
   while (1)
   {
     philoWait(index);
-    sys_wait(EATING);
+    sleep(EATING);
     philoRest(index);
-    sys_wait(DECIDING);
+    sleep(DECIDING);
   }
 }
 
@@ -58,10 +58,10 @@ int startPhiloProcess()
   philosopher[currentPhilosofers].state = DECIDING;
   char *args[2] = {"philosofer"};
   args[1] = _itoa(currentPhilosofers, 10);
-  int processPid = sys_startTask(&philoMain, 2, args, 0, NULL);
+  int processPid = startTask(&philoMain, 2, args, 0, NULL);
   if (processPid == -1)
   {
-    sys_semClose(philosopher[currentPhilosofers].semId);
+    semClose(philosopher[currentPhilosofers].semId);
     return -1;
   }
   philosopher[currentPhilosofers].pid = processPid;
@@ -76,23 +76,23 @@ int addPhilosofer()
     return -1;
   }
 
-  int semaphore = sys_semInit(1);
+  int semaphore = semInit(1);
   if (semaphore == -1)
   {
     return -1;
   }
   philosopher[currentPhilosofers].semId = semaphore;
 
-  sys_semWait(gateMutex);
+  semWait(gateMutex);
   startPhiloProcess();
-  sys_semPost(gateMutex);
+  semPost(gateMutex);
   return 0;
 }
 
 void freePhilosofer(int index)
 {
-  sys_kill(philosopher[index].pid);
-  sys_semClose(philosopher[index].semId);
+  kill(philosopher[index].pid);
+  semClose(philosopher[index].semId);
 }
 
 int removePhilosofer()
@@ -102,10 +102,10 @@ int removePhilosofer()
     return -1;
   }
 
-  sys_semWait(gateMutex);
+  semWait(gateMutex);
   freePhilosofer(currentPhilosofers - 1);
   currentPhilosofers -= 1;
-  sys_semPost(gateMutex);
+  semPost(gateMutex);
   return 0;
 }
 
@@ -113,7 +113,7 @@ void printTable()
 {
   while (1)
   {
-    sys_semWait(gateMutex);
+    semWait(gateMutex);
     for (int i = 0; i < currentPhilosofers; i += 1)
     {
       if (philosopher[i].state == EATING)
@@ -122,8 +122,8 @@ void printTable()
         _fprintf("%c ", '.');
     }
     _putc('\n');
-    sys_semPost(gateMutex);
-    sys_wait(PRINT_TIME);
+    semPost(gateMutex);
+    sleep(PRINT_TIME);
   }
 }
 static color_t standard[] = {WHITE, BLACK};
@@ -133,26 +133,26 @@ static color_t phyloQuit[] = {GREEN, BLACK};
 static color_t errorPhylo[] = {BLACK, RED};
 void phylo()
 {
-  gateMutex = sys_semInit(1);
+  gateMutex = semInit(1);
   if (gateMutex == -1)
     return;
 
   currentPhilosofers = 0;
 
-  sys_write("Pulse la tecla", 14, standard);
-  sys_write(" a ", 3, phyloAdd);
-  sys_write("para agregar un filosofo comensal. \n", 36, standard);
-  sys_write("Pulse la tecla", 14, standard);
-  sys_write(" d ", 3, phyloRemove);
-  sys_write("para eliminar un filosofo comensal. \n", 37, standard);
-  sys_write("Pulse la tecla", 14, standard);
-  sys_write(" q ", 3, phyloQuit);
-  sys_write("para cerrar la mesa. \n", 23, standard);
+  write("Pulse la tecla", 14, standard);
+  write(" a ", 3, phyloAdd);
+  write("para agregar un filosofo comensal. \n", 36, standard);
+  write("Pulse la tecla", 14, standard);
+  write(" d ", 3, phyloRemove);
+  write("para eliminar un filosofo comensal. \n", 37, standard);
+  write("Pulse la tecla", 14, standard);
+  write(" q ", 3, phyloQuit);
+  write("para cerrar la mesa. \n", 23, standard);
 
-  sys_semWait(gateMutex);
+  semWait(gateMutex);
   for (int i = 0; i < INITIAL_PHILO; i += 1)
   {
-    int semaphore = sys_semInit(1);
+    int semaphore = semInit(1);
     if (semaphore == -1)
     {
       _fprintf("ERROR: No se pudo inicializar semaforo.\n");
@@ -170,13 +170,13 @@ void phylo()
   }
 
   char *args[] = {"Print table"};
-  int tablePid = sys_startTask(&printTable, 1, args, 0, NULL);
+  int tablePid = startTask(&printTable, 1, args, 0, NULL);
   if (tablePid == -1)
   {
     _fprintf("ERROR: No se pudo inicializar proceso de mesa.");
     return;
   }
-  sys_semPost(gateMutex);
+  semPost(gateMutex);
   char c;
   while ((c = getChar()) != -1)
   {
@@ -184,30 +184,28 @@ void phylo()
     {
       int addedPhilo = addPhilosofer();
       if (addedPhilo == 0)
-        sys_write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
+        write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
       else
-        sys_write("No hay mas espacio en la mesa\n", 32, errorPhylo);
+        write("No hay mas espacio en la mesa\n", 32, errorPhylo);
     }
     else if (c == 'd')
     {
       int removedPhilo = removePhilosofer();
       if (removedPhilo == 0)
-        sys_write("Un filosofo ha concluido su tiempo en la mesa del queso. \n", 59, phyloRemove);
+        write("Un filosofo ha concluido su tiempo en la mesa del queso. \n", 59, phyloRemove);
       else
-        sys_write("Minima cantidad de filosofos alcanzado\n", 40, errorPhylo);
+        write("Minima cantidad de filosofos alcanzado\n", 40, errorPhylo);
     }
     else if (c == 'q')
     {
-      sys_write("Y en ese momento\nuna gran ola llego,\nretirando a los filosofos\nhacia un lugar mejor. \n", 87, phyloQuit);
+      write("Y en ese momento\nuna gran ola llego,\nretirando a los filosofos\nhacia un lugar mejor. \n", 87, phyloQuit);
       break;
     }
   }
-  if (c == -1)
-    _fprintf("EOF\n");
   for (int i = 0; i < currentPhilosofers; i += 1)
   {
     freePhilosofer(i);
   }
-  sys_kill(tablePid);
-  sys_semClose(gateMutex);
+  kill(tablePid);
+  semClose(gateMutex);
 }

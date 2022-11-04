@@ -22,7 +22,7 @@ void test_processes(unsigned int argc, char *argv[])
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
-  uint64_t max_processes;
+  int64_t max_processes;
   char *argvAux[] = {"endless_loop"};
 
   if (argc < 2)
@@ -37,7 +37,7 @@ void test_processes(unsigned int argc, char *argv[])
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++)
     {
-      p_rqs[rq].pid = sys_startTask(&endless_loop, 1, argvAux, 0, NULL);
+      p_rqs[rq].pid = startTask(&endless_loop, 1, argvAux, 0, NULL);
 
       if (p_rqs[rq].pid == -1)
       {
@@ -50,7 +50,7 @@ void test_processes(unsigned int argc, char *argv[])
         alive++;
       }
     }
-    sys_wait(1);
+    sleep(1);
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0)
     {
@@ -63,7 +63,7 @@ void test_processes(unsigned int argc, char *argv[])
         case 0:
           if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED)
           {
-            if (sys_kill(p_rqs[rq].pid) == -1)
+            if (kill(p_rqs[rq].pid) == -1)
             {
               _fprintf("test_processes: ERROR killing process\n");
               return;
@@ -76,7 +76,7 @@ void test_processes(unsigned int argc, char *argv[])
         case 1:
           if (p_rqs[rq].state == RUNNING)
           {
-            if (sys_block(p_rqs[rq].pid) == -1)
+            if (block(p_rqs[rq].pid) == -1)
             {
               _fprintf("test_processes: ERROR blocking process\n");
               return;
@@ -90,9 +90,9 @@ void test_processes(unsigned int argc, char *argv[])
       // Randomly unblocks processes
       for (rq = 0; rq < max_processes; rq++)
       {
-         if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
+        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2)
         {
-          if (sys_resume(p_rqs[rq].pid) == -1)
+          if (resume(p_rqs[rq].pid) == -1)
           {
             _fprintf("test_processes: ERROR unblocking process\n");
             return;
@@ -106,6 +106,6 @@ void test_processes(unsigned int argc, char *argv[])
     {
       waitpid(p_rqs[rq].pid);
     }
-    sys_wait(1);
+    sleep(1);
   }
 }

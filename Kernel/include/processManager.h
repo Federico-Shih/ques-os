@@ -18,7 +18,11 @@ typedef enum
   TERMINATED,
 } process_state;
 
-typedef enum { BACKGROUND_PRIORITY = 1, FOREGROUND_PRIORITY } priority_type;
+typedef enum
+{
+  BACKGROUND_PRIORITY = 1,
+  FOREGROUND_PRIORITY
+} priority_type;
 
 typedef struct pcb
 {
@@ -36,8 +40,8 @@ typedef struct pcb
   int semId;
 } pcb;
 
-
-typedef struct {
+typedef struct
+{
   uint64_t gs;
   uint64_t fs;
   uint64_t r15;
@@ -65,11 +69,11 @@ typedef struct {
 } stackFrame;
 
 // Obtiene un proceso en especifico
-pcb* getProcess(queueADT queue, int pid);
+pcb *getProcess(queueADT queue, int pid);
 
 queueADT getProcessQueue();
 
-pcb* getCallingProcess();
+pcb *getCallingProcess();
 
 // Inicializa el scheduler y la queue
 void initScheduler();
@@ -81,16 +85,16 @@ void initScheduler();
 void *scheduleTask(void *currStackPointer);
 
 /*
-Empieza un proceso. 
+Empieza un proceso.
 Args:
 - Puntero a la funcion del proceso
 - argc y argv
 - Si es foreground o background
 - File descriptors. Si se envia NULL, hereda los filedescriptors del padre.
-*/ 
-int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
+*/
+int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int foreground, int *fd);
 
-schedulerInfo* getSchedulerInfo();
+schedulerInfo *getSchedulerInfo();
 
 // Obtiene el pid del proceso actual
 int getpid();
@@ -103,8 +107,10 @@ int blockTask(int pid);
 
 int resumeTask(int pid);
 
+// Mata el proceso actual
 int killCurrent();
 
+// Mata el proceso actual que este corriendo el foreground.
 int killCurrentForeground();
 
 int yield();
@@ -120,9 +126,9 @@ char *stateToStr(process_state state);
 
 void _callTimerTick();
 
-pcb* initializeBlock(char* name, int foreground, int *fd);
+pcb *initializeBlock(char *name, int foreground, int *fd);
 
-void initializeStack(void (*process)(int, char**), int argc, char **argv, void *rbp);
+void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp);
 
 int waitpid(int pid);
 

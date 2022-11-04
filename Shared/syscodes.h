@@ -13,7 +13,7 @@ typedef enum {
   // Memory Manager
   SYS_MALLOC,
   SYS_FREE,
-  SYS_MEMDUMP,
+  SYS_GETMEMINFO,
   // Scheduler
   SYS_CREATE_PROCESS,
   SYS_GETPID,

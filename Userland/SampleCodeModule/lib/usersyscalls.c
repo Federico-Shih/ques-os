@@ -1,137 +1,132 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <usersyscalls.h>
+#include "usersyscalls.h"
 
-char sys_read()
+char read()
 {
   return _syscall(SYS_READ, 0, 0, 0, 0, 0);
 }
 
-int sys_write(const char *buffer, uint64_t size, color_t *colors)
+int write(const char *buffer, uint64_t size, color_t *colors)
 {
-    return _syscall(SYS_WRITE, (uint64_t)buffer, (uint64_t)size, (uint64_t)colors, 0, 0);
+  return _syscall(SYS_WRITE, (uint64_t)buffer, (uint64_t)size, (uint64_t)colors, 0, 0);
 }
 
-int sys_clear(uint8_t fd)
+int clear(uint8_t fd)
 {
-    return _syscall(SYS_CLEAN_SCREEN, fd, 0, 0, 0, 0);
+  return _syscall(SYS_CLEAN_SCREEN, fd, 0, 0, 0, 0);
 }
 
-int sys_inforeg(uint64_t *buffer)
+int inforeg(uint64_t *buffer)
 {
-  return _syscall(SYS_INFOREG, 0, (uint64_t)buffer,0, 0, 0);
+  return _syscall(SYS_INFOREG, 0, (uint64_t)buffer, 0, 0, 0);
 }
 
-int sys_dateAndTime(uint64_t id)
+int getRTC(uint64_t id)
 {
   return _syscall(SYS_DATENTIME, (uint64_t)id, 0, 0, 0, 0);
 }
 
-int sys_printMem(uint64_t direc, uint8_t * buffer, uint64_t bytes)
+int printMem(uint64_t direc, uint8_t *buffer, uint64_t bytes)
 {
-  return _syscall(SYS_PRINTMEM,(uint64_t)direc, (uint64_t) buffer, (uint64_t)bytes, 0, 0);
+  return _syscall(SYS_PRINTMEM, (uint64_t)direc, (uint64_t)buffer, (uint64_t)bytes, 0, 0);
 }
 
-int sys_wait(uint64_t seconds)
+int sleep(uint64_t seconds)
 {
   return _syscall(SYS_WAIT, (uint64_t)seconds, 0, 0, 0, 0);
 }
 
 // Muestra cursor, 0 para desactivar 1 para activar.
-int sys_showCursor(int active)
+int showCursor(int active)
 {
   return _syscall(SYS_SET_CURSOR, (uint64_t)active, 0, 0, 0, 0);
 }
 
 // Syscalls de manejo de memoria (heap)
 
-void *sys_malloc(size_t memory)
+void *malloc(size_t memory)
 {
   return (void *)_syscall(SYS_MALLOC, memory, 0, 0, 0, 0);
 }
 
-void sys_free(void *memory)
+void free(void *memory)
 {
- _syscall(SYS_FREE, (uint64_t) memory, 0, 0, 0, 0);
+  _syscall(SYS_FREE, (uint64_t)memory, 0, 0, 0, 0);
 }
 
-void sys_memDump()
+memoryInfo *getMemoryInfo()
 {
- _syscall(SYS_MEMDUMP, 0, 0, 0, 0, 0);
+  return (memoryInfo *)_syscall(SYS_GETMEMINFO, 0, 0, 0, 0, 0);
 }
 
 // Syscalls de manejo de procesos
 
-int sys_create()
-{
-  return 0;
-}
-
-int sys_getpid()
+int getpid()
 {
   return _syscall(SYS_GETPID, 0, 0, 0, 0, 0);
 }
 
-schedulerInfo* getSchedulerInfo()
+schedulerInfo *getSchedulerInfo()
 {
   return (schedulerInfo *)_syscall(SYS_GETPROCESSESINFO, 0, 0, 0, 0, 0);
 }
 
-int sys_kill(int pid)
+int kill(int pid)
 {
   return _syscall(SYS_KILL, pid, 0, 0, 0, 0);
 }
 
-void sys_nice(int pid, int newPriority)
+void nice(int pid, int newPriority)
 {
- _syscall(SYS_NICE, pid, newPriority, 0, 0, 0);
+  _syscall(SYS_NICE, pid, newPriority, 0, 0, 0);
 }
 
-int sys_block(int pid)
+int block(int pid)
 {
   return _syscall(SYS_BLOCK, pid, 0, 0, 0, 0);
 }
 
-int sys_resume(int pid)
+int resume(int pid)
 {
   return _syscall(SYS_RESUME, pid, 0, 0, 0, 0);
 }
 
-void sys_yield()
+void yield()
 {
-  _syscall(SYS_YIELD, 0 , 0 , 0, 0, 0);
+  _syscall(SYS_YIELD, 0, 0, 0, 0, 0);
 }
-int sys_startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground, int *fd)
+int startTask(void (*process)(unsigned int argc, char **argv), int argc, char **argv, int foreground, int *fd)
 {
   return _syscall(SYS_CREATE_PROCESS, (uint64_t)process, (uint64_t)argc, (uint64_t)argv, (uint64_t)foreground, (uint64_t)fd);
 }
 
 // Syscalls de manejo de semaforos
 
-int sys_semOpen(char *id, int initialValue)
+int semOpen(char *id, int initialValue)
 {
   return _syscall(SYS_SEMOPEN, (uint64_t)id, (uint64_t)initialValue, 0, 0, 0);
 }
 
-int sys_semInit(int initialValue)
+int semInit(int initialValue)
 {
   return _syscall(SYS_SEMINIT, initialValue, 0, 0, 0, 0);
 }
 
-int sys_semWait(int id)
+int semWait(int id)
 {
   return _syscall(SYS_SEMWAIT, id, 0, 0, 0, 0);
 }
 
-int sys_semPost(int id)
+int semPost(int id)
 {
   return _syscall(SYS_SEMPOST, id, 0, 0, 0, 0);
 }
-int sys_semClose(int id)
+int semClose(int id)
 {
   return _syscall(SYS_SEMCLOSE, id, 0, 0, 0, 0);
 }
-userlandSemInfo * sys_getSemInfo()
+userlandSemInfo *getSemInfo()
 {
   return (userlandSemInfo *)_syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
 }
@@ -143,23 +138,23 @@ int waitpid(int pid)
 
 // Syscalls de manejo de pipes
 
-int sys_pipeOpen(int pipeId)
+int pipeOpen(int pipeId)
 {
   return _syscall(SYS_PIPEOPEN, pipeId, 0, 0, 0, 0);
 }
-int sys_pipeRead(int pipeId)
+int pipeRead(int pipeId)
 {
   return _syscall(SYS_PIPEREAD, pipeId, 0, 0, 0, 0);
 }
-int sys_pipeWrite(int pipeId, char *str)
+int pipeWrite(int pipeId, char *str)
 {
   return _syscall(SYS_PIPEWRITE, (uint64_t)pipeId, (uint64_t)str, 0, 0, 0);
 }
-int sys_pipeClose(int pipeId)
+int pipeClose(int pipeId)
 {
   return _syscall(SYS_PIPECLOSE, pipeId, 0, 0, 0, 0);
 }
-userlandPipeInfo * sys_getPipeInfo()
+userlandPipeInfo *getPipeInfo()
 {
   return (userlandPipeInfo *)_syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
 }

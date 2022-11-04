@@ -2,13 +2,14 @@
 #define MEMORY_MANAGER_H
 
 #include <stdint.h>
+#include "shared.h"
 
-void* malloc(uint64_t size);
+void *malloc(uint64_t size);
 
-void free(void* memory);
+void free(void *memory);
 
-void initializeMemoryManager (void* heap_base, unsigned int heap_size);
+void initializeMemoryManager(void *heap_base, unsigned int heap_size);
 
-void memoryDump();
+memoryInfo *getMemoryInfo();
 
 #endif

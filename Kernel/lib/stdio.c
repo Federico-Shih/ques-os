@@ -10,7 +10,8 @@
 
 static int scan(char const *fmt, va_list arg);
 
-int printf(char const *fmt, ...) {
+int printf(char const *fmt, ...)
+{
   va_list arguments;
   int length;
 
@@ -21,26 +22,30 @@ int printf(char const *fmt, ...) {
 }
 
 // https://www.techiedelight.com/implement-itoa-function-in-c/
-
 int abs(int num) { return num < 0 ? -num : num; }
 
 // function to reverse buffer[i..j]
-char *reverse(char *buffer, int i, int j) {
-  while (i < j) swap(&buffer[i++], &buffer[j--]);
+char *reverse(char *buffer, int i, int j)
+{
+  while (i < j)
+    swap(&buffer[i++], &buffer[j--]);
 
   return buffer;
 }
 
-void swap(char *x, char *y) {
+void swap(char *x, char *y)
+{
   char t = *x;
   *x = *y;
   *y = t;
 }
 
 // Iterative function to implement itoa() function in C
-char *intToStr(int value, char *buffer, int base) {
+char *intToStr(int value, char *buffer, int base)
+{
   // invalid input
-  if (base < 2 || base > 32) {
+  if (base < 2 || base > 32)
+  {
     return buffer;
   }
 
@@ -48,12 +53,16 @@ char *intToStr(int value, char *buffer, int base) {
   int n = abs(value);
 
   int i = 0;
-  while (n) {
+  while (n)
+  {
     int r = n % base;
 
-    if (r >= 10) {
+    if (r >= 10)
+    {
       buffer[i++] = 65 + (r - 10);
-    } else {
+    }
+    else
+    {
       buffer[i++] = 48 + r;
     }
 
@@ -61,24 +70,27 @@ char *intToStr(int value, char *buffer, int base) {
   }
 
   // if the number is 0
-  if (i == 0) {
+  if (i == 0)
+  {
     buffer[i++] = '0';
   }
 
   // If the base is 10 and the value is negative, the resulting string
   // is preceded with a minus sign (-)
   // With any other base, value is always considered unsigned
-  if (value < 0 && base == 10) {
+  if (value < 0 && base == 10)
+  {
     buffer[i++] = '-';
   }
 
-  buffer[i] = '\0';  // null terminate string
+  buffer[i] = '\0'; // null terminate string
 
   // reverse the string and return it
   return reverse(buffer, 0, i - 1);
 }
 
-static int scan(char const *fmt, va_list arg) {
+static int scan(char const *fmt, va_list arg)
+{
   int int_temp;
   char char_temp;
   char *string_temp;
@@ -90,42 +102,47 @@ static int scan(char const *fmt, va_list arg) {
 
   char buffer[512];
 
-  while ((ch = *fmt++)) {
-    if ('%' == ch) {
-      switch (ch = *fmt++) {
-        case '%':
-          toPrint = '%';
-          sysWrite(&toPrint, 1, NULL);
-          length++;
-          break;
-        case 'c':
-          char_temp = va_arg(arg, int);
-          sysWrite(&char_temp, 1, NULL);
-          length++;
-          break;
-        case 's':
-          string_temp = va_arg(arg, char *);
-          thisLength = strlen(string_temp);
-          sysWrite(string_temp, length, NULL);
-          length += thisLength;
-          break;
-        case 'd':
-          int_temp = va_arg(arg, int);
-          intToStr(int_temp, buffer, 10);
-          thisLength = strlen(buffer);
-          sysWrite(buffer, thisLength, NULL);
-          length += thisLength;
-          break;
-        case 'x':
-          int_temp = va_arg(arg, int);
-          intToStr(int_temp, buffer, 16);
-          sysWrite("0x", 2, NULL);
-          thisLength = strlen(buffer);
-          sysWrite(buffer, thisLength, NULL);
-          length += thisLength;
-          break;
+  while ((ch = *fmt++))
+  {
+    if ('%' == ch)
+    {
+      switch (ch = *fmt++)
+      {
+      case '%':
+        toPrint = '%';
+        sysWrite(&toPrint, 1, NULL);
+        length++;
+        break;
+      case 'c':
+        char_temp = va_arg(arg, int);
+        sysWrite(&char_temp, 1, NULL);
+        length++;
+        break;
+      case 's':
+        string_temp = va_arg(arg, char *);
+        thisLength = strlen(string_temp);
+        sysWrite(string_temp, length, NULL);
+        length += thisLength;
+        break;
+      case 'd':
+        int_temp = va_arg(arg, int);
+        intToStr(int_temp, buffer, 10);
+        thisLength = strlen(buffer);
+        sysWrite(buffer, thisLength, NULL);
+        length += thisLength;
+        break;
+      case 'x':
+        int_temp = va_arg(arg, int);
+        intToStr(int_temp, buffer, 16);
+        sysWrite("0x", 2, NULL);
+        thisLength = strlen(buffer);
+        sysWrite(buffer, thisLength, NULL);
+        length += thisLength;
+        break;
       }
-    } else {
+    }
+    else
+    {
       sysWrite(&ch, 1, NULL);
       length++;
     }
@@ -135,40 +152,39 @@ static int scan(char const *fmt, va_list arg) {
 
 int sysWrite(const char *buffer, uint64_t size, color_t *colors)
 {
-    if (buffer == 0 || size == 0)
-        return -1;
+  if (buffer == 0 || size == 0)
+    return -1;
 
-    pcb *currentProcess = getCallingProcess();
-    int i;
+  pcb *currentProcess = getCallingProcess();
+  int i;
 
-    color_t textColor = (colors) ? colors[0] : LGREY;
-    color_t bgColor = (colors) ? colors[1] : BLACK;
+  color_t textColor = (colors) ? colors[0] : LGREY;
+  color_t bgColor = (colors) ? colors[1] : BLACK;
 
-    for (i = 0; i < size && buffer[i]; i += 1)
+  for (i = 0; i < size && buffer[i]; i += 1)
+  {
+    if (currentProcess->fileDescriptors[1] == STDOUT_PIPENO)
+      printCharColor(buffer[i], textColor, bgColor, 1);
+    else
     {
-        if (currentProcess->fileDescriptors[1] == STDOUT_PIPENO)
-            printCharColor(buffer[i], textColor, bgColor, 1);
-        else
-        {
-            int written = pipePutchar(currentProcess->fileDescriptors[1], buffer[i]);
-            if (written == -1)
-              return -1;
-        }
+      int written = pipePutchar(currentProcess->fileDescriptors[1], buffer[i]);
+      if (written == -1)
+        return -1;
     }
-    return i;
+  }
+  return i;
 }
-
 
 char sysRead()
 {
-    pcb *current = getCallingProcess();
-    int readPipe = current->fileDescriptors[0];
-    if (readPipe == 0)
-    {
-        if (current->foreground)
-            return readStdin();
-        return -1;
-    }
-    else
-        return pipeRead(readPipe);
+  pcb *current = getCallingProcess();
+  int readPipe = current->fileDescriptors[0];
+  if (readPipe == 0)
+  {
+    if (current->foreground)
+      return readStdin();
+    return -1;
+  }
+  else
+    return pipeRead(readPipe);
 }

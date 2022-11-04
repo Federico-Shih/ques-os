@@ -40,10 +40,6 @@ typedef struct userlandPipeInfo {
 
 // ------------ SCHEDULER ----------------------------
 
-/*
-
-*/
-
 typedef struct processInfo {
   char name[30];
   int pid;
@@ -59,5 +55,11 @@ typedef struct schedulerInfo {
   processInfo * array;
   int length;
 } schedulerInfo;
+
+//------------- MEMORY --------------------
+typedef struct memoryInfo {
+  uint64_t availableMem;
+  uint64_t totalMem;
+} memoryInfo;
 
 #endif

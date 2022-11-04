@@ -16,5 +16,5 @@ int pipeRead(int pipeId);
 void printPipeInfo();
 int pipePutchar(int pipeId, char c);
 
-userlandPipeInfo * getPipeInfo();
+userlandPipeInfo *getPipeInfo();
 #endif

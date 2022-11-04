@@ -4,7 +4,8 @@
 #include <ustdlib.h>
 #include <shell.h>
 
-int main() {
+int main()
+{
 	initShell();
 	_print("hola");
 	return 0;

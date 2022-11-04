@@ -32,12 +32,12 @@ static command_t commands[] = {
     {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
     {"clear", &clearScreen, "Limpia la pantalla. "},
-    {"mem", &sys_memDump, "Imprime el estado de memoria. "},
+    {"mem", &memDump, "Imprime el estado de memoria. "},
     {"ps", &ps, "Imprime el estado de los procesos. "},
-    {"kill", &kill, "Recibe un pid y mata al proceso. "},
-    {"block", &block, "Recibe un pid y bloquea al proceso. "},
-    {"resume", &resume, "Recibe un pid y resume el proceso. "},
-    {"nice", &nice, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
+    {"kill", &killTask, "Recibe un pid y mata al proceso. "},
+    {"block", &blockTask, "Recibe un pid y bloquea al proceso. "},
+    {"resume", &resumeTask, "Recibe un pid y resume el proceso. "},
+    {"nice", &niceTask, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
     {"loop", &loop, "Te saluda cada cierto tiempo. "},
     {"sem", &printSemInfo, "Imprime informacion sobre los semaforos. "},
     {"pipes", &printPipeInfo, "Imprime estado de los pipes. "},
@@ -68,7 +68,7 @@ void printmem(unsigned int argc, char *argv[])
   if (argc < 1)
   {
     char *error_message = "No se dio una direccion de memoria\n";
-    sys_write(error_message, _strlen(error_message), ERROR_COLOURS);
+    write(error_message, _strlen(error_message), ERROR_COLOURS);
     return;
   }
   char *address = argv[0];
@@ -78,13 +78,13 @@ void printmem(unsigned int argc, char *argv[])
   if (memDir == -1 || memDir >= LAST_MEM)
   {
     char *error_message = "\nLa direccion ingresada no es alcanzable \n";
-    sys_write(error_message, _strlen(error_message), ERROR_COLOURS);
+    write(error_message, _strlen(error_message), ERROR_COLOURS);
     return;
   }
   _fprintf("\nDump de 32 bytes a partir de la direccion: %s\n\n", address);
 
   uint8_t buffer[DUMP_SIZE];
-  sys_printMem(memDir, buffer, DUMP_SIZE);
+  printMem(memDir, buffer, DUMP_SIZE);
   for (int i = 0; i < DUMP_SIZE; i++)
   {
     if (i % 8 == 0)
@@ -98,13 +98,13 @@ void printmem(unsigned int argc, char *argv[])
 
 void dateAndTime()
 {
-  uint64_t date = sys_dateAndTime(DAY_RTC_ID);
-  uint64_t month = sys_dateAndTime(MONTH_RTC_ID);
-  uint64_t year = sys_dateAndTime(YEAR_RTC_ID);
+  uint64_t date = getRTC(DAY_RTC_ID);
+  uint64_t month = getRTC(MONTH_RTC_ID);
+  uint64_t year = getRTC(YEAR_RTC_ID);
   _fprintf("La fecha de hoy es: %d/%d/%d", date, month, year);
-  uint64_t hour = sys_dateAndTime(HOUR_RTC_ID);
-  uint64_t minute = sys_dateAndTime(MINUTE_RTC_ID);
-  uint64_t second = sys_dateAndTime(SECOND_RTC_ID);
+  uint64_t hour = getRTC(HOUR_RTC_ID);
+  uint64_t minute = getRTC(MINUTE_RTC_ID);
+  uint64_t second = getRTC(SECOND_RTC_ID);
   _fprintf("\n Y el horario de este momento es: %d:%d:%d\n", hour, minute, second);
 }
 
@@ -153,7 +153,7 @@ void help(unsigned int argc, char *argv[])
 void infoReg()
 {
   static uint64_t registers[TOTAL_REGISTERS];
-  sys_inforeg(registers);
+  inforeg(registers);
 
   for (int i = 0; i < TOTAL_REGISTERS; i++)
   {
@@ -191,12 +191,7 @@ command_t *getCommand(char *commandName)
   return NULL;
 }
 
-command_t *getCommands()
-{
-  return commands;
-}
-
-void kill(unsigned int argc, char *argv[])
+void killTask(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
@@ -204,10 +199,10 @@ void kill(unsigned int argc, char *argv[])
     return;
   }
   int res = _atoi(argv[1]);
-  sys_kill(res);
+  kill(res);
 }
 
-void block(unsigned int argc, char *argv[])
+void blockTask(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
@@ -215,10 +210,10 @@ void block(unsigned int argc, char *argv[])
     return;
   }
   int res = _atoi(argv[1]);
-  sys_block(res);
+  block(res);
 }
 
-void resume(unsigned int argc, char *argv[])
+void resumeTask(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
@@ -226,10 +221,10 @@ void resume(unsigned int argc, char *argv[])
     return;
   }
   int res = _atoi(argv[1]);
-  sys_resume(res);
+  resume(res);
 }
 
-void nice(unsigned int argc, char *argv[])
+void niceTask(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
@@ -240,7 +235,7 @@ void nice(unsigned int argc, char *argv[])
   {
     _fprintf("No se ingreso un valor de nice\n");
   }
-  sys_nice(_atoi(argv[1]), _atoi(argv[2]));
+  nice(_atoi(argv[1]), _atoi(argv[2]));
 }
 
 void cat(unsigned int argc, char *argv[])
@@ -294,52 +289,52 @@ void filter(unsigned int argc, char *argv[])
 
 void printCheeseOs()
 {
-  sys_write("  ______   __    __  ________   ______           ______    ______  \n", 68, CHEESE_COLOURS);
-  sys_write(" /      \\ |  \\  |  \\|        \\ /      \\         /      \\  /      \\ \n", 68, CHEESE_COLOURS);
-  sys_write("|  $$$$$$\\| $$  | $$| $$$$$$$$|  $$$$$$\\       |  $$$$$$\\|  $$$$$$\\\n", 68, CHEESE_COLOURS);
-  sys_write("| $$  | $$| $$  | $$| $$__    | $$___\\$$______ | $$  | $$| $$___\\$$\n", 68, CHEESE_COLOURS);
-  sys_write("| $$  | $$| $$  | $$| $$  \\    \\$$    \\|      \\| $$  | $$ \\$$    \\ \n", 68, CHEESE_COLOURS);
-  sys_write("| $$ _| $$| $$  | $$| $$$$$    _\\$$$$$$\\$$$$$$| $$  | $$ _\\$$$$$$\\\n", 67, CHEESE_COLOURS);
-  sys_write("| $$/ \\ $$| $$__/ $$| $$_____ |  \\__| $$       | $$__/ $$|  \\__| $$\n", 68, CHEESE_COLOURS);
-  sys_write(" \\$$ $$ $$ \\$$    $$| $$     \\ \\$$    $$        \\$$    $$ \\$$    $$\n", 68, CHEESE_COLOURS);
-  sys_write("  \\$$$$$$\\  \\$$$$$$  \\$$$$$$$$  \\$$$$$$          \\$$$$$$   \\$$$$$$\n", 67, CHEESE_COLOURS);
-  sys_write("      \\$$$\n", 11, CHEESE_COLOURS);
+  write("  ______   __    __  ________   ______           ______    ______  \n", 68, CHEESE_COLOURS);
+  write(" /      \\ |  \\  |  \\|        \\ /      \\         /      \\  /      \\ \n", 68, CHEESE_COLOURS);
+  write("|  $$$$$$\\| $$  | $$| $$$$$$$$|  $$$$$$\\       |  $$$$$$\\|  $$$$$$\\\n", 68, CHEESE_COLOURS);
+  write("| $$  | $$| $$  | $$| $$__    | $$___\\$$______ | $$  | $$| $$___\\$$\n", 68, CHEESE_COLOURS);
+  write("| $$  | $$| $$  | $$| $$  \\    \\$$    \\|      \\| $$  | $$ \\$$    \\ \n", 68, CHEESE_COLOURS);
+  write("| $$ _| $$| $$  | $$| $$$$$    _\\$$$$$$\\$$$$$$| $$  | $$ _\\$$$$$$\\\n", 67, CHEESE_COLOURS);
+  write("| $$/ \\ $$| $$__/ $$| $$_____ |  \\__| $$       | $$__/ $$|  \\__| $$\n", 68, CHEESE_COLOURS);
+  write(" \\$$ $$ $$ \\$$    $$| $$     \\ \\$$    $$        \\$$    $$ \\$$    $$\n", 68, CHEESE_COLOURS);
+  write("  \\$$$$$$\\  \\$$$$$$  \\$$$$$$$$  \\$$$$$$          \\$$$$$$   \\$$$$$$\n", 67, CHEESE_COLOURS);
+  write("      \\$$$\n", 11, CHEESE_COLOURS);
   _fprintf("\n");
 }
 
 void printCheese()
 {
   _fprintf("\n");
-  sys_write("    _--\"-.           \n", 22, CHEESE_COLOURS);
-  sys_write(" .-\"      \"-.        \n", 22, CHEESE_COLOURS);
-  sys_write("|\"\"--..      \'-.     \n", 22, CHEESE_COLOURS);
-  sys_write("|      \"\"--..   \'-.  \n", 22, CHEESE_COLOURS);
-  sys_write("|.-. .-\".    \"\"--..\".\n", 22, CHEESE_COLOURS);
-  sys_write("|\'./  -\'  .-.      | \n", 22, CHEESE_COLOURS);
-  sys_write("|      .-. \'.-\'   .-\'\n", 22, CHEESE_COLOURS);
-  sys_write("\'--..  \'.\'    .-  -. \n", 22, CHEESE_COLOURS);
-  sys_write("     \"\"--..   \'_\'   :\n", 22, CHEESE_COLOURS);
-  sys_write("           \"\"--..   |\n", 22, CHEESE_COLOURS);
-  sys_write("                 \"\"-\'\n", 22, CHEESE_COLOURS);
+  write("    _--\"-.           \n", 22, CHEESE_COLOURS);
+  write(" .-\"      \"-.        \n", 22, CHEESE_COLOURS);
+  write("|\"\"--..      \'-.     \n", 22, CHEESE_COLOURS);
+  write("|      \"\"--..   \'-.  \n", 22, CHEESE_COLOURS);
+  write("|.-. .-\".    \"\"--..\".\n", 22, CHEESE_COLOURS);
+  write("|\'./  -\'  .-.      | \n", 22, CHEESE_COLOURS);
+  write("|      .-. \'.-\'   .-\'\n", 22, CHEESE_COLOURS);
+  write("\'--..  \'.\'    .-  -. \n", 22, CHEESE_COLOURS);
+  write("     \"\"--..   \'_\'   :\n", 22, CHEESE_COLOURS);
+  write("           \"\"--..   |\n", 22, CHEESE_COLOURS);
+  write("                 \"\"-\'\n", 22, CHEESE_COLOURS);
   _fprintf("\n");
 }
 
 void printShortcuts()
 {
-  sys_write("\nShortcut 1: ", 13, CHEESE_COLOURS);
+  write("\nShortcut 1: ", 13, CHEESE_COLOURS);
   _fprintf("ctrl + c para terminar cualquier proceso foreground.\n");
-  sys_write("Shortcut 2: ", 13, CHEESE_COLOURS);
+  write("Shortcut 2: ", 13, CHEESE_COLOURS);
   _fprintf("ctrl + d para enviar un EOF al proceso actual(util para los procesosfilter, wc y cat).\n");
-  sys_write("Shortcut 3: ", 13, CHEESE_COLOURS);
+  write("Shortcut 3: ", 13, CHEESE_COLOURS);
   _fprintf("ctrl + r para capturar los registros en el momento.\n");
 }
 
 void ejemplos()
 {
-  sys_write("\nEjemplo 1: ", 12, CHEESE_COLOURS);
+  write("\nEjemplo 1: ", 12, CHEESE_COLOURS);
   _fprintf("Se recomienda utilizar los comandos filter, wc y cat con el operador pipe, como por ejemplo: 'sem | filter', 'pipe | wc'.");
   _fprintf(" De esta manera se puede\nobservar de una mejor manera su comportamiento.\n");
-  sys_write("Ejemplo 2: ", 12, CHEESE_COLOURS);
+  write("Ejemplo 2: ", 12, CHEESE_COLOURS);
   _fprintf("Para correr un proceso background, incluir al final del comando el \nsimbolo &, por ejemplo:'fibonacci &'.");
   _fprintf(" Recomendacion, ejecutar el comando ps para ver que el proceso esta corriendo en background (kill 'pid') para terminarlo.\n");
 }
@@ -357,7 +352,7 @@ void loop()
 {
   while (1)
   {
-    _fprintf("Hola soy %d\n", sys_getpid());
-    sys_wait(3);
+    _fprintf("Hola soy %d\n", getpid());
+    sleep(3);
   }
 }

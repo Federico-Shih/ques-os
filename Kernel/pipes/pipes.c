@@ -1,10 +1,10 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <stdlib.h>
+#include <stdint.h>
 #include "pipes.h"
 #include "sem.h"
-#include <stdint.h>
 #include "queue.h"
-#include <stdlib.h>
 #include "stdio.h"
 
 queueADT pipeQueue = NULL;
@@ -127,9 +127,17 @@ int pipeClose(int pipeId)
 userlandPipeInfo *getPipeInfo()
 {
     userlandPipeInfo *info = malloc(sizeof(userlandPipeInfo));
+
+    if(info == NULL)
+        return NULL;
+
     semWait(allPipesSem);
     info->length = getQueueSize(pipeQueue);
     info->array = malloc(sizeof(userlandPipe) * info->length);
+
+    if(info->array == NULL)
+        return NULL;
+
     info->pipeBufferSize = PIPE_BUFFER_SIZE;
 
     iteratorADT it = toBegin(pipeQueue);

@@ -1,4 +1,4 @@
- /*
+/*
  *   interrupts.h
  *
  *  Created on: Apr 18, 2010
@@ -39,7 +39,7 @@ uint64_t switchRsp(uint64_t rsp);
 // Recibe un rsp con state (que previamente hizo pushState) y hace que vuelva a la funcion utilizando un popState e iretq
 void switchContext(uint64_t rsp);
 
-//Termina la ejecución de la cpu.
+// Termina la ejecución de la cpu.
 void haltcpu(void);
 
 #endif /* INTERRUPS_H_ */

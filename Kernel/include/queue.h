@@ -7,38 +7,45 @@ typedef struct queueCDT *queueADT;
 
 typedef struct iteratorCDT *iteratorADT;
 
-typedef int (*comparator)(void*, void*);
+typedef int (*comparator)(void *, void *);
 
-//creates a new queue
+// Crea una cola generica
 queueADT initQueue();
 
+// Libera la cola
 int freeQueue(queueADT queue);
 
+// Obtiene la longitud de la cola
 uint64_t getQueueSize(queueADT queue);
-// Remove first element
-void* dequeue(queueADT queue);
-// Add element to the end
-int enqueue(queueADT queue, void* value);
-// Shows actual element
-void* peek(queueADT queue);
-// Resets the queue iterator to the first element.
-// 1 if has elements
+
+// Desencola un elemento
+void *dequeue(queueADT queue);
+
+// Encola un elemento
+int enqueue(queueADT queue, void *value);
+
+// Se fija el valor actual
+void *peek(queueADT queue);
+
+// Crea un objeto iterador
 iteratorADT toBegin(queueADT queue);
-// 
-int hasNext(iteratorADT iterator) ;
-// 
+
+// Devuelve si quedan elementos en el iterador
+int hasNext(iteratorADT iterator);
+
+// Devuelve el siguiente valor a iterar
 void *next(iteratorADT iterator);
-// 
-void *find(queueADT queue, comparator func, void* element);
 
-// Returns 0 if not found, return 1 if found
-int includes(queueADT queue, comparator func, void* element);
+// Obtiene un valor a partir de una condicion
+void *find(queueADT queue, comparator func, void *element);
 
-// Removes first element from array that fulfills removeCondition
+// Obtiene si un valor esta o no en la cola
+int includes(queueADT queue, comparator func, void *element);
+
+// Elimina el primer elemento que cumpla con la condicion y lo libera
 int removeElement(queueADT queue, comparator func, void *element);
 
-// Removes first element from array that fulfills removeCondition and returns
-void* takeElement(queueADT queue, comparator func, void *element);
-
+// Elimina el primer elemento que cumpla con la condicion y te lo devuelve
+void *takeElement(queueADT queue, comparator func, void *element);
 
 #endif

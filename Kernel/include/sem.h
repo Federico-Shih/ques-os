@@ -13,8 +13,8 @@ void printSemInfo();
 void acquire(int *lock);
 void release(int *lock);
 
-userlandBlockedPids * getBlockedPids(int semId);
-userlandSem * getSingleSem(int semId);
-userlandSemInfo * getSemInfo();
+userlandBlockedPids *getBlockedPids(int semId);
+userlandSem *getSingleSem(int semId);
+userlandSemInfo *getSemInfo();
 
 #endif

@@ -12,7 +12,7 @@ int64_t global; // shared memory
 void slowInc(int64_t *p, int64_t inc)
 {
   uint64_t aux = *p;
-  sys_yield(); // This makes the race condition highly probable
+  yield(); // This makes the race condition highly probable
   _fprintf(".");
   aux += inc;
   *p = aux;
@@ -20,7 +20,7 @@ void slowInc(int64_t *p, int64_t inc)
 
 void my_process_inc(unsigned int argc, char *argv[])
 {
-  uint64_t n;
+  int64_t n;
   int8_t inc;
   int8_t use_sem;
 
@@ -36,24 +36,24 @@ void my_process_inc(unsigned int argc, char *argv[])
 
   int sharedSem;
   if (use_sem)
-    if ((sharedSem = sys_semOpen(SEM_ID, 1)) == -1)
+    if ((sharedSem = semOpen(SEM_ID, 1)) == -1)
     {
-      _fprintf( "test_sync: ERROR opening semaphore\n");
-      return ;
+      _fprintf("test_sync: ERROR opening semaphore\n");
+      return;
     }
 
   uint64_t i;
   for (i = 0; i < n; i++)
   {
     if (use_sem)
-      sys_semWait(sharedSem);
+      semWait(sharedSem);
     slowInc(&global, inc);
     if (use_sem)
-      sys_semPost(sharedSem);
+      semPost(sharedSem);
   }
 
   if (use_sem)
-    sys_semClose(sharedSem);
+    semClose(sharedSem);
 
   return;
 }
@@ -62,16 +62,16 @@ void my_process_inc(unsigned int argc, char *argv[])
 void test_sync(unsigned int argc, char *argv[])
 { //{n, use_sem, 0}
   int pids[2 * TOTAL_PAIR_PROCESSES];
-  uint64_t n;
+  int64_t n;
 
   if (argc != 3)
   {
-    _fprintf( "# de args equivocados.");
+    _fprintf("# de args equivocados.");
     return;
   }
   if ((n = satoi(argv[1])) <= 0)
   {
-    _fprintf( "arg0 no es > 0");
+    _fprintf("arg0 no es > 0");
     return;
   }
 
@@ -83,8 +83,8 @@ void test_sync(unsigned int argc, char *argv[])
   int i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
   {
-    pids[i] = sys_startTask(&my_process_inc, 4, argvDec, 0, NULL);
-    pids[i + TOTAL_PAIR_PROCESSES] = sys_startTask(&my_process_inc, 4, argvInc, 0, NULL);
+    pids[i] = startTask(&my_process_inc, 4, argvDec, 0, NULL);
+    pids[i + TOTAL_PAIR_PROCESSES] = startTask(&my_process_inc, 4, argvInc, 0, NULL);
   }
 
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++)
@@ -93,7 +93,7 @@ void test_sync(unsigned int argc, char *argv[])
     waitpid(pids[i + TOTAL_PAIR_PROCESSES]);
   }
 
-  _fprintf( "Final value: %d\n", global);
+  _fprintf("Final value: %d\n", global);
 
   return;
 }

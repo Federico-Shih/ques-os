@@ -163,24 +163,27 @@ int semValue(int id)
   return sem->value;
 }
 
-userlandBlockedPids * getBlockedPids(int semId){
-  t_sem * sem = findSem(semId);
-  userlandBlockedPids * blockedPids = malloc(sizeof(userlandBlockedPids));
-  if (sem == NULL){
+userlandBlockedPids *getBlockedPids(int semId)
+{
+  t_sem *sem = findSem(semId);
+  userlandBlockedPids *blockedPids = malloc(sizeof(userlandBlockedPids));
+  if (sem == NULL)
+  {
     blockedPids->array = NULL;
     blockedPids->length = -1;
     return blockedPids;
   }
 
   blockedPids->length = getQueueSize(sem->blockedPidsQueue);
-  blockedPids->array = malloc(sizeof(int)*blockedPids->length);
+  blockedPids->array = malloc(sizeof(int) * blockedPids->length);
 
   iteratorADT it;
   it = toBegin(sem->blockedPidsQueue);
 
   int iterator = 0;
 
-  while (hasNext(it)){
+  while (hasNext(it))
+  {
     int *pid = next(it);
     blockedPids->array[iterator++] = *pid;
   }
@@ -189,29 +192,38 @@ userlandBlockedPids * getBlockedPids(int semId){
   return blockedPids;
 }
 
-userlandSem * getSingleSem(int semId){
+userlandSem *getSingleSem(int semId)
+{
   t_sem *sem = findSem(semId);
-  if(sem == NULL)
+  if (sem == NULL)
     return NULL;
 
-  userlandSem * semToRet = malloc(sizeof(userlandSem));
+  userlandSem *semToRet = malloc(sizeof(userlandSem));
   semToRet->id = sem->id;
   semToRet->lock = sem->lock;
   semToRet->attachedProcesses = sem->attachedProcesses;
-  semToRet->name = malloc(strlen(sem->name)+1);
+  semToRet->name = malloc(strlen(sem->name) + 1);
   strcpy(semToRet->name, sem->name);
   semToRet->value = sem->value;
   semToRet->blockedPids = getBlockedPids(sem->id);
   return semToRet;
 }
 
-userlandSemInfo * getSemInfo(){
+userlandSemInfo *getSemInfo()
+{
   iteratorADT it = toBegin(semQueue);
-  t_sem * semIt = NULL;
+  t_sem *semIt = NULL;
 
-  userlandSemInfo * info = malloc(sizeof(userlandSemInfo));
+  userlandSemInfo *info = malloc(sizeof(userlandSemInfo));
+
+  if (info == NULL)
+    return NULL;
+
   info->length = getQueueSize(semQueue);
-  info->array = malloc(sizeof(userlandSem)*info->length);
+  info->array = malloc(sizeof(userlandSem) * info->length);
+
+  if (info->array == NULL)
+    return NULL;
 
   userlandSem aux;
 
@@ -223,7 +235,7 @@ userlandSemInfo * getSemInfo(){
     aux.id = semIt->id;
     aux.lock = semIt->lock;
     aux.attachedProcesses = semIt->attachedProcesses;
-    aux.name = malloc((strlen(semIt->name)+1)*sizeof(char));
+    aux.name = malloc((strlen(semIt->name) + 1) * sizeof(char));
     strcpy(aux.name, semIt->name);
     aux.value = semIt->value;
     aux.blockedPids = getBlockedPids(semIt->id);

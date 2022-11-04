@@ -9,23 +9,26 @@
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
 
-typedef struct {
-	uint8_t x;
-	uint8_t y;
+typedef struct
+{
+  uint8_t x;
+  uint8_t y;
 } vec;
 
-typedef struct {
-    uint8_t width;
-    uint8_t height;
-    vec start;
-    vec currPos;
+typedef struct
+{
+  uint8_t width;
+  uint8_t height;
+  vec start;
+  vec currPos;
 } window;
 
-
-typedef enum {
-  STDIN = 0, STDOUT, STDERR
+typedef enum
+{
+  STDIN = 0,
+  STDOUT,
+  STDERR
 } FILE_DESCRIPTOR;
-
 
 void loadWindows();
 void newLine();
@@ -34,15 +37,13 @@ void printCharColor(char c, color_t charColor, color_t bgColor, int next);
 void printChar(char c);
 void clearScreen();
 void scrollUp();
-void print(char* str, size_t count);
-void printColor(char* str, size_t count, color_t charColor, color_t bgColor);
+void print(char *str, size_t count);
+void printColor(char *str, size_t count, color_t charColor, color_t bgColor);
 void blinkCursor();
 void stopCursor();
 void setCursor(int active);
-void switchScreens(size_t screen);
 void initializeSingleScreen();
-void printline(char* str);
+void printline(char *str);
 int abs(int num);
 
 #endif
-

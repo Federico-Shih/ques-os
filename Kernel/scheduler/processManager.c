@@ -252,11 +252,6 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
-int popCondition(pcb *queueElement, int *pid)
-{
-  return queueElement->pid == *pid;
-}
-
 // Utilizado para otorgar al init la capacidad de limpiar estos procesos
 static int sendTaskToInit(int pid)
 {

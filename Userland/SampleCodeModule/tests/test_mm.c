@@ -6,40 +6,47 @@
 #include "test_util.h"
 #include "ustdlib.h"
 
-typedef struct MM_rq{
+typedef struct MM_rq
+{
   void *address;
   uint32_t size;
-}mm_rq;
+} mm_rq;
 
-void test_mm(unsigned int argc, char *argv[]){
+void test_mm(unsigned int argc, char *argv[])
+{
   mm_rq mm_rqs[MAX_BLOCKS];
-  uint8_t rq;
-  uint32_t total;
-  uint64_t max_memory;
+  int64_t max_memory;
 
-  if (argc < 2) return;
+  if (argc < 2)
+    return;
 
-  if ((max_memory = satoi(argv[1])) <= 0) return;
+  if ((max_memory = satoi(argv[1])) <= 0)
+    return;
 
-  while (1){
-    rq = 0;
-    total = 0;
+  while (1)
+  {
+    uint8_t rq = 0;
+    uint32_t total = 0;
     int index = 0;
     // Request as many blocks as we can
-    while(rq < MAX_BLOCKS && total < max_memory){
+    while (rq < MAX_BLOCKS && total < max_memory)
+    {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
       _fprintf("Malloc numero: %d\n", ++index);
-      mm_rqs[rq].address = sys_malloc(mm_rqs[rq].size);
-      _fprintf("tamano: %d\n",mm_rqs[rq].size);
+      mm_rqs[rq].address = malloc(mm_rqs[rq].size);
+      _fprintf("tamano: %d\n", mm_rqs[rq].size);
 
-      if(mm_rqs[rq].address){
+      if (mm_rqs[rq].address)
+      {
         total += mm_rqs[rq].size;
         rq++;
-      }else{
+      }
+      else
+      {
         break;
       }
     }
-  
+
     bussy_wait(MINOR_WAIT);
 
     // Set
@@ -51,7 +58,8 @@ void test_mm(unsigned int argc, char *argv[]){
     // Check
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
-        if(!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)){
+        if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size))
+        {
           _fprintf("test_mm ERROR\n");
           return;
         }
@@ -61,8 +69,8 @@ void test_mm(unsigned int argc, char *argv[]){
     // Free
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
-        sys_free(mm_rqs[i].address);
-    
+        free(mm_rqs[i].address);
+
     bussy_wait(MINOR_WAIT);
-  } 
+  }
 }

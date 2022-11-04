@@ -20,7 +20,6 @@ typedef struct
   char help[MAX_HELP_LENGTH];
 } command_t;
 
-command_t *getCommands();
 command_t *getCommand(char *commandName);
 
 /*
@@ -41,10 +40,10 @@ void fibonacci();
 void primes();
 char *getDescriptions(char *function);
 void clearScreen();
-void kill(unsigned int argc, char *argv[]);
-void block(unsigned int argc, char *argv[]);
-void resume(unsigned int argc, char *argv[]);
-void nice(unsigned int argc, char *argv[]);
+void killTask(unsigned int argc, char *argv[]);
+void blockTask(unsigned int argc, char *argv[]);
+void resumeTask(unsigned int argc, char *argv[]);
+void niceTask(unsigned int argc, char *argv[]);
 void cat(unsigned int argc, char *argv[]);
 void wc(unsigned int argc, char *argv[]);
 void filter(unsigned int argc, char *argv[]);

@@ -38,6 +38,9 @@
     "buddybtree.h": "c",
     "stdio.h": "c",
     "ctype.h": "c",
-    "shared.h": "c"
+    "shared.h": "c",
+    "moduleloader.h": "c",
+    "idtloader.h": "c",
+    "printinfo.h": "c"
   }
 }
