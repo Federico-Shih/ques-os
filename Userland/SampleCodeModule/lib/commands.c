@@ -22,14 +22,18 @@ static command_t commands[] = {
     {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
     {"date&time", &dateAndTime, "Imprime en pantalla la fecha del ano corriente y horario en que fue llamado."},
     {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. "},
-    {"hello", &holaMundo, "Imprime un saludo al usuario. ",},
+    {
+        "hello",
+        &holaMundo,
+        "Imprime un saludo al usuario. ",
+    },
     {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del programa. "},
     {"inforeg", &infoReg, "Imprime los registros capturados al presionar ctrl + r. "},
     {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
     {"clear", &clearScreen, "Limpia la pantalla. "},
     {"mem", &sys_memDump, "Imprime el estado de memoria. "},
-    {"ps", &sys_printProcesses, "Imprime el estado de los procesos. "},
+    {"ps", &ps, "Imprime el estado de los procesos. "},
     {"kill", &kill, "Recibe un pid y mata al proceso. "},
     {"block", &block, "Recibe un pid y bloquea al proceso. "},
     {"resume", &resume, "Recibe un pid y resume el proceso. "},
@@ -133,10 +137,10 @@ void help(unsigned int argc, char *argv[])
   int length = getCommandsLength();
   if (page > length / HELP_PAGE)
   {
-    _fprintf( "No existe esta pagina de comandos: \n");
+    _fprintf("No existe esta pagina de comandos: \n");
     return;
   }
-  _fprintf( "* Lista de posibles comandos: \n");
+  _fprintf("* Lista de posibles comandos: \n");
   for (uint8_t i = 0; i < HELP_PAGE && commands[i + page * HELP_PAGE].runner != NULL; i++)
   {
     _fprintf("- %s: %s\n", commands[i + page * HELP_PAGE].name, commands[i + page * HELP_PAGE].help);
@@ -196,7 +200,7 @@ void kill(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprintf( "No se ingreso un pid\n");
+    _fprintf("No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -207,7 +211,7 @@ void block(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprintf( "No se ingreso un pid\n");
+    _fprintf("No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -218,7 +222,7 @@ void resume(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprintf( "No se ingreso un pid\n");
+    _fprintf("No se ingreso un pid\n");
     return;
   }
   int res = _atoi(argv[1]);
@@ -229,12 +233,12 @@ void nice(unsigned int argc, char *argv[])
 {
   if (argc == 1)
   {
-    _fprintf( "No se ingreso un pid\n");
+    _fprintf("No se ingreso un pid\n");
     return;
   }
   if (argc == 2)
   {
-    _fprintf( "No se ingreso un valor de nice\n");
+    _fprintf("No se ingreso un valor de nice\n");
   }
   sys_nice(_atoi(argv[1]), _atoi(argv[2]));
 }
@@ -247,7 +251,7 @@ void cat(unsigned int argc, char *argv[])
     return;
   }
   int c;
-  while ( (c = getChar()) != -1 )
+  while ((c = getChar()) != -1)
     _putc(c);
 }
 
@@ -259,12 +263,12 @@ void wc(unsigned int argc, char *argv[])
     return;
   }
   int c, counter = 1;
-  while ( (c = getChar()) != - 1)
+  while ((c = getChar()) != -1)
   {
-    if ( c == '\n' )
+    if (c == '\n')
       counter++;
   }
-  _fprintf("La cantidad de lineas escritas fueron: %d",counter);
+  _fprintf("La cantidad de lineas escritas fueron: %d", counter);
   return;
 }
 
@@ -276,11 +280,13 @@ void filter(unsigned int argc, char *argv[])
     return;
   }
   int c;
-  while ( (c = getChar()) != -1)
+  while ((c = getChar()) != -1)
   {
-    if( c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
+    if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
+    {
     }
-    else{
+    else
+    {
       _putc(c);
     }
   }
@@ -288,17 +294,17 @@ void filter(unsigned int argc, char *argv[])
 
 void printCheeseOs()
 {
-sys_write("  ______   __    __  ________   ______           ______    ______  \n", 68, CHEESE_COLOURS);
-sys_write(" /      \\ |  \\  |  \\|        \\ /      \\         /      \\  /      \\ \n", 68, CHEESE_COLOURS);
-sys_write("|  $$$$$$\\| $$  | $$| $$$$$$$$|  $$$$$$\\       |  $$$$$$\\|  $$$$$$\\\n", 68, CHEESE_COLOURS);
-sys_write("| $$  | $$| $$  | $$| $$__    | $$___\\$$______ | $$  | $$| $$___\\$$\n", 68, CHEESE_COLOURS);
-sys_write("| $$  | $$| $$  | $$| $$  \\    \\$$    \\|      \\| $$  | $$ \\$$    \\ \n", 68, CHEESE_COLOURS);
-sys_write("| $$ _| $$| $$  | $$| $$$$$    _\\$$$$$$\\$$$$$$| $$  | $$ _\\$$$$$$\\\n", 67, CHEESE_COLOURS);
-sys_write("| $$/ \\ $$| $$__/ $$| $$_____ |  \\__| $$       | $$__/ $$|  \\__| $$\n", 68, CHEESE_COLOURS);
-sys_write(" \\$$ $$ $$ \\$$    $$| $$     \\ \\$$    $$        \\$$    $$ \\$$    $$\n", 68, CHEESE_COLOURS);
-sys_write("  \\$$$$$$\\  \\$$$$$$  \\$$$$$$$$  \\$$$$$$          \\$$$$$$   \\$$$$$$\n", 67, CHEESE_COLOURS);
-sys_write("      \\$$$\n", 11, CHEESE_COLOURS);
-_fprintf("\n");
+  sys_write("  ______   __    __  ________   ______           ______    ______  \n", 68, CHEESE_COLOURS);
+  sys_write(" /      \\ |  \\  |  \\|        \\ /      \\         /      \\  /      \\ \n", 68, CHEESE_COLOURS);
+  sys_write("|  $$$$$$\\| $$  | $$| $$$$$$$$|  $$$$$$\\       |  $$$$$$\\|  $$$$$$\\\n", 68, CHEESE_COLOURS);
+  sys_write("| $$  | $$| $$  | $$| $$__    | $$___\\$$______ | $$  | $$| $$___\\$$\n", 68, CHEESE_COLOURS);
+  sys_write("| $$  | $$| $$  | $$| $$  \\    \\$$    \\|      \\| $$  | $$ \\$$    \\ \n", 68, CHEESE_COLOURS);
+  sys_write("| $$ _| $$| $$  | $$| $$$$$    _\\$$$$$$\\$$$$$$| $$  | $$ _\\$$$$$$\\\n", 67, CHEESE_COLOURS);
+  sys_write("| $$/ \\ $$| $$__/ $$| $$_____ |  \\__| $$       | $$__/ $$|  \\__| $$\n", 68, CHEESE_COLOURS);
+  sys_write(" \\$$ $$ $$ \\$$    $$| $$     \\ \\$$    $$        \\$$    $$ \\$$    $$\n", 68, CHEESE_COLOURS);
+  sys_write("  \\$$$$$$\\  \\$$$$$$  \\$$$$$$$$  \\$$$$$$          \\$$$$$$   \\$$$$$$\n", 67, CHEESE_COLOURS);
+  sys_write("      \\$$$\n", 11, CHEESE_COLOURS);
+  _fprintf("\n");
 }
 
 void printCheese()
@@ -340,9 +346,9 @@ void ejemplos()
 
 void echo(unsigned int argc, char *argv[])
 {
-  for(int i = 1 ; i < argc; i++)
+  for (int i = 1; i < argc; i++)
   {
-    _fprintf("%s ", argv[i]);    
+    _fprintf("%s ", argv[i]);
   }
   _fprintf("\n");
 }

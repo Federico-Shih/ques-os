@@ -83,12 +83,8 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
         return startTask((void (*)(int argc, char **argv))arg0, (int)arg1, (char **)arg2, (int)arg3, (int *)arg4);
     case SYS_GETPID:
         return getpid();
-    case SYS_PRINTPROCESSES:
-        printTasks();
-        return 0;
-    case SYS_PRINTPROCESS:
-        printTask((int)arg0);
-        return 0;
+    case SYS_GETPROCESSESINFO:
+        return (uint64_t)getSchedulerInfo();
     case SYS_KILL:
         return killTask((int)arg0);
     case SYS_EXIT:
@@ -118,7 +114,7 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
     case SYS_SEMCLOSE:
         return semClose((int)arg0);
     case SYS_SEMPRINT:
-        return getSemInfo();
+        return (uint64_t)getSemInfo();
     case SYS_PIPEOPEN:
         return pipeOpen((int)arg0);
     case SYS_PIPECLOSE:
@@ -128,7 +124,7 @@ uint64_t syscallHandler(syscall_id rax, uint64_t arg0, uint64_t arg1, uint64_t a
     case SYS_PIPEWRITE:
         return pipeWrite((int)arg0, (char *)arg1);
     case SYS_PIPEPRINT:
-        return getPipeInfo();
+        return (uint64_t)getPipeInfo();
     }
     return -1;
 }

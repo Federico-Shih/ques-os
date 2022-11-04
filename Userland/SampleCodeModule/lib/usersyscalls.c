@@ -72,14 +72,9 @@ int sys_getpid()
   return _syscall(SYS_GETPID, 0, 0, 0, 0, 0);
 }
 
-void sys_printProcesses()
+schedulerInfo* getSchedulerInfo()
 {
-  _syscall(SYS_PRINTPROCESSES, 0, 0, 0, 0, 0);
-}
-
-void sys_printProcess(int pid)
-{
-  _syscall(SYS_PRINTPROCESS, pid, 0, 0, 0, 0);
+  return (schedulerInfo *)_syscall(SYS_GETPROCESSESINFO, 0, 0, 0, 0, 0);
 }
 
 int sys_kill(int pid)
@@ -138,7 +133,7 @@ int sys_semClose(int id)
 }
 userlandSemInfo * sys_getSemInfo()
 {
-  return _syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
+  return (userlandSemInfo *)_syscall(SYS_SEMPRINT, 0, 0, 0, 0, 0);
 }
 
 int waitpid(int pid)
@@ -166,5 +161,5 @@ int sys_pipeClose(int pipeId)
 }
 userlandPipeInfo * sys_getPipeInfo()
 {
-  return _syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
+  return (userlandPipeInfo *)_syscall(SYS_PIPEPRINT, 0, 0, 0, 0, 0);
 }

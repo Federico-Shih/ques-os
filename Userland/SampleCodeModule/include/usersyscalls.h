@@ -42,6 +42,7 @@ int sys_pipeWrite(int pipeId, char *str);
 int sys_pipeClose(int pipeId);
 int sys_pipeRead(int pipeId);
 userlandPipeInfo * sys_getPipeInfo();
+schedulerInfo* getSchedulerInfo();
 int waitpid(int pid);
 
 #endif

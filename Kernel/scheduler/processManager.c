@@ -25,7 +25,6 @@ static int readyCount = 0;
 static int userlandPid = -1;
 static int initPid = -1;
 
-static int printPCB(pcb *process);
 static int sendTaskToInit(int pid);
 
 // Proceso inactivo
@@ -77,7 +76,6 @@ void freeProcess(pcb *process)
 
   free(process->argv);
   semClose(process->semId);
-  sendTaskToInit(process->pid);
   if (process->fileDescriptors[1] != STDOUT_PIPENO)
   {
     pipePutchar(process->fileDescriptors[1], -1);
@@ -175,50 +173,12 @@ int startTask(void (*process)(int argc, char **argv), int argc, char **argv, int
   enqueue(queue, (void *)newProcess);
   readyCount += 1;
 
-
   // Si el proceso es un proceso background del Userland(shell), le doy al init que lo evalue
   if (currentProcessPCB->pid == userlandPid && !foreground)
   {
     newProcess->ppid = initPid;
   }
   return newProcess->pid;
-}
-
-// Imprime el estado y datos de todas las tareas actuales
-int printTasks()
-{
-  // pcb *aux;
-  // printPCB(currentProcessPCB);
-  // iteratorADT it = toBegin(queue);
-  // while (hasNext(it))
-  // {
-  //   aux = (pcb *) next(it);
-    
-  // }
-  // free(it);
-  // return 0;
-}
-
-// Imprime el estado y datos de una tarea particular
-int printTask(int pid)
-{
-  pcb *process = getProcess(queue, pid);
-  return printPCB(process);
-}
-
-int printPCB(pcb *process)
-{
-  if (process != NULL)
-  {
-    printf(
-        "Nombre: %s | PID: %d | PPID: %d | Foreground: %s | RSP: %x | RBP: "
-        "%x | Prioridad: %d | Estado: %s \n",
-        process->name, process->pid, process->ppid,
-        foregToBool((int)process->foreground), (uint64_t)process->rsp,
-        (uint64_t)process->rbp, process->priority,
-        stateToStr(process->state));
-  }
-  return 0;
 }
 
 processInfo toProcessInfo(pcb *aux)
@@ -231,12 +191,13 @@ processInfo toProcessInfo(pcb *aux)
   process.rbp = (uint64_t)aux->rbp;
   process.rsp = (uint64_t)aux->rsp;
   strcpy(process.state, stateToStr(aux->state));
+  process.priority = aux->priority;
   return process;
 }
 
-schedulerInfo* getSchedulerInfo() 
+schedulerInfo *getSchedulerInfo()
 {
-  schedulerInfo* schedulerData = malloc(sizeof(schedulerInfo));
+  schedulerInfo *schedulerData = malloc(sizeof(schedulerInfo));
   if (schedulerData == NULL)
     return NULL;
 
@@ -248,9 +209,6 @@ schedulerInfo* getSchedulerInfo()
     return NULL;
   }
 
-  pcb *aux;
-
-  printPCB(currentProcessPCB);
   iteratorADT it = toBegin(queue);
 
   int index = 1;
@@ -268,12 +226,6 @@ int setUserlandPid(int pid)
 {
   userlandPid = pid;
   return 0;
-}
-
-// Funcion que retorna un string diferenciando si un proceso es foreground o no
-char *foregToBool(int foreground)
-{
-  return foreground ? "TRUE" : "FALSE";
 }
 
 // Funcion que retorna un string del estado de un proceso
@@ -433,9 +385,7 @@ int killCurrentForeground()
   }
   pcb *foregroundProcess = (pcb *)find(queue, (comparator)currentForegroundCondition, NULL);
   if (!foregroundProcess)
-  {
     return -1;
-  }
   terminateChildren(foregroundProcess->pid);
   return killTask(foregroundProcess->pid);
 }
@@ -526,7 +476,7 @@ pcb *initializeBlock(char *name, int foreground, int *fd)
     pipeOpen(fd[0]);
   }
 
-  if (fd[1] !=STDOUT_PIPENO)
+  if (fd[1] != STDOUT_PIPENO)
   {
     pipeOpen(fd[1]);
   }
@@ -555,7 +505,10 @@ int changeState(int pid, process_state newState)
 
   if (newState == EXITED)
     semPost(process->semId);
-  
+
+  if (newState == TERMINATED)
+    sendTaskToInit(process->pid);
+
   if (process->state != READY && newState == READY)
     readyCount += 1;
 

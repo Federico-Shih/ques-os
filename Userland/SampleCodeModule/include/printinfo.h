@@ -9,5 +9,7 @@ void printSemInfo();
 // --------- PIPES ------------------------------
 void printPipeInfo();
 
+void ps();
+
 
 #endif

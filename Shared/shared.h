@@ -42,13 +42,6 @@ typedef struct userlandPipeInfo {
 
 /*
 
-      printf(
-        "Nombre: %s | PID: %d | PPID: %d | Foreground: %s | RSP: %x | RBP: "
-        "%x | Prioridad: %d | Estado: %s \n",
-        process->name, process->pid, process->ppid,
-        foregToBool((int)process->foreground), (uint64_t)process->rsp,
-        (uint64_t)process->rbp, process->priority,
-        stateToStr(process->state));
 */
 
 typedef struct processInfo {
@@ -59,6 +52,7 @@ typedef struct processInfo {
   uint64_t rsp;
   uint64_t rbp;
   char state[20];
+  int priority;
 } processInfo;
 
 typedef struct schedulerInfo {

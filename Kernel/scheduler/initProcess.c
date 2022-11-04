@@ -25,7 +25,7 @@ void init()
       pcb *process = (pcb *)next(it);
       if (process->ppid == getpid() && process->state == EXITED)
       {
-        process->state = TERMINATED;
+        waitpid(process->pid);
       }
     }
     free(it);

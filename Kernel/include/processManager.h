@@ -90,12 +90,6 @@ Args:
 */ 
 int startTask(void (*process)(int argc, char** argv), int argc, char** argv, int foreground, int *fd);
 
-// Imprime todos los procesos actuales
-int printTasks();
-
-// Imprime el estado de un proceso
-int printTask(int pid);
-
 schedulerInfo* getSchedulerInfo();
 
 // Obtiene el pid del proceso actual
