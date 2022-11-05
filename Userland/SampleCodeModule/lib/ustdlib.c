@@ -1,7 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ustdlib.h>
-#include <usersyscalls.h>
+#include "ustdlib.h"
+#include "usersyscalls.h"
 #include <stdint.h>
 
 int _strlen(const char *str)
@@ -23,6 +23,17 @@ void _fprint(const char *str)
   write(str, length, NULL);
 }
 
+static void fillSpaces(int *hasPadding, char *padding, int stringLength)
+{
+  if (*hasPadding)
+  {
+    *hasPadding = 0;
+    long paddingLength = _atoi(padding);
+    for (int i = 0; i < paddingLength - stringLength; i += 1)
+      _putc(' ');
+  }
+}
+
 // Inspirado de https://stackoverflow.com/questions/1735236/how-to-write-my-own-printf-in-c
 void _fprintf(char *format, ...)
 {
@@ -35,7 +46,10 @@ void _fprintf(char *format, ...)
   char *s;
 
   int hasFormat = 0;
-
+  int hasPadding = 0;
+  int paddingNegative = 0;
+  char padding[MAX_SPACES] = {0};
+  int paddingIndex = 0;
   for (traverse = format; *traverse != '\0'; traverse++)
   {
     if (*traverse == '%')
@@ -48,45 +62,83 @@ void _fprintf(char *format, ...)
     }
     else if (hasFormat)
     {
-      // Module 2: Fetching and executing arguments
-      switch (*traverse)
+      if (*traverse == '-' || IS_DIGIT(*traverse))
       {
-      case 'c':
-        i = va_arg(arg, int); // Fetch char argument
-        _putc(i);
-        break;
-
-      case 'd':
-        i = va_arg(arg, int); // Fetch Decimal/Integer argument
-        if (i < 0)
-        {
-          i = -i;
-          _putc('-');
-        }
-        _fprint(_itoa(i, 10));
-        break;
-
-      case 'o':
-        i = va_arg(arg, int); // Fetch Octal representation
-        _fprint(_itoa(i, 8));
-        break;
-
-      case 's':
-        s = va_arg(arg, char *); // Fetch string
-        _fprint(s);
-        break;
-
-      case 'x':
-        i = va_arg(arg, uint64_t); // Fetch Hexadecimal representation
-        _fprint(_itoa(i, 16));
-        break;
-      case 'u': // Fetch uint64_t representation
-        _fprint(_itoa(va_arg(arg, uint64_t), 10));
-        break;
-      default:
-        _putc('%');
+        hasPadding = 1;
+        if (*traverse == '-')
+          paddingNegative = 1;
+        else
+          padding[paddingIndex++] = *traverse;
       }
-      hasFormat = 0;
+      else
+      {
+        char *toPrint;
+        // Module 2: Fetching and executing arguments
+        padding[paddingIndex] = '\0';
+        switch (*traverse)
+        {
+        case 'c':
+          i = va_arg(arg, int); // Fetch char argument
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, 1);
+          _putc(i);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, 1);
+          break;
+        case 'd':
+          i = va_arg(arg, int); // Fetch Decimal/Integer argument
+
+          toPrint = _itoa(i, 10);
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          _fprint(toPrint);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          break;
+
+        case 'o':
+          i = va_arg(arg, int); // Fetch Octal representation
+          toPrint = _itoa(i, 8);
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          _fprint(toPrint);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          break;
+        case 's':
+          s = va_arg(arg, char *); // Fetch string
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(s));
+          _fprint(s);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(s));
+          break;
+
+        case 'x':
+          i = va_arg(arg, uint64_t); // Fetch Hexadecimal representation
+          toPrint = _itoa(i, 16);
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          _fprint(toPrint);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          break;
+        case 'u': // Fetch uint64_t representation
+          toPrint = _itoa(va_arg(arg, uint64_t), 10);
+          if (!paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          _fprint(toPrint);
+          if (paddingNegative) 
+            fillSpaces(&hasPadding, padding, _strlen(toPrint));
+          break;
+        default:
+          _putc('%');
+        }
+        hasPadding = 0;
+        paddingNegative = 0;
+        paddingIndex = 0;
+        hasFormat = 0;
+      }
     }
     else
     {

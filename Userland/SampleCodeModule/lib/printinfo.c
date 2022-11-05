@@ -20,29 +20,31 @@ static void printBlockedPids(userlandBlockedPids *blockedPids)
 {
     if (blockedPids->length == 0)
     {
-        _fprintf("[No hay procesos bloqueados]\n");
+        _fprintf("[Sin procesos]");
         return;
     }
 
     for (int i = 0; i < blockedPids->length; i++)
     {
-        _fprintf("%d, ", blockedPids->array[i]);
-        _fprintf("\b\b");
+        if (i != 0)
+            _fprint(", ");
+        _fprintf("%d", blockedPids->array[i]);
     }
 }
 
 static void printUserlandSem(userlandSem sem)
 {
-    _fprintf("%d | ", sem.id);
-    _fprintf("%d | ", (int)sem.value);
-    _fprintf("%s | ", _strcasecmp(sem.name, "") ? sem.name : "[Sin nombre]");
-    _fprintf("%d | ", (int)sem.attachedProcesses);
+    _fprintf("|%-4d|", sem.id);
+    _fprintf("%-6d|", (int)sem.value);
+    _fprintf("%-19s|", _strcasecmp(sem.name, "") ? sem.name : "[unnamed]");
+    _fprintf("%-7d|", (int)sem.attachedProcesses);
     printBlockedPids(sem.blockedPids);
 }
 
 void printSemInfo()
 {
-    _fprint("ID | Valor | Nombre | # procesos vinculados | procesos bloqueados\n");
+    _fprint("|ID  |Valor |Nombre            |# PIDs |PIDs bloqueados\n");
+    _fprint("---------------------------------------------------------------------------\n");
     userlandSemInfo *info = getSemInfo();
 
     if(info == NULL)
@@ -54,6 +56,7 @@ void printSemInfo()
     for (int i = 0; i < info->length; i++)
     {
         printUserlandSem(info->array[i]);
+        _putc('\n');
     }
     freeSemInfo(info);
 }
@@ -99,16 +102,14 @@ static void freePipeInfo(userlandPipeInfo *info)
 
 static void printPipe(userlandPipe pipe, int buffersize)
 {
-    _fprintf("ID: %d | ", pipe.id);
-    _fprintf("Read Sem ID: %d | ", pipe.readSem->id);
-    _fprintf("Write Sem ID: %d | ", pipe.writeSem->id);
-    _fprintf("# procesos de pipe: %d\n", pipe.totalProcesses);
-    _fprintf("Procesos bloqueados:\n");
-    _fprintf("\tBloqueados para escribir: ");
+    _fprintf("|%-4d|", pipe.id);
+    _fprintf("%-11d|", pipe.readSem->id);
+    _fprintf("%-12d|", pipe.writeSem->id);
+    _fprintf("%-7d|", pipe.totalProcesses);
     printBlockedPids(pipe.writeSem->blockedPids);
-    _fprintf("\b\b\n\tBloqueados para leer: ");
+    _putc('|');
     printBlockedPids(pipe.readSem->blockedPids);
-    _fprintf("# de caracteres a leer: %d\n", ((pipe.writeIndex - pipe.readIndex) % buffersize));
+    // _fprintf("# de caracteres a leer: %d\n", ((pipe.writeIndex - pipe.readIndex) % buffersize));
 }
 
 void printPipeInfo()
@@ -119,6 +120,8 @@ void printPipeInfo()
         _fprintf("Error al recuperar informacion de los pipes");
         return;
     }
+    _fprint("|ID  |ReadSem ID |WriteSem ID |# PIDs |Write PIDs      |Read PIDs      \n");
+    _fprint("---------------------------------------------------------------------------\n");
     for (int i = 0; i < info->length; i++)
     {
         printPipe(info->array[i], info->pipeBufferSize);
@@ -134,13 +137,14 @@ void ps()
         _fprint("ERROR recuperando datos de los procesos.\n");
         return;
     }
-    _fprint("Nombre | PID | PPID | Foreground |  RSP  |  RBP  | Prio | Estado\n");
+    _fprint("|Nombre      |PID    |PPID    |Foreground  |RSP     |RBP     |Prio |Estado|\n");
+    _fprint("---------------------------------------------------------------------------\n");
     for (int i = 0; i < processes->length; i += 1)
     {
         processInfo process = processes->array[i];
         _fprintf(
-            "%s | %d | %d |  %s  | %x | "
-            "%x |  %d  | %s \n",
+            "|%-12s|%-7d|%-8d|%-12s|%-8x|"
+            "%-8x|%-5d|%-5s|\n",
             process.name, process.pid, process.ppid,
             process.foreground ? "TRUE" : "FALSE", process.rsp,
             process.rbp, process.priority,
