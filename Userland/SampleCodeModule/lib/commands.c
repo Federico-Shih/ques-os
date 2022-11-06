@@ -277,6 +277,7 @@ void filter(unsigned int argc, char *argv[])
   int c;
   while ((c = getChar()) != -1)
   {
+    toLower(c);
     if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
     {
     }
