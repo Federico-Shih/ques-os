@@ -177,10 +177,9 @@ void phylo()
     return;
   }
   semPost(gateMutex);
-  char c;
   while (1)
   {
-    c = getChar();
+    char c = getChar();
     if (c == 'a')
     {
       int addedPhilo = addPhilosofer();

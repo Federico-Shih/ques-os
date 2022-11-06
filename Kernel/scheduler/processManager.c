@@ -544,6 +544,8 @@ static int sendTaskToInit(int pid)
   int hasParent = 0;
   pcb *killedProcess = (pcb *)getProcess(queue, pid);
   pcb *process = currentProcessPCB;
+  if(process == NULL)
+    return -1;
   do
   {
     // Si su proceso padre esta muerto, se envia a init
