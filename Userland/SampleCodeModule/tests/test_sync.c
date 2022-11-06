@@ -62,14 +62,13 @@ void my_process_inc(unsigned int argc, char *argv[])
 void test_sync(unsigned int argc, char *argv[])
 { //{n, use_sem, 0}
   int pids[2 * TOTAL_PAIR_PROCESSES];
-  int64_t n;
 
   if (argc != 3)
   {
     _fprintf("# de args equivocados.");
     return;
   }
-  if ((n = satoi(argv[1])) <= 0)
+  if ((satoi(argv[1])) <= 0)
   {
     _fprintf("arg0 no es > 0");
     return;

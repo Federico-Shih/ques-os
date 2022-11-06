@@ -134,7 +134,7 @@ memoryInfo *getMemoryInfo()
   }
 
   toReturn->totalMem = blockMaxSize;
-  toReturn->totalMem = freeSpace;
+  toReturn->availableMem = freeSpace;
 
   return toReturn;
 }
