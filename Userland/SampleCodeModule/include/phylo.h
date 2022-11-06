@@ -9,17 +9,14 @@ typedef enum
 } philo_state;
 
 /*
-  Representa a un filosofo en particular
-  semId representa el tenedor a su derecha. Para comer, tendra que agarrar
-  el tenedor a su derecha philosofers[index].semId y el de la izquierda
-  philosofers[(index - 1) % currentPhilosofers].semId.
+  Representa a un filosofo en particular.
 */
-typedef struct t_philosofer
+typedef struct philosofer_t
 {
   int pid;
   philo_state state;
   int semId;
-} t_philosofer;
+} philosofer_t;
 
 void phylo();
 

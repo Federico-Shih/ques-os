@@ -8,7 +8,7 @@
 #define LEFT(i) (((i) + currentPhilosofers - 1) % currentPhilosofers)
 #define RIGHT(i) (((i) + 1) % currentPhilosofers)
 
-t_philosofer philosopher[MAX_PHILO] = {{0}};
+philosofer_t philosopher[MAX_PHILO] = {{0}};
 
 static int currentPhilosofers = 0;
 
@@ -178,8 +178,9 @@ void phylo()
   }
   semPost(gateMutex);
   char c;
-  while ((c = getChar()) != -1)
+  while (1)
   {
+    c = getChar();
     if (c == 'a')
     {
       int addedPhilo = addPhilosofer();
