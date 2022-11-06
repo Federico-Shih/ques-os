@@ -5,7 +5,7 @@
 
 // ------------ SEMAFOROS -----------------------------
 typedef struct userlandBlockedPids {
-  int * array; //free
+  int * array; 
   int length;
 } userlandBlockedPids;
 
@@ -14,12 +14,12 @@ typedef struct userlandSem {
   int id;
   int value;
   int lock;
-  char *name; //free
-  userlandBlockedPids * blockedPids; //free
+  char *name;
+  userlandBlockedPids * blockedPids;
 } userlandSem;
 
 typedef struct userlandSemInfo {
-    userlandSem * array; //free
+    userlandSem * array;
     int length;
 } userlandSemInfo;
 
@@ -28,12 +28,12 @@ typedef struct userlandPipe {
   int id;
   int writeIndex, readIndex;
   int totalProcesses;
-  userlandSem * readSem; //free
-  userlandSem * writeSem; //free
+  userlandSem * readSem;
+  userlandSem * writeSem;
 } userlandPipe;
 
 typedef struct userlandPipeInfo {
-  userlandPipe * array; //free
+  userlandPipe * array;
   int length;
   int pipeBufferSize;
 } userlandPipeInfo;

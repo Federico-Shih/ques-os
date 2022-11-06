@@ -160,34 +160,3 @@ memoryInfo *getMemoryInfo()
 }
 
 #endif
-
-/*printf("\nMemory manager dump (Free List)");
-  uint64_t memoria_total = header_blocks * sizeof(Header);
-  printf("\nMemoria total: %d", memoria_total);
-  printf("\n\n------------------------------------\n");
-
-  if (free_node == NULL)
-  {
-    printf("No hay bloques libres");
-    return;
-  }
-  printf("Bloques libres\n");
-
-  Header *current, *free_base;
-
-  current = free_base = free_node;
-  int i = 0;
-  unsigned int cant = 0;
-  do
-  {
-    cant += current->data.size;
-    printf("Bloque nro: %d | Base: ", i);
-    printf("%x", (uint64_t)current);
-    printf(" | Cantidad de bloques: %d\n", current->data.size);
-    printf("------------------------------------\n");
-    current = current->data.next;
-    i += 1;
-  } while (current != free_base);
-
-  uint64_t memoria_libre_total = cant * sizeof(Header);
-  printf("Memoria libre: %d | Memoria ocupada: %d\n", memoria_libre_total, memoria_total - memoria_libre_total);*/
