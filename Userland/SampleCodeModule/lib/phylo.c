@@ -187,7 +187,7 @@ void phylo()
       if (addedPhilo == 0)
         write("Un filosofo ha llegado a la mesa para disfrutar del queso. \n", 61, phyloAdd);
       else
-        write("No hay mas espacio en la mesa\n", 32, errorPhylo);
+        write("No hay mas espacio en la mesa\n", 31, errorPhylo);
     }
     else if (c == 'd')
     {
