@@ -20,6 +20,8 @@ typedef struct t_pipe
     // la funcion de write y readSemId es utilizar de manera correcta el buffer circular
 } t_pipe;
 
+t_pipe * cachedPipe = NULL; //para mejor performance en llamadas sucesivas a getPipe
+
 // funciones auxiliares
 static t_pipe *createPipe(int id);
 static void writeToPipe(t_pipe *pipe, char c);
@@ -72,7 +74,6 @@ int pipeWrite(int pipeId, char *str)
     return 0;
 }
 
-// TODO: Para aquellas escrituras que son sucesivas, considerar cachear getPipe.
 int pipePutchar(int pipeId, char c)
 {
     t_pipe *pipe;
@@ -118,7 +119,10 @@ int pipeClose(int pipeId)
     {
         semClose(pipe->readSemId);
         semClose(pipe->writeSemId);
-        removeElement(pipeQueue, findPipeCondition, (void *)&pipeId); // todo fijarse si falta algun free
+        removeElement(pipeQueue, findPipeCondition, (void *)&pipeId);
+
+        if (cachedPipe != NULL && cachedPipe->id == pipeId)
+            cachedPipe = NULL;
     }
     semPost(allPipesSem);
     return 0;
@@ -205,7 +209,14 @@ static int findPipeCondition(void *queueElement, void *value)
 
 static t_pipe *getPipe(int pipeId)
 {
-    return find(pipeQueue, findPipeCondition, &pipeId);
+    t_pipe * pipe;
+    if(cachedPipe != NULL && cachedPipe->id == pipeId)
+        pipe = cachedPipe;
+    else{
+        pipe = find(pipeQueue, findPipeCondition, &pipeId);
+        cachedPipe = pipe;
+    }
+    return pipe;
 }
 
 // -------------------------------------------------------------------

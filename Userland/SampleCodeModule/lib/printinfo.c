@@ -5,7 +5,7 @@
 #include "ustdlib.h"
 #include "usersyscalls.h"
 
-// ----------------- DECLARACIONES STATIC ------------------------
+// ----------------- DECLARACIONES LOCALES ------------------------
 static void printUserlandSem(userlandSem sem);
 static void printBlockedPids(userlandBlockedPids *blockedPids);
 static void freeSemInfo(userlandSemInfo *info);
@@ -112,7 +112,7 @@ static void printPipe(userlandPipe pipe, int buffersize)
     printBlockedPids(pipe.writeSem->blockedPids);
     _putc('|');
     printBlockedPids(pipe.readSem->blockedPids);
-    // _fprintf("# de caracteres a leer: %d\n", ((pipe.writeIndex - pipe.readIndex) % buffersize));
+    // _fprintf("A leer: %d\n", ((pipe.writeIndex - pipe.readIndex) % buffersize));
 }
 
 void printPipeInfo()

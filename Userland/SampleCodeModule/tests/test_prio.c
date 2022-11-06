@@ -5,9 +5,9 @@
 #include "test_util.h"
 
 #define TOTAL_PROCESSES 3
-#define LOWEST 1   // TODO: Change as required
-#define MEDIUM 10  // TODO: Change as required
-#define HIGHEST 20 // TODO: Change as required
+#define LOWEST 1   //Change as required
+#define MEDIUM 10  //Change as required
+#define HIGHEST 20 //Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
