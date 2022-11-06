@@ -347,8 +347,6 @@ int currentForegroundCondition(pcb *process, void *_)
 
 int killCurrentForeground()
 {
-  if (currentProcessPCB->pid == userlandPid || currentProcessPCB->pid == initPid)
-    return -1;
   if (currentProcessPCB->foreground && (currentProcessPCB->pid != userlandPid) && (currentProcessPCB->pid != initPid))
   {
     terminateChildren(currentProcessPCB->pid);
