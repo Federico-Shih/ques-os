@@ -2,9 +2,9 @@
 #define KEYBOARD_DRIVER
 
 #include <stdint.h>
-#include <console.h>
-#include <lib.h>
-#include <colors.h>
+#include "console.h"
+#include "lib.h"
+#include "colors.h"
 
 #define MAXCHARACTERS (25 * 80)
 #define RELEASE 128 // el offset entre el codigo de una tecla y el codigo del release de esa tecla

@@ -18,16 +18,10 @@ static color_t ERROR_COLOURS[] = {RED, BLACK};
 static color_t CHEESE_COLOURS[] = {YELLOW, BLACK};
 
 static command_t commands[] = {
-    {"block", &blockTask, "Recibe un pid y bloquea al proceso. "},
-    {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
-    {"cat", &cat, "Imprime el stdin tal como lo recibe. "},
     {"cheese", &printCheese, "mmmmm... queso..."},
-    {"clear", &clearScreen, "Limpia la pantalla. "},
+    {"brand", &printCheeseOs, "Imprime el nombre del sistema operativo"},
     {"date&time", &dateAndTime, "Imprime en pantalla la fecha del ano corriente y horario en que fue llamado."},
-    {"echo", &echo, "Imprime los argumentos a salida estandar"},
-    {"ejemplos", &ejemplos, "Imprime ejemplos de comandos posibles"},
     {"fibonacci", &fibonacci, "Imprime la secuencia de fibonacci infinitamente hasta que se pause o se termine su ejecucion. "},
-    {"filter", &filter, "Filtra las vocales del input."},
     {
         "hello",
         &holaMundo,
@@ -35,23 +29,29 @@ static command_t commands[] = {
     },
     {"help", &help, "Imprime una lista detallada de los comandos  y modulos ejecutables del programa. "},
     {"inforeg", &infoReg, "Imprime los registros capturados al presionar ctrl + r. "},
-    {"kill", &killTask, "Recibe un pid y mata al proceso. "},
-    {"loop", &loop, "Te saluda cada cierto tiempo. "},
-    {"mem", &memDump, "Imprime el estado de memoria. "},
-    {"nice", &niceTask, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
-    {"phylo", &phylo, "Filosofos comensales. "},
-    {"pipes", &printPipeInfo, "Imprime estado de los pipes. "},
     {"prime", &primes, "Imprime numeros primos infinitamente hasta que se pause o se termine su ejecucion. "},
     {"printmem", &printmem, "Recibe como argumento una direccion de memoria no superior a 80000000h y luego imprime los proximos 32bytes de memoria adyacentes a la direccion dada. "},
+    {"clear", &clearScreen, "Limpia la pantalla. "},
+    {"mem", &memDump, "Imprime el estado de memoria. "},
     {"ps", &ps, "Imprime el estado de los procesos. "},
+    {"kill", &killTask, "Recibe un pid y mata al proceso. "},
+    {"block", &blockTask, "Recibe un pid y bloquea al proceso. "},
     {"resume", &resumeTask, "Recibe un pid y resume el proceso. "},
+    {"nice", &niceTask, "Recibe un pid y un valor de prioridad y modifica la prioridad del pid. "},
+    {"loop", &loop, "Te saluda cada cierto tiempo. "},
     {"sem", &printSemInfo, "Imprime informacion sobre los semaforos. "},
-    {"shortcuts", &printShortcuts, "Imprime los shortcuts que la terminal provee."},
+    {"pipes", &printPipeInfo, "Imprime estado de los pipes. "},
     {"test_mm", &test_mm, "Recibe una cantidad de memoria y empieza a testear. "},
     {"test_prio", &test_prio, "Testea las prioridades del scheduler. "},
     {"test_processes", &test_processes, "Testea el scheduler. "},
     {"test_sync", &test_sync, "Testea semaforos y race conditions. "},
+    {"phylo", &phylo, "Filosofos comensales. "},
+    {"cat", &cat, "Imprime el stdin tal como lo recibe. "},
     {"wc", &wc, "Cuenta la cantidad de lineas escritas en stdin."},
+    {"filter", &filter, "Filtra las vocales del input."},
+    {"shortcuts", &printShortcuts, "Imprime los shortcuts que la terminal provee."},
+    {"ejemplos", &ejemplos, "Imprime ejemplos de comandos posibles"},
+    {"echo", &echo, "Imprime los argumentos a salida estandar"},
     {"", NULL, ""},
 };
 
@@ -71,8 +71,9 @@ void printmem(unsigned int argc, char *argv[])
     write(error_message, _strlen(error_message), ERROR_COLOURS);
     return;
   }
-  char *address = argv[0];
+  char *address = argv[1];
 
+  // Chequear que strToHex devuelva -1 si no es hex
   uint64_t memDir = strToHex(address);
   if (memDir == -1 || memDir >= LAST_MEM)
   {
@@ -174,11 +175,6 @@ char *getDescriptions(char *function)
   return foundCommand->help;
 }
 
-void clearScreen()
-{
-  clear_screen(0);
-}
-
 command_t *getCommand(char *commandName)
 {
   for (uint8_t i = 0; _strcasecmp(commands[i].name, "") != 0; i++)
@@ -276,7 +272,6 @@ void filter(unsigned int argc, char *argv[])
   int c;
   while ((c = getChar()) != -1)
   {
-    toLower(c);
     if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
     {
     }

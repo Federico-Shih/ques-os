@@ -39,7 +39,6 @@ void printmem(unsigned int argc, char *argv[]);
 void fibonacci();
 void primes();
 char *getDescriptions(char *function);
-void clearScreen();
 void killTask(unsigned int argc, char *argv[]);
 void blockTask(unsigned int argc, char *argv[]);
 void resumeTask(unsigned int argc, char *argv[]);

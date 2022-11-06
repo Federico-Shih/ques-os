@@ -112,6 +112,7 @@ static void printPipe(userlandPipe pipe, int buffersize)
     printBlockedPids(pipe.writeSem->blockedPids);
     _putc('|');
     printBlockedPids(pipe.readSem->blockedPids);
+    _putc('\n');
     // _fprintf("A leer: %d\n", ((pipe.writeIndex - pipe.readIndex) % buffersize));
 }
 
@@ -169,7 +170,7 @@ void memDump()
 
     _fprintf("Informacion actual de la memoria: \n");
     _fprintf("Memoria total: %d\n",memory->totalMem);
-    _fprintf("Memorioa libre total: %d\n", memory->availableMem);
+    _fprintf("Memoria libre total: %d\n", memory->availableMem);
     _fprintf("Memoria ocupada total: %d\n", (memory->totalMem - memory->availableMem));
 
     free(memory);

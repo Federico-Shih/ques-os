@@ -41,6 +41,7 @@
     "shared.h": "c",
     "moduleloader.h": "c",
     "idtloader.h": "c",
-    "printinfo.h": "c"
+    "printinfo.h": "c",
+    "stdarg.h": "c"
   }
 }

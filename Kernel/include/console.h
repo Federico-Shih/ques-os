@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <colors.h>
 #include <stdarg.h>
+#include "colors.h"
 
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25

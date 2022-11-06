@@ -12,9 +12,9 @@ enum {
 #define IS_HEXDIGIT(x) (IS_DIGIT(x) || (x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f'))
 #define EOF -1
 
-#define MAX_SPACES 50
+#define MAX_SPACES 6
 
-void clear_screen(unsigned int fd);
+void clearScreen();
 void _fprint(const char *str);
 char getChar();
 void _putc(char c);

@@ -4,22 +4,22 @@
 #include <stdint.h>
 #include "queue.h"
 
-typedef struct queue_node
+typedef struct queueNode
 {
   void *value;
-  struct queue_node *next;
-} queue_node;
+  struct queueNode *next;
+} queueNode;
 
 typedef struct queueCDT
 {
   uint64_t size;
-  queue_node *first;
-  queue_node *last;
+  queueNode *first;
+  queueNode *last;
 } queueCDT;
 
 typedef struct iteratorCDT
 {
-  queue_node *curr;
+  queueNode *curr;
 } iteratorCDT;
 
 queueADT initQueue()
@@ -59,7 +59,7 @@ void *dequeue(queueADT queue)
 {
   if (queue->size <= 0)
     return NULL;
-  queue_node *aux = queue->first;
+  queueNode *aux = queue->first;
   queue->first = queue->first->next;
   queue->size -= 1;
   void *res = aux->value;
@@ -69,7 +69,7 @@ void *dequeue(queueADT queue)
 
 int enqueue(queueADT queue, void *value)
 {
-  queue_node *newNode = malloc(sizeof(queue_node));
+  queueNode *newNode = malloc(sizeof(queueNode));
   if (newNode == NULL)
   {
     return -1;
@@ -163,8 +163,8 @@ void *takeElement(queueADT queue, int (*removeCondition)(void *, void *), void *
 {
   if (queue == NULL || removeCondition == NULL || getQueueSize(queue) == 0)
     return NULL;
-  queue_node *node = queue->first;
-  queue_node *prev = NULL;
+  queueNode *node = queue->first;
+  queueNode *prev = NULL;
   while (node != NULL)
   {
     if (removeCondition(node->value, element))

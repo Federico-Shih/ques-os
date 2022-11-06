@@ -94,29 +94,15 @@ void *initializeKernelBinary()
 
 int main()
 {
-	// ncPrint("[Kernel Main]");
-	// ncNewline();
-	// ncPrint("  Sample code module at 0x");
-	// ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	// ncNewline();
 
-	// ncPrint("  Sample data module at 0x");
-	// ncPrintHex((uint64_t)sampleDataModuleAddress);
-	// ncNewline();
-	// ncPrint("  Sample data module contents: ");
-	// ncPrint((char*)sampleDataModuleAddress);
-	// ncNewline();
 	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
-	// printCheeseOs();
-	// printCheese();
-
-	// print("Press enter to log in\n", 22);
-	// while(getFromBuffer() != '\n');
+	
+	// initSem and initPipe
 	initSemSystem();
 	initPipeSystem();
 	initKeyboardSystem();
 	initScheduler();
-	// initSem and initPipe
+
 	ncClear();
 
 	char *args[] = {"Init userland"};

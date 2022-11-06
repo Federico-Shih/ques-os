@@ -131,13 +131,6 @@ void initializeMemoryManager(void *heap_base, unsigned int heap_size)
   free_node->data.next = free_node;
 }
 
-/*
-  Memoria
-  total:
-  ocupada:
-  libre:
-*/
-
 memoryInfo *getMemoryInfo()
 {
   memoryInfo *toReturn = malloc(sizeof(memoryInfo));

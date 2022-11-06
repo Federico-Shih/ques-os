@@ -156,7 +156,7 @@ void _putc(char c)
   write(&c, 1, NULL);
 }
 
-void clear_screen(unsigned int fd)
+void clearScreen(unsigned int fd)
 {
   clear(fd);
 }

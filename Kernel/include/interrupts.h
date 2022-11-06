@@ -8,8 +8,8 @@
 #ifndef INTERRUPS_H_
 #define INTERRUPS_H_
 
-#include <idtLoader.h>
 #include <stdint.h>
+#include "idtLoader.h"
 
 void _irq00Handler(void);
 void _irq01Handler(void);
@@ -41,5 +41,9 @@ void switchContext(uint64_t rsp);
 
 // Termina la ejecución de la cpu.
 void haltcpu(void);
+
+// Fuerza un timer tick
+void _callTimerTick();
+
 
 #endif /* INTERRUPS_H_ */

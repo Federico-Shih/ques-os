@@ -38,6 +38,6 @@ typedef enum {
   SYS_PIPEREAD,
   SYS_PIPEWRITE,
   SYS_PIPEPRINT
-} syscall_id;
+} syscallId;
 
 #endif

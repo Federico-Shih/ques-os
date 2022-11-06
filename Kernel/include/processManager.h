@@ -5,6 +5,7 @@
 #include "queue.h"
 #include "sem.h"
 #include "shared.h"
+#include "interrupts.h"
 
 #define MAX_PRIO 20
 
@@ -68,8 +69,6 @@ typedef struct
   uint64_t base;
 } stackFrame;
 
-// Obtiene un proceso en especifico
-pcb *getProcess(queueADT queue, int pid);
 
 queueADT getProcessQueue();
 
@@ -99,39 +98,31 @@ schedulerInfo *getSchedulerInfo();
 // Obtiene el pid del proceso actual
 int getpid();
 
+// Pone en EXITED a un proceso
 int killTask(int pid);
 
+// Cambia la prioridad de un proceso
 int nice(int pid, int priorityLevel);
 
+// Bloquea un proceso
 int blockTask(int pid);
 
+// Resume un proceso
 int resumeTask(int pid);
 
-// Mata el proceso actual
+// Mata el proceso actual corriendo
 int killCurrent();
 
 // Mata el proceso actual que este corriendo el foreground.
 int killCurrentForeground();
 
+// Libera un proceso de ejecucion
 int yield();
 
-int cpyArgs(char **dest, char **from, int count);
-
-// Cambia de estado a un proceso. Devuelve el pid del proceso que se cambio o -1 si el proceso no existe.
-int changeState(int pid, process_state newState);
-
-char *foregToBool(int foreground);
-
-char *stateToStr(process_state state);
-
-void _callTimerTick();
-
-pcb *initializeBlock(char *name, int foreground, int *fd);
-
-void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp);
-
+// Espera un cambio de ejecucion de un proceso. Si el proceso no existe o hay error devuelve -1
 int waitpid(int pid);
 
+// Define el pid del userland.
 int setUserlandPid(int pid);
 
 #endif

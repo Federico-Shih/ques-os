@@ -12,5 +12,4 @@ int findPipe(int argc, char **argv);
 int linkPipe(int argc, char **argv, int pipeIndex);
 int runPipeCommand(int argc, char **argv, int fdin, int fdout, int foreground);
 
-
 #endif

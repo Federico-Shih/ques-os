@@ -22,10 +22,31 @@ static pcb *currentProcessPCB = NULL;
 
 // Cantidad de procesos listos
 static int readyCount = 0;
+
+// pids de interes
 static int userlandPid = -1;
 static int initPid = -1;
 
+// Utilizado para otorgar al init la capacidad de limpiar estos procesos
 static int sendTaskToInit(int pid);
+
+// Inicializa el bloque de memoria
+static pcb *initializeBlock(char *name, int foreground, int *fd);
+
+// Inicializa el stack
+static void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp);
+
+// Realizo una copia de los argumentos
+static int cpyArgs(char **dest, char **from, int count);
+
+// Devuelve los datos del proceso especificado
+static pcb *getProcess(queueADT queue, int pid);
+
+// Cambia el estado del proceso especificado. Devuelve el pid del proceso.
+static int changeState(int pid, process_state newState);
+static void terminateChildren(int pid);
+
+char *stateToStr(process_state state);
 
 // Proceso inactivo
 void idleProcess(int argc, char **argv)
@@ -252,35 +273,6 @@ int getpid()
   return (currentProcessPCB != NULL) ? currentProcessPCB->pid : 0;
 }
 
-// Utilizado para otorgar al init la capacidad de limpiar estos procesos
-static int sendTaskToInit(int pid)
-{
-  iteratorADT it = toBegin(queue);
-  int hasParent = 0;
-  pcb *killedProcess = (pcb *)getProcess(queue, pid);
-  pcb *process = currentProcessPCB;
-  do
-  {
-    // Si su proceso padre esta muerto, se envia a init
-    if (process->pid == killedProcess->ppid && (process->state != TERMINATED && process->state != EXITED))
-      hasParent = 1;
-
-    // Envia sus procesos hijos no terminados al init para ser procesados
-    if (process->ppid == pid && process->state != TERMINATED)
-    {
-      process->ppid = initPid;
-    }
-    process = (pcb *)next(it);
-  } while (hasNext(it));
-  free(it);
-  // Proceso es huerfano
-  if (!hasParent)
-  {
-    killedProcess->ppid = initPid;
-  }
-  return 0;
-}
-
 // Mata el proceso especificado. Ahora puede ser liberado.
 int killTask(int pid)
 {
@@ -353,22 +345,6 @@ int currentForegroundCondition(pcb *process, void *_)
   return process->foreground && process->pid != initPid && process->pid != userlandPid;
 }
 
-void terminateChildren(int pid)
-{
-  iteratorADT it = toBegin(queue);
-  pcb *current = currentProcessPCB;
-  do
-  {
-    if (current->ppid == pid)
-    {
-      changeState(current->pid, TERMINATED);
-      current->ppid = initPid;
-    }
-    current = (pcb *)next(it);
-  } while (hasNext(it));
-  free(it);
-}
-
 int killCurrentForeground()
 {
   if (currentProcessPCB->pid == userlandPid || currentProcessPCB->pid == initPid)
@@ -404,8 +380,7 @@ static void processWrapper(void (*process)(int, char **), int argc, char **argv)
   killCurrent();
 }
 
-// Inicializa el stack
-void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp)
+static void initializeStack(void (*process)(int, char **), int argc, char **argv, void *rbp)
 {
   // Ubico el stackframe correctamente
   stackFrame *sf = (stackFrame *)rbp - 1;
@@ -436,8 +411,7 @@ void initializeStack(void (*process)(int, char **), int argc, char **argv, void 
   sf->base = 0x000;
 }
 
-// Inicializa el bloque de memoria
-pcb *initializeBlock(char *name, int foreground, int *fd)
+static pcb *initializeBlock(char *name, int foreground, int *fd)
 {
   if (foreground > 1)
     return NULL;
@@ -491,8 +465,7 @@ pcb *initializeBlock(char *name, int foreground, int *fd)
   return newProcess;
 }
 
-// Cambia el estado del proceso especificado. Devuelve el pid del proceso.
-int changeState(int pid, process_state newState)
+static int changeState(int pid, process_state newState)
 {
   pcb *process = (pid == currentProcessPCB->pid) ? currentProcessPCB : getProcess(queue, pid);
   if (process == NULL || (process->state == EXITED && newState != TERMINATED) || process->state == TERMINATED)
@@ -514,8 +487,7 @@ int changeState(int pid, process_state newState)
   return process->pid;
 }
 
-// Realizo una copia de los argumentos
-int cpyArgs(char **dest, char **from, int count)
+static int cpyArgs(char **dest, char **from, int count)
 {
   for (int i = 0; i < count; i += 1)
   {
@@ -536,8 +508,7 @@ int cpyArgs(char **dest, char **from, int count)
   return 0;
 }
 
-// Devuelve los datos del proceso especificado
-pcb *getProcess(queueADT queue, int pid)
+static pcb *getProcess(queueADT queue, int pid)
 {
   iteratorADT it = toBegin(queue);
   while (hasNext(it))
@@ -551,4 +522,48 @@ pcb *getProcess(queueADT queue, int pid)
   }
   free(it);
   return NULL;
+}
+
+static void terminateChildren(int pid)
+{
+  iteratorADT it = toBegin(queue);
+  pcb *current = currentProcessPCB;
+  do
+  {
+    if (current->ppid == pid)
+    {
+      changeState(current->pid, TERMINATED);
+      current->ppid = initPid;
+    }
+    current = (pcb *)next(it);
+  } while (hasNext(it));
+  free(it);
+}
+
+static int sendTaskToInit(int pid)
+{
+  iteratorADT it = toBegin(queue);
+  int hasParent = 0;
+  pcb *killedProcess = (pcb *)getProcess(queue, pid);
+  pcb *process = currentProcessPCB;
+  do
+  {
+    // Si su proceso padre esta muerto, se envia a init
+    if (process->pid == killedProcess->ppid && (process->state != TERMINATED && process->state != EXITED))
+      hasParent = 1;
+
+    // Envia sus procesos hijos no terminados al init para ser procesados
+    if (process->ppid == pid && process->state != TERMINATED)
+    {
+      process->ppid = initPid;
+    }
+    process = (pcb *)next(it);
+  } while (hasNext(it));
+  free(it);
+  // Proceso es huerfano
+  if (!hasParent)
+  {
+    killedProcess->ppid = initPid;
+  }
+  return 0;
 }

@@ -9,7 +9,10 @@ void printSemInfo();
 // --------- PIPES ------------------------------
 void printPipeInfo();
 
+// --------- PROCESS ------------------------------
 void ps();
+
+// --------- MEMORY ------------------------------
 void memDump();
 
 

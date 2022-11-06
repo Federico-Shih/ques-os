@@ -32,9 +32,7 @@ void test_mm(unsigned int argc, char *argv[])
     while (rq < MAX_BLOCKS && total < max_memory)
     {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
-      _fprintf("Malloc numero: %d\n", ++index);
       mm_rqs[rq].address = malloc(mm_rqs[rq].size);
-      _fprintf("tamano: %d\n", mm_rqs[rq].size);
 
       if (mm_rqs[rq].address)
       {
