@@ -167,6 +167,10 @@ userlandBlockedPids *getBlockedPids(int semId)
 {
   t_sem *sem = findSem(semId);
   userlandBlockedPids *blockedPids = malloc(sizeof(userlandBlockedPids));
+
+  if(blockedPids == NULL)
+    return NULL;
+
   if (sem == NULL)
   {
     blockedPids->array = NULL;
@@ -176,6 +180,12 @@ userlandBlockedPids *getBlockedPids(int semId)
 
   blockedPids->length = getQueueSize(sem->blockedPidsQueue);
   blockedPids->array = malloc(sizeof(int) * blockedPids->length);
+
+  if(blockedPids->array == NULL)
+  {
+    free(blockedPids);
+    return NULL;
+  }
 
   iteratorADT it;
   it = toBegin(sem->blockedPidsQueue);
@@ -199,10 +209,21 @@ userlandSem *getSingleSem(int semId)
     return NULL;
 
   userlandSem *semToRet = malloc(sizeof(userlandSem));
+
+  if(semToRet == NULL)
+    return NULL;
+
   semToRet->id = sem->id;
   semToRet->lock = sem->lock;
   semToRet->attachedProcesses = sem->attachedProcesses;
   semToRet->name = malloc(strlen(sem->name) + 1);
+
+  if(semToRet->name == NULL)
+  {
+    free(semToRet);
+    return NULL;
+  }
+
   strcpy(semToRet->name, sem->name);
   semToRet->value = sem->value;
   semToRet->blockedPids = getBlockedPids(sem->id);
@@ -223,8 +244,10 @@ userlandSemInfo *getSemInfo()
   info->array = malloc(sizeof(userlandSem) * info->length);
 
   if (info->array == NULL)
+  {
+    free(info);
     return NULL;
-
+  }
   userlandSem aux;
 
   int iterator = 0;
@@ -236,6 +259,14 @@ userlandSemInfo *getSemInfo()
     aux.lock = semIt->lock;
     aux.attachedProcesses = semIt->attachedProcesses;
     aux.name = malloc((strlen(semIt->name) + 1) * sizeof(char));
+
+    if(aux.name == NULL)
+    {
+      free(info->array);
+      free(info);
+      return NULL;
+    }
+
     strcpy(aux.name, semIt->name);
     aux.value = semIt->value;
     aux.blockedPids = getBlockedPids(semIt->id);

@@ -135,8 +135,10 @@ userlandPipeInfo *getPipeInfo()
     info->length = getQueueSize(pipeQueue);
     info->array = malloc(sizeof(userlandPipe) * info->length);
 
-    if(info->array == NULL)
+    if(info->array == NULL){
+        free(info);
         return NULL;
+    }
 
     info->pipeBufferSize = PIPE_BUFFER_SIZE;
 
@@ -184,9 +186,9 @@ static t_pipe *createPipe(int id)
     pipe->writeSemId = semInit(PIPE_BUFFER_SIZE);
     if (pipe->readSemId == -1 || pipe->writeSemId == -1)
     {
-        free(pipe);
         semClose(pipe->readSemId);
         semClose(pipe->writeSemId);
+        free(pipe);
         return NULL;
     }
 

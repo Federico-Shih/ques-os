@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "printinfo.h"
 #include "ustdlib.h"
 #include "usersyscalls.h"
@@ -161,6 +164,7 @@ void memDump()
     if(memory == NULL)
     {
         _fprintf("ERROR recuperando datos de la memoria.\n");
+        return;
     }
 
     _fprintf("Informacion actual de la memoria: \n");
