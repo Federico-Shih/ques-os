@@ -73,7 +73,7 @@ void *malloc(uint64_t size)
   if (freeBlock == -1)
     return NULL;
 
-  if (orders[freeBlock].prev != (list_t *)0x0 || orders[freeBlock].next != (list_t *)0x0)
+  if (orders[freeBlock].prev != NULL || orders[freeBlock].next != NULL)
   {
     list_t *node = popFromList(&orders[freeBlock]);
 

@@ -27,7 +27,6 @@ void test_mm(unsigned int argc, char *argv[])
   {
     uint8_t rq = 0;
     uint32_t total = 0;
-    int index = 0;
     // Request as many blocks as we can
     while (rq < MAX_BLOCKS && total < max_memory)
     {

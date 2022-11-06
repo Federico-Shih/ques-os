@@ -73,7 +73,9 @@ static void freeBlockedPids(userlandBlockedPids *blockedPids)
 static void freeUserlandSem(userlandSem sem)
 {
     free(sem.name);
-    freeBlockedPids(sem.blockedPids);
+    if(sem.blockedPids != NULL){
+        freeBlockedPids(sem.blockedPids);
+    }
 }
 
 static void freeSemInfo(userlandSemInfo *info)
