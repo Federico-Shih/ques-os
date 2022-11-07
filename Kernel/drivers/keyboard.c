@@ -94,7 +94,6 @@ void initKeyboardSystem()
     stdin = pipeOpen(STDIN_PIPENO);
 }
 
-// para que no printee cosas raras cuando toco una tecla no imprimible como el control
 int isPrintable(uint8_t teclahex)
 {
     return teclahex < RELEASE && kbd_US[teclahex] != 0; // esos son los numeros imprimibles en la tabla ascii

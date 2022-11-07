@@ -97,12 +97,24 @@ int main()
 
 	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
 	
-	// initSem and initPipe
+	// ncPrint("[Kernel Main]");
+	// ncNewline();
+	// ncPrint("  Sample code module at 0x");
+	// ncPrintHex((uint64_t)sampleCodeModuleAddress);
+	// ncNewline();
+
+	// ncPrint("  Sample data module at 0x");
+	// ncPrintHex((uint64_t)sampleDataModuleAddress);
+	// ncNewline();
+	// ncPrint("  Sample data module contents: ");
+	// ncPrint((char*)sampleDataModuleAddress);
+	// ncNewline();
+	initializeMemoryManager(memoryManagerModuleAddress, HEAP_SIZE);
+
 	initSemSystem();
 	initPipeSystem();
 	initKeyboardSystem();
 	initScheduler();
-
 	ncClear();
 
 	char *args[] = {"Init userland"};
