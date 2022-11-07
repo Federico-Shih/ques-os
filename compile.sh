@@ -17,7 +17,7 @@ elif [ $1 == "standard" ];
     docker exec -it $2 make clean    -C /root/Toolchain
     docker exec -it $2 make all      -C /root/Toolchain
     docker exec -it $2 make clean    -C /root/
-    docker exec -it $2 make all MM=BUDDY       -C /root/
+    docker exec -it $2 make all MM=STANDARD       -C /root/
     docker stop $2
 elif [ $1 == "clean" ];
   then
